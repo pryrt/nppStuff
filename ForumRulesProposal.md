@@ -33,10 +33,18 @@ Forum is not the official [issue tracker](https://github.com/notepad-plus-plus/n
 If there is a bug in Notepad++, posting about it in this Community Forum will _not_ make an official request 
 to get the bug fixed.  We have a FAQ which describes how to make [bug reports or feature requests](https://community.notepad-plus-plus.org/topic/15741/faq-desk-feature-request-or-bug-report).
 
-## Categories ##
+English is the primary language of this Forum.  If you choose to post in another language, it is considered
+polite to translate your text into English as well.  There are free online translators avaialble, like translate.google.com and deepl.com.  
+Feel free to make use of those to help you communicate in English.
+
+## Category Descriptions ##
 
 The main [Categories](https://community.notepad-plus-plus.org/categories) are described below.  Please try to keep
 Topics in the correct Category.
+
+The lines can be blurry between some of the Categories, especially **Help Wanted**, **General Discussion**, and **Blogs**.  
+If in doubt, questions go in **Help Wanted** and most anything else can go in **General Discussion**.
+
 
 * [Announcements](https://community.notepad-plus-plus.org/category/1/announcements): "Announcements regarding our community".
     
@@ -48,6 +56,8 @@ Topics in the correct Category.
 * [FAQ](https://community.notepad-plus-plus.org/category/7/faq): "Frequently Asked Questions".  
     
     This contains answers to questions that pop up frequently in the Forum -- both about Notepad++ and about the Forum itself.
+    If you have a question or discussion regaring one of the FAQ entries, please create a new Topic in **Help Wanted** or 
+    **General Discussion**, and post a link to the FAQ you are talking about.
 
 * [General Discussion](...): "A place to talk about whatever you want".
 
@@ -56,10 +66,14 @@ Topics in the correct Category.
 * [Help wanted · · · – – – · · ·](...): "Got a question? Ask away!"
 
     This is where questions about Notepad++, how to use it, asking if some strange behavior might be a bug, etc, should go.
+    When in doubt about where your Notepad++ question belongs, this is the Category to use for your question.
 
 * [Plugin Development](...): "All the issues (questions/bug reports/feature requests) about plugins"
 
-    If it's about a plugin -- how to develop one, how to install one, how to use one -- the discussion belongs here.  
+    The primary focus of this Category is on developing plugins.  But often questions on how to install or use a plugin also go here.
+    Desired features for specific plugins can be discussed here, but this Forum is not necessarily visited by a specific plugin's
+    author; if it's a confirmed bug, you will want to check if that plugin has its own issue tracker and make sure you submit
+    your request there.
     
 * [Security](...): "Security shouldn't be the privilege of rich people"
 
@@ -69,10 +83,13 @@ Topics in the correct Category.
 
     If you want to ask about the translations of the Notepad++ UI into other languages, this is the place.
 
+* [BOYCOTT NOTEPAD++](...): "Say !@#$ to Notepad++ here, and only here"
+
+    If you have to whine and complain, do it here, _not_ in any other category.  
+    But really, we'd prefer it if you participated in constructive discussion in another Category.  Whining and complaining doesn't help.
+
 * [Blogs](...): "Blog posts from individual members"
 
     This Category is not used much.  If you have something that you feel is more "blog"-like than "discussion oriented",
     it could go there.
-
-The lines can be blurry between some of the Categories, especially **Help Wanted**, **General Discussion**, and **Blogs**.
 
