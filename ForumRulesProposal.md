@@ -37,6 +37,9 @@ English is the primary language of this Forum.  If you choose to post in another
 polite to translate your text into English as well.  There are free online translators avaialble, like translate.google.com and deepl.com.  
 Feel free to make use of those to help you communicate in English.
 
+Each user should maintain only one active account.  If you have difficulty logging in, do not just create a new account;
+instead, please contact a moderator (___, ____, ___) and wait patiently for a reply.
+
 ## Category Descriptions ##
 
 The main [Categories](https://community.notepad-plus-plus.org/categories) are described below.  Please try to keep
