@@ -1,10 +1,12 @@
 # Read Before Posting
 
-Hello, and welcome to the Notepad++ Community. We look forward to discussing Notepad++ with you, or helping you with your questions.
+Hello, and welcome to the Notepad++ Community, where users of Notepad++ can come to help each other use Notepad++. We look forward to discussing Notepad++ with you, or helping you with your questions.
 
 We have a [FAQ Desk](https://community.notepad-plus-plus.org/category/7/faq), with answers to common topics on the Forum.  That's a great place to start.
 
 If you need help with formatting your post, there is a FAQ entry on [Formatting Forum Posts](https://community.notepad-plus-plus.org/topic/21925/faq-desk-formatting-forum-posts)
+
+When asking for help, it's usually useful to go to Notepad++'s **?**-menu and select the **Debug Info** entry, and **Copy debug info into clipboard** and paste it into your post; that way, we know what version of Notepad++, what version of Windows, what plugins are installed, and a couple other configuration options that will help us understand what you're asking about.
 
 Please understand that this is not official paid support: regulars in the Forum spend their time here voluntarily, and are here to discuss Notepad++ and help others use Notepad++ to the fullest. But that means that at times, your question will not be answered in a matter of minutes, hours, or sometimes even days. That might be because the expert on your topic isn't around, or because we don't know the answer, or because your question got buried and no one has noticed you don't yet have an answer -- sorry, it can easily happen.
 
