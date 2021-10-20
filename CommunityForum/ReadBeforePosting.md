@@ -18,4 +18,4 @@ English is the primary language of this Forum. If you choose to post in another 
 
 Please be polite and treat other Community Forum members with respect.
 
-Despite what your Community account "settings" page may imply, the email notification for the Community does not work, and you will _not_ be emailed when you get replies to your questions.  You have to come back to the Community to check for answers and other replies.  Sorry for the inconvenience.
+_Technical Note_: Despite what your Notepad++ Community account "settings" page may imply, the email notification for the Community does not work, and you will _not_ be emailed when you get replies to your questions.  You have to come back to the Community to check for answers and other replies.  Sorry for the inconvenience.
