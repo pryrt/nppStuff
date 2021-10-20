@@ -1,3 +1,5 @@
+# FAQ Desk: Template for Search/Replace Questions
+
 Hello, and welcome to the FAQ Desk.  If you are reading this, you were likely directed here to get a template to use when asking a search, search-and-replace, regular expression, regex, mark, or other "change data that matches X" question.
 
 You can copy the template below and paste it into your question in the [Help Wanted](https://community.notepad-plus-plus.org/category/4/help-wanted) section of the forum.  Then go through and change anything that's in ALL CAPS into something that's meaningful for your question.  Leave the special punctuation (\` or \`\`\` symbols especially), as they provide [formatting for this forum](https://community.notepad-plus-plus.org/topic/21925/faq-desk-formatting-forum-posts) that will help your message be understandable.
