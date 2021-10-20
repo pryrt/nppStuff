@@ -1,12 +1,10 @@
-# Template for Search/Replace Questions
-
 Hello, and welcome to the FAQ Desk.  If you are reading this, you were likely directed here to get a template to use when asking a search, search-and-replace, regular expression, regex, mark, or other "change data that matches X" question.
 
 You can copy the template below and paste it into your question in the [Help Wanted](https://community.notepad-plus-plus.org/category/4/help-wanted) section of the forum.  Then go through and change anything that's in ALL CAPS into something that's meaningful for your question.  Leave the special punctuation (\` or \`\`\` symbols especially), as they provide [formatting for this forum](https://community.notepad-plus-plus.org/topic/21925/faq-desk-formatting-forum-posts) that will help your message be understandable.
 
 ## Template
 
-~~~
+~~~txt
 Fellow Notepad++ Users,
 
 Could you please help me the the following search-and-replace problem I am having?
@@ -50,11 +48,11 @@ HERE IS WHY YOU THOUGHT YOUR EXPRESSION WOULD WORK
 Unfortunately, this did not produce the output I desired, and I'm not sure why. Could you please help me understand what went wrong and help me find the solution?
 ~~~
 
+## Hints / Guidelines
+
 Obviously, you can feel free to include additional information not present in the template.  
 
 If you choose to leave out information from this template, it will be harder for people to answer your question, and you may get people pointing you back to this FAQ entry to provide more information.
-
-## Hints / Guidelines
 
 Here are some other hints and guidelines for asking such questions:
 
@@ -65,6 +63,7 @@ Here are some other hints and guidelines for asking such questions:
 * Your example "before" and "after" data should include examples of data that should be changed, and example data that should _not_ be changed by the replacement.  Often, crafting a successful search/replace expression requires knowing both.
 * If there are edge cases or exceptions, make sure your example data includes those
 * When you share the expressions that you already tried, it's good to explain why you thought it would work
+* It really is important for the example "before" and "after" data to be as plain text, not just as a screenshot.  Otherwise, fellow Notepad++ Community members cannot easily copy/paste your example data to experiment with the search/replace expressions.
 
 Please note that the template above was written to try to encourage following these guidelines.
 
@@ -77,4 +76,3 @@ _**Please note**: This Community Forum is not a data transformation service; you
 * [FAQ Desk: Formatting Forum Posts](https://community.notepad-plus-plus.org/topic/21925/faq-desk-formatting-forum-posts)
 * [FAQ Desk: Where to Find Regular Expression (RegEx) Documentation](https://community.notepad-plus-plus.org/topic/15765/faq-desk-where-to-find-regular-expressions-regex-documentation)
 * [Notepad++ Online User Manual: Searching](https://npp-user-manual.org/docs/searching/)
-
