@@ -4,9 +4,9 @@ Hello, and welcome to the Notepad++ Community, where users of Notepad++ can come
 
 We have a [FAQ Desk](https://community.notepad-plus-plus.org/category/7/faq), with answers to common topics on the Forum.  That's a great place to start.
 
-If you need help with formatting your post, there is a FAQ entry on [Formatting Forum Posts](https://community.notepad-plus-plus.org/topic/21925/faq-desk-formatting-forum-posts)
-
 If you have a search-and-replace question, please use the [Template for Search/Replace Questions](https://community.notepad-plus-plus.org/topic/22022/template-for-search-replace-questions) from our FAQ Desk.
+
+If you need help with formatting your post, there is a FAQ entry on [Formatting Forum Posts](https://community.notepad-plus-plus.org/topic/21925/faq-desk-formatting-forum-posts)
 
 When asking for help, it's usually useful to go to Notepad++'s **?**-menu and select the **Debug Info** entry, and **Copy debug info into clipboard** and paste it into your post; that way, we know what version of Notepad++, what version of Windows, what plugins are installed, and a couple other configuration options that will help us understand what you're asking about.
 
