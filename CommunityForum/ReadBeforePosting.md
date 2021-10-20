@@ -17,3 +17,5 @@ Please note that while we will try to help you, and even can try to confirm soft
 English is the primary language of this Forum. If you choose to post in another language, it is considered polite to translate your text into English as well. There are free online translators avaialble, like translate.google.com and deepl.com.  Feel free to make use of those to help you communicate in English.
 
 Please be polite and treat other Community Forum members with respect.
+
+Despite what your Community account "settings" page may imply, the email notification for the Community does not work, and you will _not_ be emailed when you get replies to your questions.  You have to come back to the Community to check for answers and other replies.  Sorry for the inconvenience.
