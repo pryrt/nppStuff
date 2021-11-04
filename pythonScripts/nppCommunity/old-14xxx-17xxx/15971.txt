@@ -1,0 +1,28 @@
+Name: jkl1
+Comment: name
+Member of groups:
+    STRAVEL_R
+    PDOC_R
+    TRAVEL_R
+_______________________________________________________________________________
+Name: abc3
+Comment: name
+Member of groups:
+    SPURCHASE_R
+    VOUCHER_R
+    SVOUCHER_R
+_______________________________________________________________________________
+Name: xyz9
+Comment: name
+Member of groups:
+    RDOC_R
+    SRECEIVE_R
+    CONTRACT_R
+_______________________________________________________________________________
+Name: abc1
+Comment: name
+Member of groups:
+    TRAVEL_R
+    VOUCHER_R
+    SVOUCHER_R
+_______________________________________________________________________________

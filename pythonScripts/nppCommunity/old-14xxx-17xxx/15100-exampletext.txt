@@ -1,0 +1,74 @@
+I know @guy038 can do some magical stuff with regex, and with a simple example, like the one you showed, there would only have to be about 20 checks ((first digit 0-9) x (second digit 0-4 or second digit 5-9)).  But to be able to handle all of these properly would require a monster.
+
+    16.01217    -> 16.012
+    16.01297    -> 16.013
+    16.01949    -> 16.019
+    16.01999    -> 16.020
+    16.14999    -> 16.150
+    16.19999    -> 16.200
+    16.99999    -> 17.000
+    19.99999    -> 20.000
+    199.9999    -> 200.000
+
+Because for every digit that might possibly change, you have to have another layer.  (And any digit from the thousandths digit and higher could potentially change)
+
+What about rounding negative toward zero?
+
+    -0.0009     -> -0.001
+    -0.0004     -> -0.000
+                or  0.000
+
+Also, what do you want done with numbers that have fewer than 3 digits after the decimal?  Extend or keep as-is?
+
+    16.01       -> 16.010       # extend
+    16.01       -> 16.01        # keep as-is
+
+What do you want to do if there's a not-really-numeric, but looks like it, such as an IP address:
+
+    10.1.117.9
+
+Most regex that you could come up with would probably stumble over that one.
+
+Honestly, this is where a full-fledged programming language would shine.  And since Python can have easy access to the contents of a text file opened in Notepad++ , using the [Python Script plugin](http://sourceforge.net/projects/npppythonscript/files/Python%20Script%201.0.8.0/PythonScript_1.0.8.0.msi/download), that's what I would recommend.
+
+Here's a simple example, though it doesn't handle the IP-address exception.
+
+    # https://notepad-plus-plus.org/community/topic/15100/regex-rounding-numbers
+    #   version 1
+
+    #console.clear()
+    #console.show()
+
+    editor.documentEnd()
+    end = editor.getCurrentPos()
+    start = 0
+    #console.write("start:{}\n".format(start))
+    #console.write("end:  {}\n".format(end))
+    #editor.documentStart()
+
+    while start < end:
+        position = editor.findText( FINDOPTION.REGEXP , start , end , "-*\d+\.\d{4,}")    # find any that are at more than 3 digits after the decimal point
+
+        # error handling
+        if position is None:
+            #console.writeError("editor.position is NONE => not found.\n")
+            break
+
+        # grab the matched text
+        #console.write("editor: findText @ " + str(position[0]) + ":" + str(position[1]) + "\n")
+        text = editor.getTextRange(position[0], position[1])
+        #console.write(text + "\n")
+
+        # round it=
+        rounded = round( float(text) , 3 )
+        text = "{:0.3f}".format(rounded)
+        #console.write(text + "\n" )
+
+        # replace it with rounded
+        editor.setSel(position[0], position[1])
+        editor.replaceSel(text)
+
+        # next
+        start = position[1]
+
+    #console.writeError("DONE\n")
