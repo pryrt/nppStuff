@@ -1,0 +1,188 @@
+<NotepadPlus>
+    <UserLang name="Cadence" ext="tp mod tmod" udlVersion="2.1">
+        <Settings>
+            <Global caseIgnored="yes" allowFoldOfComments="no" foldCompact="no" forcePureLC="0" decimalSeparator="0" />
+            <Prefix Keywords1="no" Keywords2="no" Keywords3="no" Keywords4="no" Keywords5="no" Keywords6="no" Keywords7="no" Keywords8="no" />
+        </Settings>
+        <KeywordLists>
+            <Keywords name="Comments">00-- 01 02 03 04</Keywords>
+            <Keywords name="Numbers, prefix1">2# 8# 10#</Keywords>
+            <Keywords name="Numbers, prefix2">16# 0x 0X</Keywords>
+            <Keywords name="Numbers, extras1">A B C D E F a b c d e f _ :</Keywords>
+            <Keywords name="Numbers, extras2"></Keywords>
+            <Keywords name="Numbers, suffix1"></Keywords>
+            <Keywords name="Numbers, suffix2"></Keywords>
+            <Keywords name="Numbers, range"></Keywords>
+            <Keywords name="Operators1"># % &amp; ( ) * , / : [ ] ^ | ~ + &lt; = &gt; -</Keywords>
+            <Keywords name="Operators2"></Keywords>
+            <Keywords name="Folders in code1, open">body</Keywords>
+            <Keywords name="Folders in code1, middle"></Keywords>
+            <Keywords name="Folders in code1, close">end_body endbody</Keywords>
+            <Keywords name="Folders in code2, open">if for while</Keywords>
+            <Keywords name="Folders in code2, middle">else else_if elseif</Keywords>
+            <Keywords name="Folders in code2, close">end_if endif end_for endfor end_while endwhile</Keywords>
+            <Keywords name="Folders in comment, open"></Keywords>
+            <Keywords name="Folders in comment, middle"></Keywords>
+            <Keywords name="Folders in comment, close"></Keywords>
+            <Keywords name="Keywords1">A mA uA nA pA fA dB dBm dBc mdeg F mF uF nF pF H mH uH nH Hz kHz MHz GHz lsb mm um ohm milliohm kohm Mohm Gohm Tohm ppm pct mrad rpm s ms us ns ps V kV mV uV nV W mW uW</Keywords>
+            <Keywords name="Keywords2">const end_const endconst global end_global endglobal local end_local endlocal static end_static endstatic private end_private endprivate integer lword short word double float array list multisite set string pin pin_group boolean enum end_enum endenum struct end_struct endstruct float_test integer_test boolean_test chan</Keywords>
+            <Keywords name="Keywords3">abort activate allocate and are args at begin break by cadence class clear clock close connect deactivate deallocate define define_pm_timeline disable discard disconnect display do downgrade downto dump else else_if elseif enable end end_args end_class end_for end_if end_macro_component end_mode end_test end_timeline end_while endargs endclass endfor endif endmode endtest endtimeline endwhile execute exor false for for_each foreach from gate generate get goto gpib group halt if in in_out initialize interrupt is listen load lock macro_component map mask measure mod mode module move next not null of open or out pass pattern phases pingroup poll prepare prescale pulse queue queue_safe read reset return round runtime send start step stop store talk test test_method then to true uflow unload unmask unshared unsigned upgrade use vp_acc wait while write xor</Keywords>
+            <Keywords name="Keywords4">procedure function test_value Test_value digital dighr dighsb awghr awghsb ovi vi16 ppmu cpmu abs acode acs adc_best_fit_analysis adc_best_fit_characterization adc_end_point_analysis adc_end_point_characterization adc_endpoint_analysis adc_endpoint_characterization add_clock_loop add_clock_wait add_end_loop add_end_loop_clock_hi add_end_loop_clock_lo add_event add_jump_id_hi add_jump_id_lo add_jump_label_hi add_jump_label_lo add_label add_loop add_wait adec ag_ptc alarms_on all_tm_list ap_ptc apcbits_ptc apollo_cmd archive_dlog_file archive_enabled aread asc asn atn atn2 average_every_n avg awg_ptc awghr_ptc awghs_ptc awghsb_ptc awrite aws_ptc best_fit_line calc_eye_ddj calc_eye_ddj_with_eq calc_jitter_spectrum calc_random_jitter calc_subrate_jitter calc_total_jitter calc_wave_ac_params calc_wave_ac_params_with_eq call_c_library call_c_library_handle call_c_library_qsafe card_base_addr cartesian_to_polarltx_get_loaded_calspecs cbits_ptc char_eye_ddj char_eye_ddj_with_eq char_jitter_spectrum char_random_jitter char_wave_ac_params char_wave_ac_params_with_eq check_socket_adapter_pwr check_testhead_pwr chmod chr clear_alarms clear_errnum clear_timeline close_alarm_window close_c_library complex_divide complex_fft complex_multiply convert_multisite copy_data correlated correlated_open correlation cos cpcm cps_ptc crate_list crate_number create_digrf3g_header create_digrf3g_iq_packets cum_hist cxhvdp_ptc cxrf_ptc dac_best_fit_analysis dac_best_fit_characterization dac_end_point_analysis dac_end_point_characterization dac_endpoint_analysis dac_endpoint_characterization date db_to_mag_ratio db_to_power_ratio dbm_to_volts dcload_ptc ddp_ptc debug_text decimate deg delete demodulation_80211b dfilter_ptc dft dig_ptc dighr_ptc dighs_ptc dighsb_ptc dimsize disable_alarms dlog_text double_to_frac double_to_lword double_to_lword_frac double_to_word_frac dp_ptc dpro_ptc dps_ptc dsp_chan_imbal dsp_meas_freq dut_eeprom_read dut_eeprom_write dut_eeprom_write_header enable_alarms end_of_lot_event end_of_wafer_event errnum errnum_text eval_double_expr eval_pin_expr eval_pin_group_expr eval_pin_list_expr evx_breakpoint exist exp expand_segments fcs_ptc fftrestricted_board_var find_object fir_filter fir_filter_open flip_bits float_to_frac float_to_lword float_to_lword_frac float_to_word_frac flush format_clock_loop format_clock_wait format_end_clock_loop format_end_loop format_event format_loop format_wait frac_to_double frac_to_float fvm fx1tmu_ptc gather_1d generate_ramp generate_triangle get_active_sites get_boolean_passing_sites get_c_library_function get_expr get_expr_site get_expr_slice get_hw_baseline get_scm_chans get_scm_connected_chans get_socket_adapter get_swbins get_tag_array get_tag_array_keep get_test_phase get_test_pins gpcb_ptc gtom_ptc halt_on_math_error hcovi_ptc hcovicbits_ptc head_number head_pwr_sts hsdvr_ptc hvvi_ptc input inq_virtual_inventory inquire inventory_all_chans inverse_complex_fft inverse_fft io_errnum is_background is_background_enabled is_calfactor_present iu_present len linear_regression ln ln_DSP_56k locate log log_find_column log_find_row log_param_error log_read_integer log_read_real log_read_text log_write_integer log_write_real log_write_text ltx_add_cal_inventory ltx_get_append_calspecs ltx_get_cal_age_days ltx_get_calfile_calspecs ltx_get_user_calspecs ltx_internal_use_only_digrf_iq ltx_internal_use_only_dmpstk ltx_internal_use_only_is_mem ltx_internal_use_only_log_event ltx_internal_use_only_read_adr ltx_internal_use_only_read_l_adr ltx_internal_use_only_set_adr ltx_internal_use_only_set_l_adr ltx_internal_use_only_setdbg ltx_open_calfile ltx_write_calfactor mag_cfft mag_fft mag_ratio_to_db mag_to_dbc make_bartlett_window make_blackman_3_term_window make_blackman_harris_window make_blackman_window make_hamming_window make_hann_window make_rosenfeld_window mask_bits math_error_occurred max maxlen min module_list msm mucode mudec nic_shell_command ofdm_evm ofdm_evm_2 open_alarm_window open_c_library output_summary ovi_ptc ovicbits_ptc pack_words_into_lword phase_noise_calc pick_elements pick_segments pin_connection pin_instrument pin_resource pin_to_pin_list polar polar_to_cartesian pos power_cfft power_fft power_ratio_to_db ppcm pps_ptc ppvi_ptc print println profiler_marker program_date program_load_path program_name program_time qdcl_ptc rad randomize rcv_data read_adr read_alarm_stats read_alarms read_arr read_ee_addr read_eeprom report_fault_text restricted_board_base_addr restricted_board_chans restricted_board_crate restricted_board_eeprom restricted_board_filter restricted_board_mfg restricted_board_name restricted_board_part restricted_board_rev restricted_board_serial restricted_board_slot restricted_disable_tm_baseline restricted_get_boards restricted_get_tm_baseline restricted_select_boards rfmp_ptc rfp_ptc rms rnd running_average sa_pwr_sts sampvm_ptc scatter_1d seek send_ap servo_ptc set_adr set_arr set_ee_addr set_expr set_priority set_sites set_virtual_inventory settling_time_calc sgn sia_ptc sigma sin sine_bin sine_frequency sinput slot_number sms_ptc snap_timer split_lword_into_words sprint sqr start_timer stop_timer sum summary_event sumsq tally tan tc_type test_head_type test_set_name tester_name tester_os tester_simulated tester_type time tm_list tm_load_file transpose truncate up_sample use_vp user_instrument_id user_instrument_ptc utp_average valid_object vi16_ptc vi16b_ptc volts_to_dbm vp_abs vp_acc_pick vp_add vp_and vp_arcsine vp_atn vp_atn2 vp_bnd vp_cdiv vp_clip vp_cmul vp_compare_eq vp_compare_ge vp_compare_gt vp_compress vp_conv vp_corr vp_cos vp_cosine_gen vp_div vp_dot vp_double_to_float vp_envelope vp_expe vp_f_fr vp_float_to_double vp_float_to_fraction vp_float_to_integer vp_float_to_short vp_fr_f vp_fraction_to_float vp_gather vp_histogram vp_i2sp vp_iadd vp_ibnd vp_imul vp_index vp_ineg vp_integer_to_float vp_isub vp_left_shift vp_line vp_logd vp_loge vp_max vp_maxi vp_maxv vp_merge vp_mgsq vp_min vp_mini vp_minv vp_mnmi vp_mnmv vp_mov vp_mul vp_mxmi vp_mxml vp_mxmv vp_neg vp_nmaxi vp_nmini vp_nmnmi vp_nmxmi vp_nop vp_npolynomial vp_or vp_phase_unwrap vp_phase_unwrap_rad vp_pick vp_polynomial vp_present vp_ramp vp_random vp_read_acc_size vp_reciprocal vp_rectangular vp_reverse vp_right_shift vp_right_shift_ar vp_round vp_rshift vp_sadd vp_scatter vp_scattered_add vp_sdiv vp_set vp_set_acc_size vp_sfft vp_short_to_float vp_sift vp_sigma vp_simpsons vp_sin vp_smax vp_smin vp_smul vp_sqr vp_sqrt vp_sub vp_sum vp_sumsq vp_swap vp_table_lookup vp_tan vp_trapezoidal vp_truncate vp_type vp_wait vp_xor vp_xpwy vref_ptc vxgto_ptc wait_for_nic_shell_command weight xtrm</Keywords>
+            <Keywords name="Keywords5"></Keywords>
+            <Keywords name="Keywords6"></Keywords>
+            <Keywords name="Keywords7"></Keywords>
+            <Keywords name="Keywords8"></Keywords>
+            <Keywords name="Delimiters">00&quot; 01 02&quot; 03&lt;: 03[ 04 05:&gt; 05] 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
+        </KeywordLists>
+        <Styles>
+            <WordsStyle name="DEFAULT" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="COMMENTS" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="LINE COMMENTS" fgColor="808080" bgColor="EFEFEF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="NUMBERS" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS1" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS2" fgColor="400080" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS3" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS4" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS5" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS6" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS7" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS8" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="OPERATORS" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE1" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="7" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE2" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="FOLDER IN COMMENT" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS1" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS2" fgColor="004000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="67108864" />
+            <WordsStyle name="DELIMITERS3" fgColor="004000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS4" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS5" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS6" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS7" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS8" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+        </Styles>
+    </UserLang>
+    <UserLang name="LtxMxDsPattern" ext="ds" udlVersion="2.1">
+        <Settings>
+            <Global caseIgnored="yes" allowFoldOfComments="no" foldCompact="no" forcePureLC="0" decimalSeparator="0" />
+            <Prefix Keywords1="no" Keywords2="no" Keywords3="no" Keywords4="yes" Keywords5="no" Keywords6="no" Keywords7="no" Keywords8="no" />
+        </Settings>
+        <KeywordLists>
+            <Keywords name="Comments">03 04 00; 01 02</Keywords>
+            <Keywords name="Numbers, prefix1"></Keywords>
+            <Keywords name="Numbers, prefix2"></Keywords>
+            <Keywords name="Numbers, extras1"></Keywords>
+            <Keywords name="Numbers, extras2"></Keywords>
+            <Keywords name="Numbers, suffix1"></Keywords>
+            <Keywords name="Numbers, suffix2"></Keywords>
+            <Keywords name="Numbers, range"></Keywords>
+            <Keywords name="Operators1">! : =</Keywords>
+            <Keywords name="Operators2"></Keywords>
+            <Keywords name="Folders in code1, open"></Keywords>
+            <Keywords name="Folders in code1, middle"></Keywords>
+            <Keywords name="Folders in code1, close"></Keywords>
+            <Keywords name="Folders in code2, open"></Keywords>
+            <Keywords name="Folders in code2, middle"></Keywords>
+            <Keywords name="Folders in code2, close"></Keywords>
+            <Keywords name="Folders in comment, open"></Keywords>
+            <Keywords name="Folders in comment, middle"></Keywords>
+            <Keywords name="Folders in comment, close"></Keywords>
+            <Keywords name="Keywords1">.chmap .extern .eva .mode .pattern .sect .tset .waveform .wavetype alive auto bits capture cpm dpm dspsend dvm end keep lsb msb only parallel regsend serial vectors AF CONT FAIL FALSE F1 F2 F3 GF NZC</Keywords>
+            <Keywords name="Keywords2">cond cjmp cjrsi cret dc1 dc2 dc3 dc4 dc5 dc6 dc7 dc8 dc9 endl1 endl2 endl3 endl4 endl5 endl6 endl7 endl8 endl9 extern eva fail jmp jsr jsri ka lc1 lc2 lc3 lc4 lc5 lc6 lc7 lc8 lc9 nop nzc1 nzc2 nzc3 nzc4 nzc5 nzc6 nzc7 nzc8 nzc9 rep1 rep2 rep3 rep4 rep5 rep6 rep7 rep8 rep9 rpt ret stop</Keywords>
+            <Keywords name="Keywords3">MODE FLAG</Keywords>
+            <Keywords name="Keywords4">- X H L M V</Keywords>
+            <Keywords name="Keywords5"></Keywords>
+            <Keywords name="Keywords6"></Keywords>
+            <Keywords name="Keywords7"></Keywords>
+            <Keywords name="Keywords8"></Keywords>
+            <Keywords name="Delimiters">00{ 01 02} 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
+        </KeywordLists>
+        <Styles>
+            <WordsStyle name="DEFAULT" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="COMMENTS" fgColor="FFFF80" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="LINE COMMENTS" fgColor="808080" bgColor="EFEFEF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="NUMBERS" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS1" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS2" fgColor="400080" bgColor="FFFFFF" fontName="" fontStyle="4" nesting="0" />
+            <WordsStyle name="KEYWORDS3" fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS4" fgColor="004000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS5" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS6" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS7" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS8" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="OPERATORS" fgColor="400080" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE1" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="3" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE2" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN COMMENT" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS1" fgColor="000080" bgColor="FFFF80" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS2" fgColor="000000" bgColor="800000" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS3" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS4" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS5" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS6" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS7" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS8" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+        </Styles>
+    </UserLang>
+    <UserLang name="LtxMxEnVision" ext="eva evo" udlVersion="2.1">
+        <Settings>
+            <Global caseIgnored="yes" allowFoldOfComments="no" foldCompact="no" forcePureLC="0" decimalSeparator="0" />
+            <Prefix Keywords1="no" Keywords2="no" Keywords3="no" Keywords4="no" Keywords5="no" Keywords6="no" Keywords7="no" Keywords8="no" />
+        </Settings>
+        <KeywordLists>
+            <Keywords name="Comments">00-- 01 02 03/* 04*/</Keywords>
+            <Keywords name="Numbers, prefix1">2# 8# 10#</Keywords>
+            <Keywords name="Numbers, prefix2">16# 0x 0X</Keywords>
+            <Keywords name="Numbers, extras1">A B C D E F a b c d e f</Keywords>
+            <Keywords name="Numbers, extras2"></Keywords>
+            <Keywords name="Numbers, suffix1"></Keywords>
+            <Keywords name="Numbers, suffix2"></Keywords>
+            <Keywords name="Numbers, range"></Keywords>
+            <Keywords name="Operators1">&apos; - ! &amp; ( ) , . : ; ? @ [ \ ] ^ | ~ + &lt; = &gt;</Keywords>
+            <Keywords name="Operators2"></Keywords>
+            <Keywords name="Folders in code1, open">{</Keywords>
+            <Keywords name="Folders in code1, middle"></Keywords>
+            <Keywords name="Folders in code1, close">}</Keywords>
+            <Keywords name="Folders in code2, open"></Keywords>
+            <Keywords name="Folders in code2, middle"></Keywords>
+            <Keywords name="Folders in code2, close"></Keywords>
+            <Keywords name="Folders in comment, open"></Keywords>
+            <Keywords name="Folders in comment, middle"></Keywords>
+            <Keywords name="Folders in comment, close"></Keywords>
+            <Keywords name="Keywords1">AliasMap CaptureRef Comment Default enVision MicroCodeFirst Mode Pattern PatternMode PinList PinGroup RegSendRef SendRef SyncRef Timeset Type TestProg OperatorVariable AdapterBoard Flow_ PatternMap BinMap DatalogObject ExtInterface ExternalRef WaveformCapture GraphicalDebug TPSummary TPHeader Device ParamCheck ev DatalogFilter SamplingSize TestIdFilter Destination FunctionalFails ActiveExtInterface Expr String Value Direction Method UserMode FastBinning IOStream CalMethod Name Group Pin PinType PinGroup Path File Row Mux</Keywords>
+            <Keywords name="Keywords2">COND CJMP CJSR CJRSI CRET DC1 DC2 DC3 DC4 DC5 DC6 DC7 DC8 DC9 ENDL1 ENDL2 ENDL3 ENDL4 ENDL5 ENDL6 ENDL7 ENDL8 ENDL9 EXTERN EVA FAIL FLAG HOLD INIT JMP JSR JSRI KA LC1 LC2 LC3 LC4 LC5 LC6 LC7 LC8 LC9 LCR1 LCR2 LCR3 LCR4 LCR5 LCR6 LCR7 LCR8 LCR9 MODE NEXT NOP ON OFF REP1 REP2 REP3 REP4 REP5 REP6 REP7 REP8 REP9 RPT RET START STOP TR</Keywords>
+            <Keywords name="Keywords3">word lword integer boolean multisite const static float double string unsigned</Keywords>
+            <Keywords name="Keywords4">and false not or true xor</Keywords>
+            <Keywords name="Keywords5">Spec Category ParamGlobals Min Max Typ Mask</Keywords>
+            <Keywords name="Keywords6">SCALAR Hz s A V Ohm Cel</Keywords>
+            <Keywords name="Keywords7"></Keywords>
+            <Keywords name="Keywords8"></Keywords>
+            <Keywords name="Delimiters">00* 01 02* 03&quot; 03&apos; 04\ 05&quot; 05&apos; 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
+        </KeywordLists>
+        <Styles>
+            <WordsStyle name="DEFAULT" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="COMMENTS" fgColor="808080" bgColor="EFEFEF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="LINE COMMENTS" fgColor="808080" bgColor="EFEFEF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="NUMBERS" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS1" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS2" fgColor="800000" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS3" fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS4" fgColor="400080" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS5" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS6" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS7" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS8" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="OPERATORS" fgColor="400080" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE1" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="1" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE2" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN COMMENT" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS1" fgColor="008000" bgColor="FFFF80" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS2" fgColor="008040" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS3" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS4" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS5" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS6" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS7" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS8" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />
+        </Styles>
+    </UserLang>
+</NotepadPlus>
