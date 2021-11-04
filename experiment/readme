@@ -1,4 +1,0 @@
-Try to link in an external repo via svn, on a github-hosted repo:
-	svn propedit svn:externals .
-	https://github.com/pryrt/pyscFilteredViewer/trunk/pyscFilteredViewer pyscFilteredViewer
-
