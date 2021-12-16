@@ -26,3 +26,7 @@ _SINGLETON_CHECKER.toggle_OnSave_callback()
 editor.setSelEOLFilled(True)
 
 console.write("This is from user scripts\n")
+
+# see https://community.notepad-plus-plus.org/topic/22274/linked-text-to-open-other-files-into-notepad
+import UriIndicatorAltClick
+uiac = UriIndicatorAltClick.UIAC()
