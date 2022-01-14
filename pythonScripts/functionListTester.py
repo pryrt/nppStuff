@@ -84,66 +84,67 @@ notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT)
 
 try:
     reComment = parser.attrib['commentExpr']
+    console.write("reComment = {}\n".format(reComment))
     funcEditor.research(reComment, lambda m: markingFunction(m,MY_MENUCOMMAND.SEARCH_MARKONEEXT1))
 except KeyError:
     notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT1)
 
-#console.write("reComment = {}\n".format(reComment))
 
 #### CLASS RANGE are EXT5 (if it doesn't find CLASS NAME in the CLASS RANGE)
 #### CLASS NAMES are EXT2
 #### FUNCTION NAMES in CLASS are EXT3
 
-try:
-    classRange = parser.find('./classRange')
-    reClassMain = classRange.attrib['mainExpr']
-    console.write('<classRange MainExpr="{}">\n'.format(reClassMain))
-    #funcEditor.research(reClassMain, lambda m: markingFunction(m,MY_MENUCOMMAND.SEARCH_MARKONEEXT5), re.S|re.M)
-    classNameExpressions = classRange.findall('./className/nameExpr')
-    if len(classNameExpressions) == 0:
-        console.write("\tno class name expressions\n")
-        pass
-    else:
-        console.write("\tfound {:d} class name expressions\n".format(len(classNameExpressions)))
-        for classElem in classNameExpressions:
-            reClassName = classElem.attrib['expr']
-            console.write("\t<nameExpr expr='{}'>\n".format(reClassName))
-            funcEditor.research(reClassMain, lambda m: containerMarkingFunction(m,reClassName,MY_MENUCOMMAND.SEARCH_MARKONEEXT2), re.S|re.M)
-    classFunction = classRange.find('./function')
-    reClassFunctionMain = classFunction.attrib['mainExpr']
-    console.write("\t<classRange><function mainExpr='{}'>\n".format(reClassFunctionMain))
-    classFunctionExpressions = classFunction.findall('./functionName/funcNameExpr')
-    if len(classFunctionExpressions) == 0:
-        funcEditor.research(reClassMain, lambda m: containerMarkingFunction(m,reClassFunctionMain,MY_MENUCOMMAND.SEARCH_MARKONEEXT3), re.S|re.M)
-    else:
-        for funcNameElem in classFunctionExpressions:
-            reClassFuncName = funcNameElem.attrib['expr']
-            funcEditor.research(reClassFunctionMain, lambda m: containerMarkingFunction(m,reClassFuncName,MY_MENUCOMMAND.SEARCH_MARKONEEXT3), re.S|re.M)
-
-except KeyError:
-    notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT2)
-    notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT3)
-    notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT5)
-
-#### NORMAL FUNCTION NAMES are EXT4
-
-try:
-    functionRange = parser.find('./function')
-    reFunctionMain = functionRange.attrib['mainExpr']
-    nameExpressions = functionRange.findall('./functionName/nameExpr')
-    console.write('<function MainExpr="{}"> => {:d}\n'.format(reFunctionMain, len(nameExpressions)))
-    if len(nameExpressions) == 0:
-        funcEditor.research(reFunctionMain, lambda m: markingFunction(m,MY_MENUCOMMAND.SEARCH_MARKONEEXT4), re.S|re.M)
-    else:
-        for nameElem in nameExpressions:
-            reFunctionName = nameElem.attrib['expr']
-            console.write("\t<nameExpr expr='{}'>\n".format(reFunctionName))
-            funcEditor.research(reFunctionMain, lambda m: containerMarkingFunction(m,reFunctionName,MY_MENUCOMMAND.SEARCH_MARKONEEXT4), re.S|re.M)
-    # TODO: implement className/nameExpr inside the normal function as well, using EXT2
-except KeyError:
-    notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT5)
-
-
-'''
-triple quotes
-'''
+#   try:
+#       classRange = parser.find('./classRange')
+#       reClassMain = classRange.attrib['mainExpr']
+#       console.write('<classRange MainExpr="{}">\n'.format(reClassMain))
+#       #funcEditor.research(reClassMain, lambda m: markingFunction(m,MY_MENUCOMMAND.SEARCH_MARKONEEXT5), re.S|re.M)
+#       classNameExpressions = classRange.findall('./className/nameExpr')
+#       if len(classNameExpressions) == 0:
+#           console.write("\tno class name expressions\n")
+#           pass
+#       else:
+#           console.write("\tfound {:d} class name expressions\n".format(len(classNameExpressions)))
+#           for classElem in classNameExpressions:
+#               reClassName = classElem.attrib['expr']
+#               console.write("\t<nameExpr expr='{}'>\n".format(reClassName))
+#               funcEditor.research(reClassMain, lambda m: containerMarkingFunction(m,reClassName,MY_MENUCOMMAND.SEARCH_MARKONEEXT2), re.S|re.M)
+#       classFunction = classRange.find('./function')
+#       reClassFunctionMain = classFunction.attrib['mainExpr']
+#       console.write("\t<classRange><function mainExpr='{}'>\n".format(reClassFunctionMain))
+#       classFunctionExpressions = classFunction.findall('./functionName/funcNameExpr')
+#       if len(classFunctionExpressions) == 0:
+#           funcEditor.research(reClassMain, lambda m: containerMarkingFunction(m,reClassFunctionMain,MY_MENUCOMMAND.SEARCH_MARKONEEXT3), re.S|re.M)
+#       else:
+#           for funcNameElem in classFunctionExpressions:
+#               reClassFuncName = funcNameElem.attrib['expr']
+#               funcEditor.research(reClassFunctionMain, lambda m: containerMarkingFunction(m,reClassFuncName,MY_MENUCOMMAND.SEARCH_MARKONEEXT3), re.S|re.M)
+#
+#   except KeyError:
+#       notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT2)
+#       notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT3)
+#       notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT5)
+#
+#   #### NORMAL FUNCTION NAMES are EXT4
+#
+#   try:
+#       functionRange = parser.find('./function')
+#       reFunctionMain = functionRange.attrib['mainExpr']
+#       nameExpressions = functionRange.findall('./functionName/nameExpr')
+#       console.write('<function MainExpr="{}"> => {:d}\n'.format(reFunctionMain, len(nameExpressions)))
+#       if len(nameExpressions) == 0:
+#           funcEditor.research(reFunctionMain, lambda m: markingFunction(m,MY_MENUCOMMAND.SEARCH_MARKONEEXT4), re.S|re.M)
+#       else:
+#           for nameElem in nameExpressions:
+#               reFunctionName = nameElem.attrib['expr']
+#               console.write("\t<nameExpr expr='{}'>\n".format(reFunctionName))
+#               funcEditor.research(reFunctionMain, lambda m: containerMarkingFunction(m,reFunctionName,MY_MENUCOMMAND.SEARCH_MARKONEEXT4), re.S|re.M)
+#       # TODO: implement className/nameExpr inside the normal function as well, using EXT2
+#   except KeyError:
+#       notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT5)
+#
+#
+#   '''
+#   triple quotes
+#   '''
+#
