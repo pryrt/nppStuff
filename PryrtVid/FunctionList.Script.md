@@ -1,43 +1,90 @@
-Hello. Welcome to PryrtVid.
+-----BEGIN PGP MESSAGE-----
 
-In this video, I am going to walk you through how to develop a Function List for your particular programming language in Notepad++.
-
-Notepad++ comes pre-bundled with many function list definitions (for most of the languages that Notepad++ recognizes)... but, as is common in Notepad++, you may want to create your own custom rules for a Function List, either for an existing language or for your own custom language (a UDL).
-
-To get started, you'll want to bookmark a few pages:
-
-https://npp-user-manual.org/docs/function-list/ 
-
-This is the function list overview in the online Notepad++ User Manual.  It explains what the Function List feature does, gives some details about the various nodes in the XML configuration files (more on these later), and even goes into what's required if you want to submit your function list definition to be distributed with Notepad++.
-
-https://npp-user-manual.org/docs/config-files/#function-list 
-
-This explains the difference in the config files for function list for newer versions of Notepad++ (v7.9.1 and later) and older versions (v7.9 and earlier).  In this video, I will assume you have v7.9.1 or newer.
-
-https://community.notepad-plus-plus.org/topic/19480/faq-desk-function-list-basics 
-
-The Notepad++ Community Forum has a FAQ entry on the basics of function list behavior.  It gives the perspective of the Community's foremost expert on function lists.  It contains everything I am going to cover here, but much more succinctly.
-
-For my example, I am going to be defining the Function List for a User Defined Language (UDL).
-
-Defining a whole UDL is a subject for an entire video, so I won't cover all the details.  But if you don't have yours yet, we'll start with two things: create the UDL and give it a name, and associate an extension with it.
-
-Go to the Language menu, User Defined Language, and Define Your Language.  Click "Save As" and give it a name: I will use `PryrtLanguage`.  Save this string.  Assume that PryrtLanguage files end in .pry, so we'll type `pry` into the Extension box (don't include the dot).  So anytime Notepad++ opens a `.pry` file, it will automatically choose the PryrtLanguage UDL.  That's it: that's as much as we need for our UDL definition to make Function List work right.
-
-Next, we need to tell Notepad++ how to map that UDL to the configuration file for the function list.  We use the `overrideMap.xml`, which can be found in `%AppData%\Notepad++\functionList\overrideMap.xml`, which we can open in Notepad++.  Add the line
-```
-			<association id= "udl_pryrtlanguage.xml"	        userDefinedLangName="PryrtLanguage"/>
-```
-... right next to the other User Defined Languages.  Please note: the filename can be whatever you want it to be.  But the userDefinedLangName must match the name of your UDL exactly.  That's why I had you save the string earlier.
-
-While we're here, you can point Notepad++ to a customized version for a built-in language as well.  The comments show examples, and you can just copy/paste the line for the language you want to change, and then change the filename for that language.  For example, if I have a different Function List for Perl called `my_perl.xml`, I can just copy the Perl language #21 row outside of the comments, and edit it to `my_perl.xml`.  The next time I restarted Notepad++, the Perl Function List would be controlled by `my_perl.xml` instead of `perl.xml`.  But we're not doing that now, so let's delete that.
-
-Now, in the same folder as overrideMap, create the XML file to define your Function List -- it's easiest to just copy an existing one to a file that matches the name in the association-id.  Let's strip out all the old regex (unless you happened to pick a language that's very similar to your UDL).  And let's fill out the parser information: the display name can be anything, though it normally matches the name of the UDL, so `PryrtLanguage`.  The ID must be unique; often, just use an all-lowercase version of the displayName, sometimes with extra like `_syntax`.  The comment expression is a regular expression that will recognize comments -- this allows the parser to _not_ show you "functions" or "classes" that are inside a comment.  
-
-For PryrtLanguage, comments happen to be anything after a hashtag to the end of the line, so `(?-s)#.*$` -- I used the modifier `(?-s)` to make sure that .* doesn't gobble up newlines.
-
-Back on the Function List page, you saw me gloss over the differences between Function Parser, Class Parser, and Mixed Parser.  That's because we're going into more details on that now.
-
-First, what's a "function" versus a "class". From the purposes of this parser, a "class" is just a name for a container -- it could be a "class" or an "object" or a "structure", or it might be whatever meaningful container might be in your language.
-The function might be a subroutine, function, or method name; or it might be something else.  For example, in a markdown file, maybe you want headers to be "classes", and links to be the "functions".
-
+hQIMA7RSq4PEwgVNAQ//W6XWTR+0w4Apc7VHJG7gSojavNHBVnNuhw5jD30lkJsK
+5Htfwg/0Rw8zpZMrocAoh88o8oZtICrKqV8AUTtjRsowsfjshoER3lR5b+dQxyRH
+xSMdf9jxyZoMpDllDX0YSqP28WF/QIGWXSisfBQ2ctnQ2aFm+4gRCXGd1p4E8276
+eJjaLeBnCuTXxy7I6ZCO2m0Q0dBblptyZ9PBpcBaLuINbs1DQMoRM7zauPHXzBNU
+uXSLoE3JJoAmpeY0cVolxPvqKyINxYZY9G/tmnCf0jA5BehO4zqIkqQdY1ONXN8I
+gpFt7gigapDNfRcMGVLFzn3N18Zt5sUlhA6cjAeRoV5fvJfpJQ1yy9XHxUzdbwGE
+jWyNp+9MeRNAcV1/V/CsVPHyRL5fw4YPRcPw8SZ3SecwJfMo1LPAjnX73u/uE1EA
+yPir78VNRqlI/5QwC6EBMoECdggTOo4XTI2gPS91YMA7ySztuwpbJmenan4MmZqL
+FiDqHt37CL1ylQJtH9FNYASyywwENFSLKanAfV1K2ATDPbh+Pbv7dqEKf6Xj43xH
+06+Nr0EYPIyS3qh8IYMtrXawgQlNYk5cBIyS1wSJshlbZLBDUo9llBoXibGCf8I2
+ktBHfXId1hCevF8JbPkYn6/wcyvrlxKhOAH61qFNlkkB8CQjCdwXmtGZiafP2AGF
+AgwDythjhYQDLt8BEACBC2Xuwuh96nkDgktJwxuZVrhncFg6K9LgGi0as5TXA8AJ
+vRFKwf4QIqqp+oxLikxgtHmLbGBE5Na1bfqBN2QxDscwtNfzF/oPFajcZoAr0xgh
+/hyVNGKFogNKPqpPjzXZuCteCpKyeTDWVqfQ5qcFVy09wmBsIgDboxRs2eaaqVqo
+IJHq72L12IQ0Q6Y2ycQXpOT92VTNDXXY2PFHB7iJzpsHxkVI2pKFsjkZEXAabMWG
+7NQoL4aEYssZzzpKRFX0IdatC5ByoKfvSmTctDPen3YMarCMMDyHsHFVsj6AY55Y
+yRlH1qUCyj9KdZqHYC3VTlr8EU3rOCBFXK3jXD7hWH6q28/4neWetTgy32N/ex20
+HShnNRRk5lqyxEINouA+dBjdfw1LhZBwrIDo53ucs0VdwKl59HPZApfdJzP3YUpg
+cGGPqz3zyRtdKqf2Q1a7qwcASETBCJmpPlO+j4PlDseJK8aCHKtdoqfMzZQEMqkV
+AwNntTbZbWDNZwORBtb22n7tm7xr3EcF4hs8NzGcC+nEOquQ87y182/zWLshSx3n
+seHQFtfqp6uwQVzzUI+skoY62nED0jUiLLLlRgYW5A9MD3KJ9DFGJwJZ0YZiI7Fx
+aplMbqchniFND71jqKLDG/TOhoERJcwSsJyqezEIlVlf2e+fHJP/Ekif3C6Rn9Lr
+ASoxFXzOipCYqIQWhrnuzmw8swsrED5c82hMdA69ZCdC2MMCpP/7BueruAjRn/4W
+t2f52aL5bTxViuqDC4cBGT3aJ22WzU8RINctu8k8ByxEpUf02mX8KQ6sYERWbDCi
+sXMrBuWDaPdSarO2uBsQsh6DAMJgGViLU/rB5El2IHJi6dBZKcayHJdOrqCW17At
+ea0/gXrIDq9i1Ub74/vlUjQcV8Pj83yrlx7OYG0bQbxWnAAas+cg2uB2sl5UQbd5
+87fw1ZO7Hlot67IwOza+7BzwBRxrZiaxpvdi3wFinLGjMF5AOn00ThT/q/Z8s446
+7w+UIeHmLoo5a8nFoQj5EFTd65T8nIRZeEd64jr3m2gXnV+eTEY78hB8MKLEX7lM
+AJf6zuHbxJ36bSdBDs7mClb+LExnCw18qhNbNThfY2Tsj92wrdlQQOMPMqANlpzR
+DeaLeST4YEv+YMVT+67asQiYw0g/ekNrGMUAMVXk6MDXqZLNh0KhtGstuZr1WbJZ
+tiM8/VgsZXyb2rZg489VVchU9fHYymcyFGWMvfrJ98ceKZ49Kp0rgDf5lE2nZcBV
++SeydQLaIvkNV5Mht/uB6yn/ZUONVcNjEdVwyvMRIqNLA3yKxAZCYiUUNYoExGA5
+GIyI3c8NTyya3f6g8ePWtN6s7DFB3OVsD0BoQ/+OPrNbZTZXtG7SWfJqMzfC+RgG
+987OmeNLQE0aUfnyMBmjjPJ3WPQ8Dm+5tC4NQKKq3FZAhjNH02oiWTeF/kEuAJ9j
+Xk7O4u0LC5r/Jb0cx6MJeZCi+RKcxRf7APINZjuxCxg5qqnS3u9xPOE/1c2stAxu
+MmmHi40/WLa8qNMyreQ26DUbWUhaaD7FoO55DlkqTEBD7HIKhpDQz4xBLNQoRYe+
+uqb6QUQOoioTQGMctNQf83FkGOG5DBMYLJKpVk56kSVRFlGOvE1jN/4cg6fod5LN
+o7Clp5wYMDCqs2IT6xskdPhmx96WMj4mUAzJvRNC/1dT8zpYZc3kNPxiWQKFWHYl
+DvLafTXzxaVxNZ8TgQIIHBRSYPSK2Bu8rU6Dh4LIF9UzgevyErfbzVmulFQmaBcF
+f96NrUBP9cwYQSVhPRzgm5yGgfS0q4i59CX8YjBrfs06KVjAKm+wwN+GDASsLY/k
+Q9hGInF54dUnXV/FtAvUfCmL2Ju4P/ks4mChX2EsMeSWYxyL8XbrbH07g4xNGi1r
+MjVNE0gHNacwbkH7qZHqHZbooocCNzO45zXIASX6hN8IM5he/cdhQVRQWnf9zTYW
+NYmYUhk6L/mx9yEs9opFIl1Z7EWutbCWxgM8IB9RkwtKpe4Q+bHsnL6tcShLLxft
+nQndvdny048l3XrE+ervc/pBWaRPNeGhpFquZ6VUy5uCHEAwk9jdklowBklW3NLP
+0OL8gFtZG5q+vaxK3NBq0+ogdMFnS2C7o9uHzsdtWdcRouZnxiIci7MWl8zuEojl
+JPStzveZFm83a/C4thSTsqu8Uv8eBF68HrHOYSXQFjmjD1IPl3F2mDDZsGsgdGAv
+m2VqAS8oDmuE0Q72pJfx6WBU7MRKVYWZuaYxDbyshTTWKCHjyh9djRpcddo+M3Re
+FbYROOmsqFzrtG+6MujMhaP5sGnw9R1zmhH5zpozMT/klJUpskG/bnTtG0u4QgGN
+4qCO4rbhjBXTPjJgT9TSiD9C19hnLuxk2fU1HuSLd3bN0rBb7KiqYVeYK5tjmGRJ
+81wW+poVFWQKiUxacpGZHQ2tfHzYgC4yhMFsiTBQPgPj2CsOckbXZW2np2cGQHht
+svYcXni890YCpG0FOuw87Yk5O3uGhPb3UpJTXqi+UZk24NPte/LbKGqlNi14m3QW
+wg857pX1pYsfxBPH0EsuDnLBQwBg44UEMafkoccMRVFumIsI5VT7z0Z+USrnHrSG
+Xu+cqp8YIY5IJ+DZph4vpfvkHDHmO8vlkrENSo4xL06SSY+5INLscCNwJ7YzwS5B
+jBYIs0nw8lcAGcoNAPz732IZibK3pZxArMfo+Pzw7j07F1Lc4AreFg/a8NeRrKxM
+vaJ0CEI3gNVYq+k903cbHC41cCbheAw0NG3++YDIsHQfCPaOeuue6PZcBu2smVsY
+dcjpq0bpR1fXhLhuQrhitsK0d28z+RyFGVqJV9vVF6SYNHk7zhvjwTK5ZDIU14QK
+Kns7ypXCI7xjyVRoT0eTNnNMl/4UtH/Qzpks2ov8wAJfq9zVSk7R/sj4Lef7RTAB
+gW38Yd8MtQjVbw5SxQc5gzyPRRPDKsnz9k0FTZB5VEOPnHdPVw5+ERUfBio6sD0X
+Q5wX2G0vSrb6kmqpJNq88zhoZE6my5C33wxvgygkoBbLBW7S8IIwqVSatfc0gz+K
+ATX3cu0eAbftrkpEl+vfYAIJ49ZR8b/7OCtBcC83t93nVWf/RSJ1UsQNHnfeYDrs
+iC+Tdm+n85OfWUzkmuA2XoDlpu/FAlcR2+BREBALeGSw0/dan1R0f4OMwUgZo49i
+3ixU13pPiojlKcFp8WssWdzLjBD85kP7MpkFbeZWv0XZJMr/6OPzLPv42bWJtN+E
+vwAO1GRGiaaXlG0NJkHrMWRBpJD14AjzITCDf0LRa13ZXZNbgL/ctjkUxFWH16xj
+zEyXgn4pMD12XhaP80NUEG9z6SU1CDKfkDtCeSQ+coKRUB4epgmEYe2Hv0hNYTAM
+Z17zBCyNrT1qhe9vR9hnQXhyHZ6qq3LEJkZXXE8in6bpoYne7zyHlVqlCi6jZnSE
+k7op6hq4kLSWXAd1pULUsuhJBeB5G+9XU/Z5UhxVQjz0GBo7s+nDVIIOlFwZ+89X
+nWULHTaLWg2M1RXvcf7B15AIXB7xoR64bLS/hGwRQoeSmlI5Af5G2VlW6iiXPOJE
+b8UYklqzGheqmyZ/E/2mUspnF/1G4I7pkImiJZqsKnUgL4LBrX5k5rR+hLNh75hF
+bv5Z9+KFfnDsu7QFxcaiv5gWo6qlQ0UCu/YT4QHcVHtn0QnTT0kCaGJvnNFq0rSJ
+vPqIUgnjJpDh7R8bbvJQUcNNlbAJBAHj4Y52bBP3WjCoCJ4DU3hMXhjGY/RkRwDr
+kbUZbRHBiaIL/mn8GCXeT9CtbwmmkCEIk2srygXiU9LQi9Pd39zTgGu4yQHTHj8z
+BPP9T7rpzlEzlY+NF3imSeUK6OBiCDEq4FBjLccML0fxZulz9ll1teYmrXktnsE2
++MLKg45k1ziqGLM48HEpsSPsx1/eGYKtIHQoJKrVngcTKabM3BD2NcqiGulvSdzz
+vpOcl8nDXHOPA3GvSJr9iGHR37/Z48NsvjtcSeHHWhj1vn+IhfKgQOjY58fOGDL5
+fGJYeJvYSvjiv/KY/x9Vqtp4C27ElXAUeeprCaPXb70m8+njcF25l96gZBOChXAT
+MhpHp9fxZijjmZham7vEIIPBEpxSvEHS/eh8bTRy2Ls0IaeKIMH/PpycSXz417sD
+PcQG8b+auvwF1laengcGmRje6ggVVX3kGU430smLcxHJAQO8fxGoP7p8yoW/j+UJ
+99wWMvA6twOOnFFcMOYyTfh17oNOyw0H7UW43E06f8x9bKxGTKJtvKyXHj1Dt4yE
+rw68ytAFonUSz9D+C+pLW5GZjnu5dIgYHn+g7arnqF79BtgnBv/cj5yg3Dcfp+76
+WnrnDPuAl8iUcRTtTyfZKO/t2KkEXdd7ztW+iKcgdJJR4AYvG3zFDTLARmpvoGDU
+N8AX3gNFswsTPLYoGZ/v6dgYXfbi69VPc4yr2LOSNpnPFb+Spubzzxi+K8wBLs6m
+16Ex+cxTckjbpFY+FDzRtVjy/W8iSlFtdmGnc12kJKRsfqbJXMdcgxoTbuDOfMGl
+NdD0I+YfWXkgx10FTNglJyaZ+50A0TfOpGEv15AxPpaCMM8Oe2eEvsGdrb45Jt0S
+a5X2EBB8sj6AhhrGoO1CxmYAQNRWmLWsOEh+eoj7dFLZlupKlBXXRcTxPKMeDwWw
+Y0LxnIqHyzipr+rInv6Be/RuR17ZwYzrTvs3lWUAZ4ra+0vNYRGiT2tCD2ISdyXD
+7FKthOA=
+=zTfO
+-----END PGP MESSAGE-----
