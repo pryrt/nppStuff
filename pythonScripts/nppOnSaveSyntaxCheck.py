@@ -11,6 +11,7 @@ Starting with just Perl, but might eventually do others
 """
 
 import subprocess
+import os.path
 import re
 from Npp import (
     editor, notepad, console,
@@ -32,7 +33,9 @@ class NppOnSaveSyntaxCheck:
         if fname[-3:] != '.pl': return
         editor.annotationClearAll()
         try:
-            subprocess.check_output(['wperl', '-I.', '-c', notepad.getCurrentFilename()], shell=False, stderr=subprocess.STDOUT)
+            d = os.path.dirname( notepad.getCurrentFilename() )
+            optI = "-I" + d
+            subprocess.check_output(['wperl', optI, '-c', notepad.getCurrentFilename()], shell=False, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             #editor.annotationSetText(0, e.output)
             results = dict()
