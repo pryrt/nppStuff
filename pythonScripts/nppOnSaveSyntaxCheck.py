@@ -32,7 +32,7 @@ class NppOnSaveSyntaxCheck:
         if fname[-3:] != '.pl': return
         editor.annotationClearAll()
         try:
-            subprocess.check_output(['wperl', '-c', notepad.getCurrentFilename()], shell=False, stderr=subprocess.STDOUT)
+            subprocess.check_output(['wperl', '-I.', '-c', notepad.getCurrentFilename()], shell=False, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             #editor.annotationSetText(0, e.output)
             results = dict()
