@@ -17,13 +17,13 @@ import sys
 from Npp import (notepad, editor, editor1, editor2,
                  INDICATORSTYLE, INDICFLAG, INDICVALUE)
 
-excluded_styles = [1, 3, 4, 6, 7, 12, 16, 17, 18, 19]
+excluded_styles = [] #[1, 3, 4, 6, 7, 12, 16, 17, 18, 19]
 start_position, end_position = 0,0
 
-INDICATOR_ID = 0
-editor1.indicSetStyle(INDICATOR_ID, INDICATORSTYLE.TEXTFORE)
+INDICATOR_ID = 7
+editor1.indicSetStyle(INDICATOR_ID, INDICATORSTYLE.DASH)
 editor1.indicSetFlags(INDICATOR_ID, INDICFLAG.VALUEFORE)
-editor2.indicSetStyle(INDICATOR_ID, INDICATORSTYLE.TEXTFORE)
+editor2.indicSetStyle(INDICATOR_ID, INDICATORSTYLE.DASH)
 editor2.indicSetFlags(INDICATOR_ID, INDICFLAG.VALUEFORE)
 
 def rgb(r, g, b):
@@ -79,7 +79,7 @@ def paint_it(color, match_position, length, start_position, end_position):
         editor.getStyleAt(match_position) in excluded_styles):
         return
 
-    editor.setIndicatorCurrent(0)
+    editor.setIndicatorCurrent(INDICATOR_ID)
     editor.setIndicatorValue(color)
     editor.indicatorFillRange(match_position, length)
 
@@ -102,6 +102,19 @@ def grab_color_and_paint_hex8(m):
     r = int(m.group(0)[3:5], base=16)
     g = int(m.group(0)[5:7], base=16)
     b = int(m.group(0)[7:9], base=16)
+    my_rgb = rgb(r,g,b) | INDICVALUE.BIT
+    paint_it(my_rgb,
+                    m.span(0)[0],
+                    m.span(0)[1] - m.span(0)[0],
+                    start_position,
+                    end_position)
+
+def grab_color_and_paint_rgbparen(m):
+    #console.write("match({}..{})='{}'\n".format(m.start(0),m.end(0), m.group(0)))
+    console.write("matches: 0:{}\t1:{}\t2:{}\t3:{}\n".format(m.group(0),m.group(1),m.group(2),m.group(3)))
+    r = int(m.group(1))
+    g = int(m.group(2))
+    b = int(m.group(3))
     my_rgb = rgb(r,g,b) | INDICVALUE.BIT
     paint_it(my_rgb,
                     m.span(0)[0],
@@ -140,4 +153,9 @@ if my_state[my_file]:
                 start_position,
                 end_position)
 
-"7e"
+    editor.research(r'rgb\(\h*(\d+)\h*,\h*(\d+)\h*,\h*(\d+)\h*\)',
+                grab_color_and_paint_rgbparen,
+                0,
+                start_position,
+                end_position)
+
