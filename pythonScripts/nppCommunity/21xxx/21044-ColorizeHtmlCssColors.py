@@ -41,6 +41,22 @@ def rgb(r, g, b):
     '''
     return (b << 16) + (g << 8) + r
 
+def argb(a, r, g, b):
+    '''
+        Helper function
+        Retrieves rgb color triple and converts it
+        into its integer representation
+
+        Args:
+            a = alpha, use FF for normal (non-transparent)
+            r = integer, red color value in range of 0-255
+            g = integer, green color value in range of 0-255
+            b = integer, blue color value in range of 0-255
+        Returns:
+            integer
+    '''
+    return (a << 24) + (b << 16) + (g << 8) + r
+
 def paint_it(color, match_position, length, start_position, end_position):
     '''
         This is where the actual coloring takes place.
@@ -68,11 +84,24 @@ def paint_it(color, match_position, length, start_position, end_position):
     editor.indicatorFillRange(match_position, length)
 
 
-def grab_color_and_paint(m):
+def grab_color_and_paint_hex6(m):
     #console.write("match({}..{})='{}'\n".format(m.start(0),m.end(0), m.group(0)))
     r = int(m.group(0)[1:3], base=16)
     g = int(m.group(0)[3:5], base=16)
     b = int(m.group(0)[5:7], base=16)
+    my_rgb = rgb(r,g,b) | INDICVALUE.BIT
+    paint_it(my_rgb,
+                    m.span(0)[0],
+                    m.span(0)[1] - m.span(0)[0],
+                    start_position,
+                    end_position)
+
+def grab_color_and_paint_hex8(m):
+    #console.write("match({}..{})='{}'\n".format(m.start(0),m.end(0), m.group(0)))
+    a = int(m.group(0)[1:3], base=16)
+    r = int(m.group(0)[3:5], base=16)
+    g = int(m.group(0)[5:7], base=16)
+    b = int(m.group(0)[7:9], base=16)
     my_rgb = rgb(r,g,b) | INDICVALUE.BIT
     paint_it(my_rgb,
                     m.span(0)[0],
@@ -100,8 +129,15 @@ if my_state[my_file]:
     #console.write("lines:{}..{}, pos:{}..{}\n".format(start_line,end_line,start_position,end_position))
 
     editor.research(r'\#[[:xdigit:]]{6}\b',
-                grab_color_and_paint,
+                grab_color_and_paint_hex6,
                 0,
                 start_position,
                 end_position)
 
+    editor.research(r'\#[[:xdigit:]]{8}\b',
+                grab_color_and_paint_hex8,
+                0,
+                start_position,
+                end_position)
+
+"7e"
