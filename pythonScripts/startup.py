@@ -35,4 +35,8 @@ editor.setSelEOLFilled(True)
 import UriIndicatorAltClick
 uiac = UriIndicatorAltClick.UIAC()
 
+# see https://community.notepad-plus-plus.org/post/71772
+#import MouseJiggleDaemon
+#mjd = MouseJiggleDaemon.MJD()
+
 console.write("END of user startup.py\n\n")
