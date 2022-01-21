@@ -35,7 +35,8 @@ class NppOnSaveSyntaxCheck:
         try:
             d = os.path.dirname( notepad.getCurrentFilename() )
             optI = "-I" + d
-            subprocess.check_output(['wperl', optI, '-c', notepad.getCurrentFilename()], shell=False, stderr=subprocess.STDOUT)
+            optIlib = "-I" + d + '\\lib'
+            subprocess.check_output(['wperl', optI, optIlib, '-c', notepad.getCurrentFilename()], shell=False, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             #editor.annotationSetText(0, e.output)
             results = dict()
