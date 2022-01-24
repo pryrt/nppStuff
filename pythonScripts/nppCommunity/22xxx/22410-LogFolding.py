@@ -34,7 +34,7 @@ INSTALL:
 3. Edit the start_regex and end_regex right here:
 """
 start_regex = r'^\d+:\d+:\d+,\d+ ERROR'
-end_regex = r'\R{2,}'
+end_regex = r'more\R{2,}'
 """
     These need to be boost-compatible regular expressions
 
