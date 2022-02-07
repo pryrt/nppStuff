@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==========================================================================\
+|
+|   To learn how to make your own language parser, please check the following
+|   link:
+|       https://npp-user-manual.org/docs/function-list/
+|
+\=========================================================================== -->
+<NotepadPlus>
+    <functionList>
+        <parser displayName="LtxMxEnVision"
+                id="LtxMxEnVision"
+                commentExpr="">
+                <classRange
+                    mainExpr    ="(?xms)                        # spaces/comments, ^$, .-matches-newline
+                            ^Spec                               # Start with Spec
+                            \h                                  # one space
+                            \w+                                 # name
+                            \s*                                 # spaces
+                            {                                   # start
+                            .*?                                 # contents
+                            ^}                                  # end
+                        "
+                >
+                    <className>
+                        <nameExpr expr="(?xms)                  # spaces/comments, ^$, .-matches-newline
+                                Spec                            # Start with Spec
+                                \h                              # one space
+                                \w+                             # name
+                            "
+                        />
+                    </className>
+                    <function
+                        mainExpr="(?xm-s)                       # spaces/comments, ^$, .-matches-newline
+                            ^\h+                                # must start with space(s)
+                            (                                   # group
+                                Category                        #   Category
+                                \h                              #   Space
+                                \w+                             #   Name
+                            |                                   # OR
+                                ParamGlobals                    #   ParamGlobals
+                            )                                   # endgroup
+                        "
+                    >
+                        <functionName>
+                            <funcNameExpr expr="(?xm-s)         # spaces/comments, ^$, .-matches-newline
+                                ^\h+                            # must start with space(s)
+                                \K                              # reset match
+                                (                               # group
+                                    Category                    #   Category
+                                    \h                          #   space
+                                    \w+                         #   Name
+                                |                               # OR
+                                    ParamGlobals                #   ParamGlobals
+                                )                               # endgroup
+                            "
+                            />
+                        </functionName>
+                    </function>
+                </classRange>
+            <function mainExpr="(?xm-s)                         # spaces/comments, ^$, .-matches-newline
+                    ^\h*                                        # start with 0+ spaces
+                    \K                                          # reset match
+                    \w+                                         # type (like Category, Mask, etc...)
+                    \h+                                         # space
+                    \w+                                         # name
+                "
+            />
+        </parser>
+    </functionList>
+</NotepadPlus>
