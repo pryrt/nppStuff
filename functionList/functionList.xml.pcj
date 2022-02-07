@@ -1,0 +1,30 @@
+overrideMap.xml:
+			<!-- ==================== Peter's Customizations ============================ -->
+            <association id= "my_perl.xml"			langID= "21" />
+			<association id= "udl_markdown.xml"		userDefinedLangName="Markdown"/>
+			<association id= "udl_cadence.xml"		userDefinedLangName="Cadence"/>
+			<!-- ======================================================================== -->
+
+my_perl.xml
+udl_markdown.xml
+udl_cadence.xml
+
+=================================
+v7.9.0 and earlier
+---------------------------------
+
+functionList.xml:<asscoationMap>...
+			<!-- ======================================================================== -->
+			<!-- PETER'S ADDITIONS ====================================================== -->
+			<association id="fn_udl_cadence"          userDefinedLangName="Cadence"        />
+			<association id="fn_udl_cadence"          ext=".tp"                            />
+			<association id="fn_udl_cadence"          ext=".mod"                           />
+			<association id="fn_udl_cadence"          ext=".tmod"                          />
+            <!-- https://community.notepad-plus-plus.org/topic/18458/display-markdown-outline-view-through-functionlist -->
+            <association id="Markdown"                userDefinedLangName="Markdown"       />
+            <association id="Markdown"                ext=".md"                            />
+            <association id="Markdown"                ext=".markdown"                      />
+			<!-- ======================================================================== -->
+		</associationMap>
+
+For the <parsers> section, copy the <parser> section from each of the individual .xml listed above into the functionList.xml
