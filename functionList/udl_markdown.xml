@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==========================================================================\
+|
+|   To learn how to make your own language parser, please check the following
+|   link:
+|       https://npp-user-manual.org/docs/function-list/
+|
+\=========================================================================== -->
+<NotepadPlus>
+    <functionList>
+        <parser displayName="Markdown (preinstalled)"
+                id="Markdown (preinstalled)"
+                commentExpr="">
+            <function mainExpr="(?x-s)(^[#]+\s*(.*?)$|^(.*)(?=[\r\n]+^([-=])\4{2,}\s*$))"/>
+        </parser>
+    </functionList>
+</NotepadPlus>
