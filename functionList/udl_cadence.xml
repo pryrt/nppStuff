@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==========================================================================\
+|
+|   To learn how to make your own language parser, please check the following
+|   link:
+|       https://npp-user-manual.org/docs/function-list/
+|
+\=========================================================================== -->
+<NotepadPlus>
+    <functionList>
+            <!-- =============================================== [ TP, MOD, TMOD ] -->
+            <!-- LTX CADENCE LANGUAGE                                              -->
+            <parser
+                id="fn_udl_cadence"
+                displayName="LTX Cadence (UDL)"
+                commentExpr="(?-s:--.*?$)"
+            >
+                <function
+                    mainExpr="^\h*(private\h+)?(procedure|function)\h*\w+"
+                    displayMode="$functionName"
+                >
+                    <functionName>
+                        <nameExpr expr="^\h*(private\h+)?(procedure|function)\h*\w+" />
+                    </functionName>
+                </function>
+            </parser>
+    </functionList>
+</NotepadPlus>
