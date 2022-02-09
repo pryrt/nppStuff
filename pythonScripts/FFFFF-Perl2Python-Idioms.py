@@ -141,14 +141,52 @@ def perl_foreachLoops():
 
     console.write("==========\n\n")
 
+def perl_subroutine_args():
+    """ perl sub { my(...) = @_ } """
+    console.write("subroutine arguments\n")
+
+    # sub { my ($positional, $argument) = @_ }
+    def py_positional(positional, argument):
+        console.write("py_positional({},{}) called\n".format(positional, argument))
+    py_positional('one', 'two')
+
+    # sub { my ($positional, $argument) = @_; $argument //= 'default' }
+    def py_positional_default(positional, argument='default'):
+        console.write("py_positional_default({},{}) called\n".format(positional, argument))
+    py_positional_default('one')
+    py_positional_default('one', 'override')
+
+    # sub { my (@args) = @_; }
+    #   also note that `[fn(x) for x in args]` is pythonesque version of perl's `fn($_) for @args`
+    def py_list(*args):
+        console.write("py_list({}) called\n".format(','.join([str(x) for x in args])))
+    py_list('one')
+    py_list(1,'mixed',3)
+    py_list() # having no argument works as well
+
+    # sub { my (%h) = @_; }
+    def py_hash(**kwargs):
+        ###while you can k,v in {some:'dict'}, that doesn't work in kwargs, apparently, so use k in kwargs instead, \
+        ###either
+        console.write("py_hash({}):\n".format(','.join(["{}=>{}".format(k,kwargs[k]) for k in kwargs])))
+        ### or
+        #console.write("py_hash(...):\n")
+        #for k in kwargs:
+        #    console.write("\t{} => {}\n".format(k,kwargs[k]))
+        ### either works
+    py_hash(key='value', another=None)
+
+    console.write("==========\n\n")
+
 
 if __name__ == '__main__':
     console.clear()
     console.show()
 
-    py_formattedPrints()
-    py_introspectFunctionName()
-    perl_fileReadlineLoop()
-    perl_regex()
-    perl_stringJoin()
-    perl_foreachLoops()
+    #py_formattedPrints()
+    #py_introspectFunctionName()
+    #perl_fileReadlineLoop()
+    #perl_regex()
+    #perl_stringJoin()
+    #perl_foreachLoops()
+    perl_subroutine_args()
