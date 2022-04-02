@@ -1,0 +1,78 @@
+<NotepadPlus>
+    <functionList>
+        <!-- ======================================================== [ PERL ] -->
+        <!-- PERL - Practical Extraction and Reporting Language                -->
+
+        <parser
+            displayName="POD"
+            id         ="pod_mixed"
+            commentExpr="(?x)                                               # Utilize inline comments (see `RegEx - Pattern Modifiers`)
+                            (?m-s:\x23.*$)                                  # Single Line Comment
+                        "
+        >
+                <classRange
+                    mainExpr    ="(?xms)                                    # comments, ^/$ always works, dot matches newline
+                            ^ \h*                                           # spaces allowed at beginning of line
+                            =head\d+                                        # equals followed by head followed by digit(s)
+                            .*?                                             # consume until
+                            (                                               # EITHER
+                                ^=cut                                       #   a cut
+                            |                                               # OR
+                                ^=head\d+                                   #   another head
+                            |                                               # OR
+                                \Z                                          #   end of file
+                            )
+                        "
+                >
+                    <className>
+                        <nameExpr expr="(?xm-s)                             # comments, ^/$ always works, dot doesn't match newline
+                                \s                                          # a space (so this will find the first space _after_ the =head\d+)
+                                \K                                          # discard text matched so far
+                                .+?                                         # consume
+                                $                                           # until end of line
+                            "
+                        />
+                    </className>
+                    <function
+                        mainExpr="(?xm-s)                                   # comments, ^/$ always works, dot doesn't match newline
+                                =item                                       # equals followed by item
+                                \h+                                         # one or more spaces
+                                .*                                          # consume until
+                                $                                           # end of line
+                            "
+                    >
+                        <functionName>
+                            <funcNameExpr expr="(?xm-s)                     # comments, ^/$ always works, dot doesn't match newline
+                                =item                                       # equals followed by item
+                                \h+                                         # one or more spaces
+                                \K                                          # restart match from here
+                                .*                                          # consume until
+                                $                                           # end of line
+                            "
+                            />
+                        </functionName>
+                    </function>
+                </classRange>
+            <function
+                mainExpr="(?xm-s)                                           # comments, ^/$ always works, dot doesn't match newline
+                                =item                                       # equals followed by item
+                                \h+                                         # one or more spaces
+                                .*                                          # consume until
+                                $                                           # end of line
+                            "
+            >
+                <functionName>
+                    <nameExpr expr="(?xm-s)                                 # comments, ^/$ always works, dot doesn't match newline
+                                    =item                                   # equals followed by item
+                                    \h+                                     # one or more spaces
+                                    \K                                      # restart match from here
+                                    (?: (\*|\d+\.?) \h* )?                  # explicitly keep bullets and numberings (move before \K to exclude them)
+                                    .*                                      # consume until
+                                    $                                       # end of line
+                                "
+                    />
+                </functionName>
+            </function>
+        </parser>
+    </functionList>
+</NotepadPlus>
