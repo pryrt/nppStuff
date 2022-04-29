@@ -178,6 +178,12 @@ def perl_subroutine_args():
 
     console.write("==========\n\n")
 
+def perl_list_grep():
+    # grep the sys.path list (probably a tuple, because immutable) for elements that don't contain .svn
+    # perl -e "@out = grep { !/\.svn/ } sort @sys_path_contents"
+    console.write("\n".join(sorted([x for x in sys.path if not ".svn" in x])) + "\n")
+    console.write("==========\n\n")
+
 
 if __name__ == '__main__':
     console.clear()
@@ -190,3 +196,4 @@ if __name__ == '__main__':
     #perl_stringJoin()
     #perl_foreachLoops()
     perl_subroutine_args()
+    perl_list_grep()
