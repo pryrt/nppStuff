@@ -94,12 +94,28 @@ class SelectCurrentTag(object):
         return self.tagword, self.tagtype
 
     def selectFromOpen(self):
-        editor.setSelection( self.wordtagpos[0], editor.getLength() )
-        # TODO: actually find the next close tag (or eventually, matching close tag)
+        """selects from the beginning of the current-position-open tag to the first close tag found"""
+        # TODO: require balanced tags inside
+        self.startNewSelection = self.wordtagpos[0]
+
+        def cb(m):
+            console.write("->selectFromOpen: 0:'{}' at ({}..{})\n".format(m.group(0), m.start(), m.end()))
+            self.endNewSelection = m.end()
+            pass
+
+        editor.research(r'</{}.*?>'.format(self.tagword), cb, 0, self.wordtagpos[0], editor.getLength(), 1) # find the first
+
+        console.write("->selectFromOpen => {} .. {}\n".format(self.startNewSelection, self.endNewSelection))
+        editor.setSelection(self.startNewSelection, self.endNewSelection)
 
     def selectToClose(self):
-        editor.setSelection( 0, self.wordtagpos[1] )
-        # TODO: actually find the previous open tag (or eventually, matching open tag)
+        """selects from the last open-tag found to the close tag known at the current location"""
+        self.endNewSelection = self.wordtagpos[1]
+
+        self.startNewSelection = 0  # TODO: actually find the previous open tag (or eventually, matching open tag)
+
+        console.write("->selectToClose => {} .. {}\n".format(self.startNewSelection, self.endNewSelection))
+        editor.setSelection(self.startNewSelection, self.endNewSelection)
 
     def go(self):
         self.getTagWord()
