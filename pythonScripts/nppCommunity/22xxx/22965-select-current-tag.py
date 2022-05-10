@@ -1,12 +1,14 @@
 # encoding=utf-8
 """ selectCurrentTag: in response to https://community.notepad-plus-plus.org/topic/22965/copy-entire-code-group
 
-Starts at the current position; looks to see if it's `<open`, `</close`, or neither.  If not neither, then search for the balanced pair and
+Starts at the current position; looks to see if it's `<open`, `</close`, or neither.
+If not neither, then search for the first pair it finds.
 
+TODO: change from  "first pair it finds" to "first balanced pair it finds"
 """
 
 from Npp import editor, notepad, console
-console.show()
+#console.show()
 
 class SelectCurrentTag(object):
     class TAGTYPE(object):
@@ -93,38 +95,42 @@ class SelectCurrentTag(object):
 
         return self.tagword, self.tagtype
 
-    def selectFromOpen(self):
+    def selectFromThisOpen(self):
         """selects from the beginning of the current-position-open tag to the first close tag found"""
         # TODO: require balanced tags inside
         self.startNewSelection = self.wordtagpos[0]
 
         def cb(m):
-            console.write("->selectFromOpen: 0:'{}' at ({}..{})\n".format(m.group(0), m.start(), m.end()))
+            #console.write("->selectFromThisOpen: 0:'{}' at ({}..{})\n".format(m.group(0), m.start(), m.end()))
             self.endNewSelection = m.end()
-            pass
 
         editor.research(r'</{}.*?>'.format(self.tagword), cb, 0, self.wordtagpos[0], editor.getLength(), 1) # find the first
 
-        console.write("->selectFromOpen => {} .. {}\n".format(self.startNewSelection, self.endNewSelection))
+        #console.write("->selectFromThisOpen => {} .. {}\n".format(self.startNewSelection, self.endNewSelection))
         editor.setSelection(self.startNewSelection, self.endNewSelection)
 
-    def selectToClose(self):
+    def selectToThisClose(self):
         """selects from the last open-tag found to the close tag known at the current location"""
         self.endNewSelection = self.wordtagpos[1]
 
         self.startNewSelection = 0  # TODO: actually find the previous open tag (or eventually, matching open tag)
+        def cb(m):
+            #console.write("->selectToThisClose: 0:'{}' at ({}..{})\n".format(m.group(0), m.start(), m.end()))
+            self.startNewSelection = m.start()
 
-        console.write("->selectToClose => {} .. {}\n".format(self.startNewSelection, self.endNewSelection))
+        editor.research(r'<{}.*?>'.format(self.tagword), cb, 0, 0, self.wordtagpos[1]) # find the last, so don't put a maxCount parameter
+
+        #console.write("->selectToThisClose => {} .. {}\n".format(self.startNewSelection, self.endNewSelection))
         editor.setSelection(self.startNewSelection, self.endNewSelection)
 
     def go(self):
         self.getTagWord()
-        console.write("SelectCurrentTag: tagword='{:s}' tagtype={:s} oldPos={:d} wordtagpos={}\n".format(self.tagword, self.tagtype, self.oldPos, self.wordtagpos))
+        #console.write("SelectCurrentTag: tagword='{:s}' tagtype={:s} oldPos={:d} wordtagpos={}\n".format(self.tagword, self.tagtype, self.oldPos, self.wordtagpos))
         if self.tagtype == self.TAGTYPE.OPEN:
-            self.selectFromOpen()
+            self.selectFromThisOpen()
             pass
         elif self.tagtype == self.TAGTYPE.CLOSE:
-            self.selectToClose()
+            self.selectToThisClose()
             pass
         else:   # no matching tag found, so don't select anything new
             editor.setSelection( self.oldPos, self.oldPos )
