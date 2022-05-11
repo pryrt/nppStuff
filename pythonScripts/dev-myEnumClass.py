@@ -19,16 +19,20 @@ class BaseEnum():
 
     # https://docs.python.org/2.7/reference/datamodel.html#emulating-numeric-types
     def __int__(self):          return self._number
-    def __add__(self, other):   return int(self) + other
-    def __radd__(self, other):  return other + int(self)
-    def __sub__(self, other):   return int(self) - other
-    def __rsub__(self, other):  return other - int(self)
+    #def __add__(self, other):   return int(self) + other
+    #def __radd__(self, other):  return other + int(self)
+    #def __sub__(self, other):   return int(self) - other
+    #def __rsub__(self, other):  return other - int(self)
     # to make it a truly useful enum, I would have to define all the other integer-compatible math functions...
+    def __coerce__(self,other): return (other, int(self))
+    # it looks like I have what I need if I have __int__ and __coerce__ defined
 
 class ExampleEnum(BaseEnum):
-    NONE = ExampleEnum("NONE", 0)
-    CHAR = ExampleEnum("CHAR", 1)
-    LINE = ExampleEnum("LINE", 2)
+    pass
+
+ExampleEnum.NONE = ExampleEnum("NONE", 0)
+ExampleEnum.CHAR = ExampleEnum("CHAR", 1)
+ExampleEnum.LINE = ExampleEnum("LINE", 2)
 
 if __name__ == '__main__':
     # experiment with them:
