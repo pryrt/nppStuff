@@ -45,7 +45,7 @@
 						<nameExpr expr="(?x)                                    # free-spacing (see `RegEx - Pattern Modifiers`)
 								\s
 								\K                                              # discard text matched so far
-								[^;]+
+								[^;{]+
 							"
 						/>
 					</className>
