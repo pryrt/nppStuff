@@ -2,6 +2,8 @@
 """
 By: Alan Kilborn
 https://community.notepad-plus-plus.org/post/71772
+
+Edited: Peter added a way to stop the jiggling: add a boolean to the instance, and if
 """
 
 from Npp import console
@@ -57,13 +59,14 @@ def sendMouseMoveDeltaXY(x, y):
 class MJD(object):
 
     def __init__(self):
+        self.jiggling = True
         self.jiggle_thread = threading.Thread(target=self.jiggle_thread_function, args=(1,))
         self.jiggle_thread.daemon = True  # thread won't stop until parent ends
         self.jiggle_thread.start()
 
     def jiggle_thread_function(self, name):
         multiplier = 1
-        while True:
+        while self.jiggling:
             sendMouseMoveDeltaXY(multiplier, multiplier)
             multiplier *= -1
             #console.write("jiggled\n")
@@ -76,6 +79,9 @@ class MJD(object):
 if __name__ == "__main__":
     try:
         mjd
+        mjd.jiggling = False
+        del mjd
+        console.write("stopped the MouseJiggleDaemon\n")
     except NameError:
         mjd = MJD()
         console.write("starting MouseJiggleDaemon\n")
