@@ -8,6 +8,7 @@ def get_wide_ordinal(char):
 
 def callback_sci_UPDATEUI(args):
     c = editor.getCharAt(editor.getCurrentPos())
+    console.write("c=0x{0:04X}={0}dec\n".format(c));
     if c < 0 or c > 255:
         p = editor.getCurrentPos()
         q = editor.positionAfter(p)
@@ -17,7 +18,8 @@ def callback_sci_UPDATEUI(args):
         s = unichr(c)
 
     try:
-        info = "'{1}' = HEX:0x{0:04X} = DEC:{0} ".format(c, s.encode('utf-8') if c not in [13, 10, 0] else 'LINE-ENDING' if c != 0 else 'END-OF-FILE')
+        is_eof = (editor.getCurrentPos()==editor.getLength())
+        info = "'{1}' = HEX:0x{0:04X} = DEC:{0} ".format(c, s.encode('utf-8') if c not in [13, 10, 0] else 'LINE-ENDING' if c != 0 else 'END-OF_FILE' if is_eof else 'NUL')
     except ValueError:
         info = "HEX:?? DEC:?"
     notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, info)
