@@ -63,6 +63,10 @@ class MJD(object):
         self.jiggle_thread = threading.Thread(target=self.jiggle_thread_function, args=(1,))
         self.jiggle_thread.daemon = True  # thread won't stop until parent ends
         self.jiggle_thread.start()
+        console.write("started MouseJiggleDaemon\n")
+
+    def __del__(self):
+        console.write("stopped MouseJiggleDaemon\n")
 
     def jiggle_thread_function(self, name):
         multiplier = 1
@@ -81,7 +85,6 @@ if __name__ == "__main__":
         mjd
         mjd.jiggling = False
         del mjd
-        console.write("stopped the MouseJiggleDaemon\n")
     except NameError:
         mjd = MJD()
-        console.write("starting MouseJiggleDaemon\n")
+
