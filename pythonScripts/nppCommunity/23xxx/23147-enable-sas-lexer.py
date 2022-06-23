@@ -105,11 +105,11 @@ class SasLexer:
         editor.styleSetFore(self.SCE_SAS_TYPE                  , (128,0,255))       # not implemented
         editor.styleSetFore(self.SCE_SAS_WORD                  , (255,128,0))       # not implemented
         editor.styleSetFore(self.SCE_SAS_GLOBAL_MACRO          , (255,255,0))       # not implemented
-        editor.styleSetFore(self.SCE_SAS_MACRO                 , (0xCC,0x66,0xFF))
-        editor.styleSetFore(self.SCE_SAS_MACRO_KEYWORD         , (0xCC,0x66,0xFF))
-        editor.styleSetFore(self.SCE_SAS_BLOCK_KEYWORD         , (0,0,0x80))
-        editor.styleSetFore(self.SCE_SAS_MACRO_FUNCTION        , (0xFF,0x66,0xFF))
-        editor.styleSetFore(self.SCE_SAS_STATEMENT             , (0xAA,0,0))
+        editor.styleSetFore(self.SCE_SAS_MACRO                 , (0,0,255))         # start with %
+        editor.styleSetFore(self.SCE_SAS_MACRO_KEYWORD         , (0,255,255))       # keywords/keywords1
+        editor.styleSetFore(self.SCE_SAS_BLOCK_KEYWORD         , (0,0,127))         # keywords2
+        editor.styleSetFore(self.SCE_SAS_MACRO_FUNCTION        , (0,127,127))       # keywords3
+        editor.styleSetFore(self.SCE_SAS_STATEMENT             , (0xAA,0,0))        # keywords4
 
         # ordering is important
         self.ilexer_ptr = self.create_lexer_func(b'sas')
@@ -117,6 +117,11 @@ class SasLexer:
         self.user32.SendMessageW(editor_hwnd, self.SCI_SETILEXER, 0, self.ilexer_ptr)
         #editor.setProperty('lexer.sas.value.separate', self.separate_path_and_line_number)
         #editor.setProperty('lexer.sas.escape.sequences', self.interpret_escape_sequences)
+        editor.setKeyWords(0, "%let %do")
+        editor.setKeyWords(1, "also cards class data input model ods proc var where")
+        editor.setKeyWords(2, "%printz")
+        editor.setKeyWords(3, "run")
+        console.write("SAS lexer: set styles\n")
 
     def check_lexers(self):
         '''
@@ -132,7 +137,7 @@ class SasLexer:
         _, _, file_extension = notepad.getCurrentFilename().rpartition('.')
         if has_no_lexer_assigned and file_extension in self.known_extensions:
             self.init_lexer()
-        console.write("check_lexers: {}\n".format(has_no_lexer_assigned))
+        console.write("check_lexers: {} {}\n".format(editor.getLexerLanguage(), has_no_lexer_assigned))
 
 
     def on_bufferactivated(self, args):
