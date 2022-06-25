@@ -1,4 +1,4 @@
-**# FAQ Desk: How do I Replace the Features of TextFX?
+# FAQ Desk: How do I Replace the Features of TextFX?
 
 Hello, and welcome to the FAQ Desk.  You have likely been directed here because you were a user of TextFX and need an alternative.
 
