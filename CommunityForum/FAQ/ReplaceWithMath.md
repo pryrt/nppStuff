@@ -22,7 +22,7 @@ The remainder of this FAQ will be showing examples using the PythonScript plugin
 
 ### Add a value to each match
 
-This example actually comes directly from the PythonScript documentation (**Plugins > Python Script > Context-Help**, then choose **Editor Object**, and go to the `editor.rereplace()` section:
+This example actually comes directly from the PythonScript documentation (**Plugins > Python Script > Context-Help**, then choose **Editor Object**, and go to the `editor.rereplace()` section):
 ```
 # encoding=utf-8
 from Npp import editor
