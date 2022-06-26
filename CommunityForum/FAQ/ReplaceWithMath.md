@@ -80,11 +80,11 @@ three=3.0
 1.62x
 ```
 
-Why isn't `3.0` shown as `3.00`?  Because the `round()` function rounded the value to 3.0 exactly, and the `str(3.00)` is just `3.0`.  If you want to guarantee it's printed with that same number of digits always, you can just use the [Python 2.7 format mini-language](https://docs.python.org/2/library/string.html#formatspec) instead of the `str()` and `round()` calls.
+Why isn't `3.0` shown as `3.00`?  Because the `round()` function rounded the value to 3.0 exactly, and the `str(3.00)` is just `3.0`.  If you want to guarantee it's printed with that same number of digits always, you can just use the [Python 2.7 format mini-language](https://docs.python.org/2/library/string.html#formatspec) instead of the `str()` and `round()` calls.  Change the `return...` line above to the following to use the format string instead:
 ```
     return "{:0.2f}".format(float(m.group(1)))
 ```
-which on the same input will result in
+When run on the same input, this will result in
 ```
 pi=3.14
 e=2.72
@@ -185,4 +185,4 @@ The `rereplace` call is working on the whole group from `^{` to `^},`.  Inside t
 
 The possibilities of this mechanism are limited only by your imagination, and your knowledge of Python (or some other scripting language) and regular expressions.
 
-You may be able to convince a Community member to customize one of these for your exact circumstances... but the chances will be much higher if you try it on yuor own first, and show us what you tried, before asking us to write it for you.
+You may be able to convince a Community member to customize one of these for your exact circumstances... but the chances will be much higher if you try it on your own first, and show us what you tried, before asking us to write it for you.
