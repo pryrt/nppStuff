@@ -3,6 +3,8 @@
 PythonScript replacement of TextFX>Edit>Rewrap
 https://community.notepad-plus-plus.org/post/78177
 Author: @Ekopalypse , with input from @PeterJones
+
+also saved as 23203-TextFXRewrap-Equivalent.py
 """
 from Npp import editor, notepad
 from textwrap import wrap
