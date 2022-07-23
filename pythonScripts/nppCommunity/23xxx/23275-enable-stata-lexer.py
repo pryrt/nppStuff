@@ -2,21 +2,17 @@
 '''
     Makes lexilla's builtin Stata lexer available for NPP.
 
-    To toggle the escape characters on/off one can
-    create another script with these two lines of code.
-
-    stata_lexer.show_escape_chars = not stata_lexer.show_escape_chars
-    editor.styleSetVisible(stata_lexer.SCE_ERR_ESCSEQ, stata_lexer.show_escape_chars)
 
 '''
 """
 Peter trying to adapt https://raw.githubusercontent.com/Ekopalypse/NppPythonScripts/master/npp/error_list_lexer_support2.py
 based on Eko's comments https://community.notepad-plus-plus.org/topic/23147/missing-lexers-from-lexilla/7
-Converted the Stata from https://community.notepad-plus-plus.org/post/77802 to Stata
+Converted the SAS from https://community.notepad-plus-plus.org/post/77802 to Stata
+updated based on https://community.notepad-plus-plus.org/post/78579 for Notepad++ v8.4.3
 """
 
 from Npp import notepad, editor, NOTIFICATION
-from ctypes import windll, WINFUNCTYPE
+from ctypes import windll, WINFUNCTYPE, addressof, create_unicode_buffer
 from ctypes.wintypes import HWND, UINT, WPARAM, LPARAM, HMODULE, LPCWSTR, LPCSTR, LPVOID
 
 class StataLexer:
@@ -48,29 +44,45 @@ class StataLexer:
         self.SCE_STATA_GLOBAL_MACRO                             = 10
         self.SCE_STATA_MACRO                                    = 11
 
+        self.NPPM_CREATELEXER                                   = (1024 + 1000 + 110)
+        self.SCI_SETILEXER                                      = 4033
+
         self.kernel32 = windll.kernel32
         self.user32 = windll.user32
 
-        notepad_hwnd = self.user32.FindWindowW(u'Notepad++', None)
-        self.editor1_hwnd = self.user32.FindWindowExW(notepad_hwnd, None, u"Scintilla", None)
-        self.editor2_hwnd = self.user32.FindWindowExW(notepad_hwnd, self.editor1_hwnd, u"Scintilla", None)
-
-        self.kernel32.GetModuleHandleW.argtypes = [LPCWSTR]
-        self.kernel32.GetModuleHandleW.restype = HMODULE
-        self.kernel32.GetProcAddress.argtypes = [HMODULE, LPCSTR]
-        self.kernel32.GetProcAddress.restype = LPVOID
-        handle = self.kernel32.GetModuleHandleW(None)
-        create_lexer_ptr = self.kernel32.GetProcAddress(handle, b'CreateLexer')
-
-        CL_FUNCTYPE = WINFUNCTYPE(LPVOID, LPCSTR)
-        self.create_lexer_func = CL_FUNCTYPE(create_lexer_ptr)
+        self.notepad_hwnd = self.user32.FindWindowW(u'Notepad++', None)
+        self.editor1_hwnd = self.user32.FindWindowExW(self.notepad_hwnd, None, u"Scintilla", None)
+        self.editor2_hwnd = self.user32.FindWindowExW(self.notepad_hwnd, self.editor1_hwnd, u"Scintilla", None)
 
         self.user32.SendMessageW.argtypes = [HWND, UINT, WPARAM, LPARAM]
+        self.user32.SendMessageW.restype  = LPARAM
+
+        #console.write( "npp version: {:05.3f}\n".format(self.nppver()) )
+
+        if self.nppver() < 8.410:
+
+            self.kernel32.GetModuleHandleW.argtypes = [LPCWSTR]
+            self.kernel32.GetModuleHandleW.restype = HMODULE
+            self.kernel32.GetProcAddress.argtypes = [HMODULE, LPCSTR]
+            self.kernel32.GetProcAddress.restype = LPVOID
+            handle = self.kernel32.GetModuleHandleW(None)
+            create_lexer_ptr = self.kernel32.GetProcAddress(handle, b'CreateLexer')
+
+            CL_FUNCTYPE = WINFUNCTYPE(LPVOID, LPCSTR)
+            self.create_lexer_func = CL_FUNCTYPE(create_lexer_ptr)
+
+            #console.write("init the function the old way\n")
+
+        else:
+            #console.write("init the function the new way\n")
+            pass
+
+
+        self.lexer_name = create_unicode_buffer('stata')
+
 
         notepad.callback(self.on_langchanged, [NOTIFICATION.LANGCHANGED])
         notepad.callback(self.on_bufferactivated, [NOTIFICATION.BUFFERACTIVATED])
-
-        self.SCI_SETILEXER                                          = 4033
 
         console.write("Initialized Stata lexer\n")
 
@@ -105,15 +117,20 @@ class StataLexer:
         editor.styleSetFore(self.SCE_STATA_MACRO                 , (0,0,255))       # not implemented that I can see in LexStata.cxx
 
         # ordering is important
-        self.ilexer_ptr = self.create_lexer_func(b'stata')
+        if self.nppver() < 8.410:
+            self.ilexer_ptr = self.create_lexer_func(b'stata')
+            #console.write("old: called create_lexer_func()\n")
+        else:
+            self.ilexer_ptr = self.user32.SendMessageW(self.notepad_hwnd, self.NPPM_CREATELEXER, 0, addressof(self.lexer_name))
+            #console.write("new: sendmessage NPPM_CREATELEXER({:s})\n".format(self.lexer_name.value))
+
         editor_hwnd = self.editor1_hwnd if notepad.getCurrentView() == 0 else self.editor2_hwnd
         self.user32.SendMessageW(editor_hwnd, self.SCI_SETILEXER, 0, self.ilexer_ptr)
-        # properties: fold.compact, fold.at.else
+
         editor.setKeyWords(0, "anova by ci clear correlate describe diagplot drop edit exit gen generate graph help if infile input list log lookup oneway pcorr plot predict qnorm regress replace save sebarr set sort stem summ summarize tab tabulate test ttest use")   # keywords SAS: %let %do
         editor.setKeyWords(1, "byte int long float double strL str") # types # SAS: also cards
-        #editor.setKeyWords(2, "%printz")
-        #editor.setKeyWords(3, "run")
-        console.write("Stata lexer: set styles\n")
+
+        #console.write("Stata lexer: set styles\n")
 
     def check_lexers(self):
         '''
@@ -129,7 +146,7 @@ class StataLexer:
         _, _, file_extension = notepad.getCurrentFilename().rpartition('.')
         if has_no_lexer_assigned and file_extension in self.known_extensions:
             self.init_lexer()
-        console.write("check_lexers: {} {}\n".format(editor.getLexerLanguage(), has_no_lexer_assigned))
+        #console.write("check_lexers: {} {}\n".format(editor.getLexerLanguage(), has_no_lexer_assigned))
 
 
     def on_bufferactivated(self, args):
@@ -143,7 +160,7 @@ class StataLexer:
                 None
         '''
         self.check_lexers()
-        console.write("on_bufferactivated\n")
+        #console.write("on_bufferactivated\n")
 
 
     def on_langchanged(self, args):
@@ -157,8 +174,23 @@ class StataLexer:
                 None
         '''
         self.check_lexers()
-        console.write("on_langchanged\n")
+        #console.write("on_langchanged\n")
 
+    def nppver(self):
+        self.NPPM_GETNPPVERSION = 1024 + 1000 + 50
+        nppv = self.user32.SendMessageW(self.notepad_hwnd, self.NPPM_GETNPPVERSION, 1, 0 )
+        # for v8.4.1 and newer, this will pad it as 8<<16 + 410 for easy comparison
+        # v8.4 will be under old scheme of 8<<16 + 4, v8.3.3 is 8<<16 + 33
+        ver = nppv >> 16    # major version
+        mnr = nppv & 0xFFFF # minor version
+        if (ver <= 8) and (mnr < 10):
+            ver += mnr/10.
+        elif (ver <= 8) and (mnr < 100):
+            ver += mnr/100.
+        elif (ver>8) or (mnr>99):
+            ver += mnr/1000.
+
+        return ver
 
     def main(self):
         '''
@@ -173,7 +205,7 @@ class StataLexer:
         '''
         self.on_bufferactivated(None)
 
-console.show()
+#console.show()
 stata_lexer = StataLexer()
 stata_lexer.main()
 
