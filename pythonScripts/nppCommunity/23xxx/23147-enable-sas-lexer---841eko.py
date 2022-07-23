@@ -1,22 +1,17 @@
 # -*- coding: utf-8 -*-
 '''
     Makes the builtin SAS lexer available for NPP.
-
-    To toggle the escape characters on/off one can
-    create another script with these two lines of code.
-
-    sas_lexer.show_escape_chars = not sas_lexer.show_escape_chars
-    editor.styleSetVisible(sas_lexer.SCE_ERR_ESCSEQ, sas_lexer.show_escape_chars)
-
 '''
 """
 Peter trying to adapt https://raw.githubusercontent.com/Ekopalypse/NppPythonScripts/master/npp/error_list_lexer_support2.py
 based on Eko's comments https://community.notepad-plus-plus.org/topic/23147/missing-lexers-from-lexilla/7
+updated based on https://community.notepad-plus-plus.org/post/78579 for Notepad++ v8.4.3
 """
 
 from Npp import notepad, editor, NOTIFICATION
-from ctypes import windll, WINFUNCTYPE
+from ctypes import windll, WINFUNCTYPE, addressof, create_unicode_buffer
 from ctypes.wintypes import HWND, UINT, WPARAM, LPARAM, HMODULE, LPCWSTR, LPCSTR, LPVOID
+
 
 class SasLexer:
 
@@ -30,9 +25,6 @@ class SasLexer:
         # aka normal text, assigned do get handled
         self.known_extensions = ['sas']
         #
-        #self.show_escape_chars = False
-        #self.separate_path_and_line_number = '0'
-        #self.interpret_escape_sequences = '1'
         # ****************************************************
         self.SCE_SAS_DEFAULT                                        = 0
         self.SCE_SAS_COMMENT                                        = 1
@@ -51,29 +43,23 @@ class SasLexer:
         self.SCE_SAS_MACRO_FUNCTION                                 = 14
         self.SCE_SAS_STATEMENT                                      = 15
 
-        self.kernel32 = windll.kernel32
+        self.NPPM_CREATELEXER                                       = (1024 + 1000 + 110)
+        self.SCI_SETILEXER                                          = 4033
+
         self.user32 = windll.user32
 
-        notepad_hwnd = self.user32.FindWindowW(u'Notepad++', None)
-        self.editor1_hwnd = self.user32.FindWindowExW(notepad_hwnd, None, u"Scintilla", None)
-        self.editor2_hwnd = self.user32.FindWindowExW(notepad_hwnd, self.editor1_hwnd, u"Scintilla", None)
+        self.notepad_hwnd = self.user32.FindWindowW(u'Notepad++', None)
+        self.editor1_hwnd = self.user32.FindWindowExW(self.notepad_hwnd, None, u"Scintilla", None)
+        self.editor2_hwnd = self.user32.FindWindowExW(self.notepad_hwnd, self.editor1_hwnd, u"Scintilla", None)
 
-        self.kernel32.GetModuleHandleW.argtypes = [LPCWSTR]
-        self.kernel32.GetModuleHandleW.restype = HMODULE
-        self.kernel32.GetProcAddress.argtypes = [HMODULE, LPCSTR]
-        self.kernel32.GetProcAddress.restype = LPVOID
-        handle = self.kernel32.GetModuleHandleW(None)
-        create_lexer_ptr = self.kernel32.GetProcAddress(handle, b'CreateLexer')
-
-        CL_FUNCTYPE = WINFUNCTYPE(LPVOID, LPCSTR)
-        self.create_lexer_func = CL_FUNCTYPE(create_lexer_ptr)
+        self.lexer_name = create_unicode_buffer('SAS')
 
         self.user32.SendMessageW.argtypes = [HWND, UINT, WPARAM, LPARAM]
+        self.user32.SendMessageW.restype = LPARAM
 
         notepad.callback(self.on_langchanged, [NOTIFICATION.LANGCHANGED])
         notepad.callback(self.on_bufferactivated, [NOTIFICATION.BUFFERACTIVATED])
 
-        self.SCI_SETILEXER                                          = 4033
 
         console.write("Initialized SAS lexer\n")
 
@@ -112,11 +98,11 @@ class SasLexer:
         editor.styleSetFore(self.SCE_SAS_STATEMENT             , (0xAA,0,0))        # keywords4
 
         # ordering is important
-        self.ilexer_ptr = self.create_lexer_func(b'sas')
+        ilexer_ptr = self.user32.SendMessageW(self.notepad_hwnd, self.NPPM_CREATELEXER, 0, addressof(self.lexer_name))
         editor_hwnd = self.editor1_hwnd if notepad.getCurrentView() == 0 else self.editor2_hwnd
-        self.user32.SendMessageW(editor_hwnd, self.SCI_SETILEXER, 0, self.ilexer_ptr)
-        #editor.setProperty('lexer.sas.value.separate', self.separate_path_and_line_number)
-        #editor.setProperty('lexer.sas.escape.sequences', self.interpret_escape_sequences)
+        self.user32.SendMessageW(editor_hwnd, self.SCI_SETILEXER, 0, ilexer_ptr)
+
+
         editor.setKeyWords(0, "%let %do")
         editor.setKeyWords(1, "also cards class data input model ods proc var where")
         editor.setKeyWords(2, "%printz")
@@ -133,9 +119,9 @@ class SasLexer:
                 None
         '''
 
-        has_no_lexer_assigned = editor.getLexerLanguage() == 'null'
+        has_no_lexer_assigned = (editor.getLexerLanguage() == 'null') or (editor.getLexerLanguage() == '')
         _, _, file_extension = notepad.getCurrentFilename().rpartition('.')
-        console.write("check_lexers: lex:'{}' no:{} ext:'{}'\n".format(editor.getLexerLanguage(), has_no_lexer_assigned, file_extension))
+        console.write("check_lexers: lex='{}' nolex={} ext='{}'\n".format(editor.getLexerLanguage(), has_no_lexer_assigned, file_extension))
         if has_no_lexer_assigned and file_extension in self.known_extensions:
             self.init_lexer()
 
@@ -184,6 +170,7 @@ class SasLexer:
 console.show()
 sas_lexer = SasLexer()
 sas_lexer.main()
+
 
 """ example junk SAS (just lists some of the keywords):
 
