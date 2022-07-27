@@ -2,7 +2,7 @@
 from Npp import *
 
 def pmq_CreatePerlMonksQuestion():
-    notepad.open('C:\Users\peter.jones\OneDrive - maximintegrated.onmicrosoft.com\OneDriveDocuments\SOPW.html')
+    notepad.open('C:\Users\peter.jones\OneDrive - Analog Devices, Inc\OneDriveDocuments\SOPW.html')
     editor.documentStart()
     #console.show()
     #console.write("\n"+__name__ + "\n")
