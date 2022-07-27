@@ -93,8 +93,8 @@ class StataLexer:
             Destructor (kind of)
         '''
         console.write("Clear Stata lexer callbacks...\n")
-        notepad.clearCallbacks(self.on_langchanged)
-        notepad.clearCallbacks(self.on_bufferactivated)
+        notepad.clearCallbacks(self.on_langchanged, [NOTIFICATION.LANGCHANGED])
+        notepad.clearCallbacks(self.on_bufferactivated, [NOTIFICATION.BUFFERACTIVATED])
         console.write("Destroyed Stata lexer\n")
 
     def init_lexer(self):
