@@ -15,7 +15,31 @@ from Npp import notepad, editor, NOTIFICATION
 from ctypes import windll, WINFUNCTYPE, addressof, create_unicode_buffer
 from ctypes.wintypes import HWND, UINT, WPARAM, LPARAM, HMODULE, LPCWSTR, LPCSTR, LPVOID
 
-class StataLexer:
+class GenericLexer:
+    _lexer_name = b"Generic"
+
+    def draw(self):
+        console.write("I should colorize the {} file\n".format(self._lexer_name))
+
+# specific lexer subclasses
+class StataLexer(GenericLexer):
+    _lexer_name = b"Stata"
+    SCE_STATA_DEFAULT                                  = 0
+    SCE_STATA_COMMENT                                  = 1
+    SCE_STATA_COMMENTLINE                              = 2
+    SCE_STATA_COMMENTBLOCK                             = 3
+    SCE_STATA_NUMBER                                   = 4
+    SCE_STATA_OPERATOR                                 = 5
+    SCE_STATA_IDENTIFIER                               = 6
+    SCE_STATA_STRING                                   = 7
+    SCE_STATA_TYPE                                     = 8
+    SCE_STATA_WORD                                     = 9
+    SCE_STATA_GLOBAL_MACRO                             = 10
+    SCE_STATA_MACRO                                    = 11
+
+class HiddenLexers:
+    NPPM_CREATELEXER                                   = (1024 + 1000 + 110)
+    SCI_SETILEXER                                      = 4033
 
     def __init__(self):
         '''
@@ -88,15 +112,6 @@ class StataLexer:
 
         console.write("Initialized Stata lexer\n")
 
-    def __del__(self):
-        '''
-            Destructor (kind of)
-        '''
-        console.write("Clear Stata lexer callbacks...\n")
-        notepad.clearCallbacks(self.on_langchanged, [NOTIFICATION.LANGCHANGED])
-        notepad.clearCallbacks(self.on_bufferactivated, [NOTIFICATION.BUFFERACTIVATED])
-        console.write("Destroyed Stata lexer\n")
-
     def init_lexer(self):
         '''
             Initializes the lexer and its properties
@@ -105,6 +120,7 @@ class StataLexer:
             Returns:
                 None
         '''
+        # StataLexer.colorize()
         editor.styleSetFore(self.SCE_STATA_DEFAULT               , notepad.getEditorDefaultForegroundColor())
         editor.styleSetFore(self.SCE_STATA_COMMENT               , (0,128,0))
         editor.styleSetFore(self.SCE_STATA_COMMENTLINE           , (0,128,0))
@@ -123,7 +139,7 @@ class StataLexer:
             self.ilexer_ptr = self.create_lexer_func(b'stata')
             #console.write("old: called create_lexer_func()\n")
         else:
-            self.ilexer_ptr = self.user32.SendMessageW(self.notepad_hwnd, self.NPPM_CREATELEXER, 0, addressof(self.lexer_name))
+            self.ilexer_ptr = self.user32.SendMessageW(self.notepad_hwnd, HiddenLexers.NPPM_CREATELEXER, 0, addressof(self.lexer_name))
             #console.write("new: sendmessage NPPM_CREATELEXER({:s})\n".format(self.lexer_name.value))
 
         editor_hwnd = self.editor1_hwnd if notepad.getCurrentView() == 0 else self.editor2_hwnd
@@ -223,15 +239,19 @@ class StataLexer:
         self.enabled = True
         self.on_bufferactivated(None)
 
+
 console.show()
 console.write("Run again\n")
 try:
     stata_lexer.toggle()
 except NameError:
-    stata_lexer = StataLexer()
+    stata_lexer = HiddenLexers()
     stata_lexer.main()
 
-""" notepad.clearCallbacks(); del stata_lexer; del StataLexer """
+    GenericLexer().draw()
+    StataLexer().draw()
+
+""" notepad.clearCallbacks(); del stata_lexer; del HiddenLexers; del StataLexer; del GenericLexer """
 
 """ example junk Stata (just lists some of the keywords):
 
