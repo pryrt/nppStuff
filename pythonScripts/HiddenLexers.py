@@ -56,6 +56,20 @@ class StataLexer(GenericLexer):
         editor.styleSetFore(self.SCE_STATA_GLOBAL_MACRO          , (255,255,0))     # not implemented that I can see in LexStata.cxx
         editor.styleSetFore(self.SCE_STATA_MACRO                 , (0,0,255))       # not implemented that I can see in LexStata.cxx
 
+        #### TODO: this block needs to move inside .colorize(), so needs to be reworked to be relative
+        # ordering is important
+        if lexintf.nppver() < 8.410:
+            self.ilexer_ptr = self.create_lexer_func(self.lexer_name.value)
+            #console.write("old: called create_lexer_func({})\n".format(self.lexer_name.value))
+        else:
+            self.ilexer_ptr = windll.user32.SendMessageW(lexintf.notepad_hwnd, lexintf.NPPM_CREATELEXER, 0, addressof(self.lexer_name))
+            #console.write("new: sendmessage NPPM_CREATELEXER({:s})\n".format(self.lexer_name.value))
+
+        editor_hwnd = lexintf.editor1_hwnd if notepad.getCurrentView() == 0 else lexintf.editor2_hwnd
+        windll.user32.SendMessageW(editor_hwnd, lexintf.SCI_SETILEXER, 0, self.ilexer_ptr)
+
+        editor.setKeyWords(0, "anova by ci clear correlate describe diagplot drop edit exit gen generate graph help if infile input list log lookup oneway pcorr plot predict qnorm regress replace save sebarr set sort stem summ summarize tab tabulate test ttest use")   # keywords SAS: %let %do
+        editor.setKeyWords(1, "byte int long float double strL str") # types # SAS: also cards
 
 class HiddenLexerInterface:
     NPPM_CREATELEXER                                   = (1024 + 1000 + 110)
@@ -70,41 +84,26 @@ class HiddenLexerInterface:
         '''
 
         # **************** configuration area ****************
-        # files with these extensions and a null lexer,
-        # aka normal text, assigned do get handled
-        self.known_extensions = ['do', 'stata']
+        """
+        files with these extensions and a null lexer (that is, normal text), will be processed by the listed extension
+
+        Examples:
+            self.map_extensions['oneext'] = OneFileLexer()                              # *.oneext will be processed by a OneFileLexer instance
+            self.map_extensions['notc'] = self.map_extensions['noth'] = NotCLexer()     # *.notc and *.noth will be processed by the same NotCLexer instance
+        """
         self.map_extensions = {}
-        self.map_extensions['do'] = StataLexer()
+        self.map_extensions['do'] = self.map_extensions['stata'] = StataLexer()
+        #elf.map_extensions['sas'] = SasLexer()
 
-        #
-        #self.show_escape_chars = False
-        #self.separate_path_and_line_number = '0'
-        #self.interpret_escape_sequences = '1'
-        # ****************************************************
-        self.SCE_STATA_DEFAULT                                  = 0
-        self.SCE_STATA_COMMENT                                  = 1
-        self.SCE_STATA_COMMENTLINE                              = 2
-        self.SCE_STATA_COMMENTBLOCK                             = 3
-        self.SCE_STATA_NUMBER                                   = 4
-        self.SCE_STATA_OPERATOR                                 = 5
-        self.SCE_STATA_IDENTIFIER                               = 6
-        self.SCE_STATA_STRING                                   = 7
-        self.SCE_STATA_TYPE                                     = 8
-        self.SCE_STATA_WORD                                     = 9
-        self.SCE_STATA_GLOBAL_MACRO                             = 10
-        self.SCE_STATA_MACRO                                    = 11
-
+        # initialize win32 interface info
         self.notepad_hwnd = windll.user32.FindWindowW(u'Notepad++', None)
         self.editor1_hwnd = windll.user32.FindWindowExW(self.notepad_hwnd, None, u"Scintilla", None)
         self.editor2_hwnd = windll.user32.FindWindowExW(self.notepad_hwnd, self.editor1_hwnd, u"Scintilla", None)
-
         windll.user32.SendMessageW.argtypes = [HWND, UINT, WPARAM, LPARAM]
         windll.user32.SendMessageW.restype  = LPARAM
 
-        #console.write( "npp version: {:05.3f}\n".format(self.nppver()) )
-
+        # if it's older then v8.4.1, need to make an old CreateLexer; if it's v8.4.2-or-newer, don't need to go searching for the function
         if self.nppver() < 8.410:
-
             windll.kernel32.GetModuleHandleW.argtypes = [LPCWSTR]
             windll.kernel32.GetModuleHandleW.restype = HMODULE
             windll.kernel32.GetProcAddress.argtypes = [HMODULE, LPCSTR]
@@ -114,15 +113,11 @@ class HiddenLexerInterface:
 
             CL_FUNCTYPE = WINFUNCTYPE(LPVOID, LPCSTR)
             self.create_lexer_func = CL_FUNCTYPE(create_lexer_ptr)
-
-            #console.write("init the function the old way\n")
-
         else:
-            #console.write("init the function the new way\n")
             pass
 
 
-
+        # create the callbacks
         notepad.callback(self.on_langchanged, [NOTIFICATION.LANGCHANGED])
         notepad.callback(self.on_bufferactivated, [NOTIFICATION.BUFFERACTIVATED])
 
@@ -142,20 +137,6 @@ class HiddenLexerInterface:
             self.map_extensions[ext].colorize(self)
             self.lexer_name = self.map_extensions[ext].lexer_name
 
-        #### TODO: this block needs to move inside .colorize(), so needs to be reworked to be relative
-        # ordering is important
-        if self.nppver() < 8.410:
-            self.ilexer_ptr = self.create_lexer_func(b'stata')
-            #console.write("old: called create_lexer_func()\n")
-        else:
-            self.ilexer_ptr = windll.user32.SendMessageW(self.notepad_hwnd, HiddenLexerInterface.NPPM_CREATELEXER, 0, addressof(self.lexer_name))
-            #console.write("new: sendmessage NPPM_CREATELEXER({:s})\n".format(self.lexer_name.value))
-
-        editor_hwnd = self.editor1_hwnd if notepad.getCurrentView() == 0 else self.editor2_hwnd
-        windll.user32.SendMessageW(editor_hwnd, self.SCI_SETILEXER, 0, self.ilexer_ptr)
-
-        editor.setKeyWords(0, "anova by ci clear correlate describe diagplot drop edit exit gen generate graph help if infile input list log lookup oneway pcorr plot predict qnorm regress replace save sebarr set sort stem summ summarize tab tabulate test ttest use")   # keywords SAS: %let %do
-        editor.setKeyWords(1, "byte int long float double strL str") # types # SAS: also cards
 
         #console.write("Stata lexer: set styles\n")
 
@@ -173,12 +154,12 @@ class HiddenLexerInterface:
         old_langtype = "{}".format(notepad.getCurrentLang())
         has_no_lexer_assigned = editor.getLexerLanguage() == 'null'
         _, _, file_extension = notepad.getCurrentFilename().rpartition('.')
-        if has_no_lexer_assigned and file_extension in self.known_extensions:
+        if has_no_lexer_assigned and file_extension in self.map_extensions:
             if self.enabled:
                 self.init_lexer(file_extension)
-        console.write("check_lexers: old:{} lex:{} hasnt:{} oldlang:{} newlang:{}\n".format(
+        console.write("check_lexers: old:{} lex:{} hasnt:{} oldlang:{} newlang:{} << \"{}\" \n".format(
             old_lexer, editor.getLexerLanguage(), has_no_lexer_assigned,
-            old_langtype, notepad.getCurrentLang()
+            old_langtype, notepad.getCurrentLang(), notepad.getCurrentFilename()
         ))
 
 
@@ -251,9 +232,10 @@ class HiddenLexerInterface:
 
 try:
     lexer_interface.toggle()
-    notepad.clearCallbacks()
-    del lexer_interface
-    console.write("deleted callbacks and lexer_interface")
+    if True:
+        notepad.clearCallbacks()
+        del lexer_interface
+        console.write("deleted callbacks and lexer_interface")
 except NameError:
     lexer_interface = HiddenLexerInterface()
     lexer_interface.main()
