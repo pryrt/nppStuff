@@ -110,11 +110,11 @@ def perl_foreachLoops():
     console.write("========== {}() ==========\n".format(sys._getframe().f_code.co_name))
 
     # setup an array (tuple, so non-mutable) and a hash (dictionary)
-    array = ('one' , 'two' , 'three')               # https://docs.python.org/3/library/stdtypes.html#lists             and #tuples
-    hash = { 'ten':10, 'eleven':11}                 # https://docs.python.org/3/library/stdtypes.html#typesmapping
+    array = ('one' , 'two' , 'three')               # https://docs.python.org/2.7/library/stdtypes.html#lists             and #tuples
+    hash = { 'ten':10, 'eleven':11}                 # https://docs.python.org/2.7/library/stdtypes.html#typesmapping
 
     # foreach my $i ( 0 .. $#array )
-    for i in range(len(array)):                     # https://docs.python.org/3/library/stdtypes.html#ranges
+    for i in range(len(array)):                     # https://docs.python.org/2.7/library/stdtypes.html#ranges
         """this is the only place I like that range(max) goes from 0 .. max-1"""
         console.write("i={}, element={}\n".format(i, array[i]))
 
