@@ -18,12 +18,15 @@ from ctypes.wintypes import HWND, UINT, WPARAM, LPARAM, HMODULE, LPCWSTR, LPCSTR
 class GenericLexer:
     _lexer_name = b"Generic"
 
-    def draw(self):
-        console.write("I should colorize the {} file\n".format(self._lexer_name))
+    def __init__(self):
+        self.lexer_name = create_unicode_buffer(self._lexer_name)
+
+    def colorize(self, lexintf):
+        raise NotImplementedError("You should be calling colorize() on a specific lexer, not on the {} parent class".format(__class__))
 
 # specific lexer subclasses
 class StataLexer(GenericLexer):
-    _lexer_name = b"Stata"
+    _lexer_name = b"stata"
     SCE_STATA_DEFAULT                                  = 0
     SCE_STATA_COMMENT                                  = 1
     SCE_STATA_COMMENTLINE                              = 2
@@ -37,9 +40,29 @@ class StataLexer(GenericLexer):
     SCE_STATA_GLOBAL_MACRO                             = 10
     SCE_STATA_MACRO                                    = 11
 
-class HiddenLexers:
+    def colorize(self, lexintf):
+        console.write("I will colorize {} from {}\n".format(self._lexer_name, str(lexintf)))
+
+        editor.styleSetFore(self.SCE_STATA_DEFAULT               , notepad.getEditorDefaultForegroundColor())
+        editor.styleSetFore(self.SCE_STATA_COMMENT               , (0,128,0))
+        editor.styleSetFore(self.SCE_STATA_COMMENTLINE           , (0,128,0))
+        editor.styleSetFore(self.SCE_STATA_COMMENTBLOCK          , (0,128,0))
+        editor.styleSetFore(self.SCE_STATA_NUMBER                , (255,128,0))
+        editor.styleSetFore(self.SCE_STATA_OPERATOR              , (0,0,128))
+        editor.styleSetFore(self.SCE_STATA_IDENTIFIER            , (64,64,64))
+        editor.styleSetFore(self.SCE_STATA_STRING                , (128,128,128))
+        editor.styleSetFore(self.SCE_STATA_TYPE                  , (128,0,255))     # KeyWords(1)
+        editor.styleSetFore(self.SCE_STATA_WORD                  , (0,128,255))     # KeyWords(0)
+        editor.styleSetFore(self.SCE_STATA_GLOBAL_MACRO          , (255,255,0))     # not implemented that I can see in LexStata.cxx
+        editor.styleSetFore(self.SCE_STATA_MACRO                 , (0,0,255))       # not implemented that I can see in LexStata.cxx
+
+
+class HiddenLexerInterface:
     NPPM_CREATELEXER                                   = (1024 + 1000 + 110)
     SCI_SETILEXER                                      = 4033
+
+    def __str__(self):
+        return "<" + self.__class__.__name__ + ">"
 
     def __init__(self):
         '''
@@ -50,6 +73,9 @@ class HiddenLexers:
         # files with these extensions and a null lexer,
         # aka normal text, assigned do get handled
         self.known_extensions = ['do', 'stata']
+        self.map_extensions = {}
+        self.map_extensions['do'] = StataLexer()
+
         #
         #self.show_escape_chars = False
         #self.separate_path_and_line_number = '0'
@@ -68,29 +94,23 @@ class HiddenLexers:
         self.SCE_STATA_GLOBAL_MACRO                             = 10
         self.SCE_STATA_MACRO                                    = 11
 
-        self.NPPM_CREATELEXER                                   = (1024 + 1000 + 110)
-        self.SCI_SETILEXER                                      = 4033
+        self.notepad_hwnd = windll.user32.FindWindowW(u'Notepad++', None)
+        self.editor1_hwnd = windll.user32.FindWindowExW(self.notepad_hwnd, None, u"Scintilla", None)
+        self.editor2_hwnd = windll.user32.FindWindowExW(self.notepad_hwnd, self.editor1_hwnd, u"Scintilla", None)
 
-        self.kernel32 = windll.kernel32
-        self.user32 = windll.user32
-
-        self.notepad_hwnd = self.user32.FindWindowW(u'Notepad++', None)
-        self.editor1_hwnd = self.user32.FindWindowExW(self.notepad_hwnd, None, u"Scintilla", None)
-        self.editor2_hwnd = self.user32.FindWindowExW(self.notepad_hwnd, self.editor1_hwnd, u"Scintilla", None)
-
-        self.user32.SendMessageW.argtypes = [HWND, UINT, WPARAM, LPARAM]
-        self.user32.SendMessageW.restype  = LPARAM
+        windll.user32.SendMessageW.argtypes = [HWND, UINT, WPARAM, LPARAM]
+        windll.user32.SendMessageW.restype  = LPARAM
 
         #console.write( "npp version: {:05.3f}\n".format(self.nppver()) )
 
         if self.nppver() < 8.410:
 
-            self.kernel32.GetModuleHandleW.argtypes = [LPCWSTR]
-            self.kernel32.GetModuleHandleW.restype = HMODULE
-            self.kernel32.GetProcAddress.argtypes = [HMODULE, LPCSTR]
-            self.kernel32.GetProcAddress.restype = LPVOID
-            handle = self.kernel32.GetModuleHandleW(None)
-            create_lexer_ptr = self.kernel32.GetProcAddress(handle, b'CreateLexer')
+            windll.kernel32.GetModuleHandleW.argtypes = [LPCWSTR]
+            windll.kernel32.GetModuleHandleW.restype = HMODULE
+            windll.kernel32.GetProcAddress.argtypes = [HMODULE, LPCSTR]
+            windll.kernel32.GetProcAddress.restype = LPVOID
+            handle = windll.kernel32.GetModuleHandleW(None)
+            create_lexer_ptr = windll.kernel32.GetProcAddress(handle, b'CreateLexer')
 
             CL_FUNCTYPE = WINFUNCTYPE(LPVOID, LPCSTR)
             self.create_lexer_func = CL_FUNCTYPE(create_lexer_ptr)
@@ -102,8 +122,6 @@ class HiddenLexers:
             pass
 
 
-        self.lexer_name = create_unicode_buffer('stata')
-
 
         notepad.callback(self.on_langchanged, [NOTIFICATION.LANGCHANGED])
         notepad.callback(self.on_bufferactivated, [NOTIFICATION.BUFFERACTIVATED])
@@ -112,7 +130,7 @@ class HiddenLexers:
 
         console.write("Initialized Stata lexer\n")
 
-    def init_lexer(self):
+    def init_lexer(self, ext):
         '''
             Initializes the lexer and its properties
             Args:
@@ -120,30 +138,21 @@ class HiddenLexers:
             Returns:
                 None
         '''
-        # StataLexer.colorize()
-        editor.styleSetFore(self.SCE_STATA_DEFAULT               , notepad.getEditorDefaultForegroundColor())
-        editor.styleSetFore(self.SCE_STATA_COMMENT               , (0,128,0))
-        editor.styleSetFore(self.SCE_STATA_COMMENTLINE           , (0,128,0))
-        editor.styleSetFore(self.SCE_STATA_COMMENTBLOCK          , (0,128,0))
-        editor.styleSetFore(self.SCE_STATA_NUMBER                , (255,128,0))
-        editor.styleSetFore(self.SCE_STATA_OPERATOR              , (0,0,128))
-        editor.styleSetFore(self.SCE_STATA_IDENTIFIER            , (64,64,64))
-        editor.styleSetFore(self.SCE_STATA_STRING                , (128,128,128))
-        editor.styleSetFore(self.SCE_STATA_TYPE                  , (128,0,255))     # KeyWords(1)
-        editor.styleSetFore(self.SCE_STATA_WORD                  , (0,128,255))     # KeyWords(0)
-        editor.styleSetFore(self.SCE_STATA_GLOBAL_MACRO          , (255,255,0))     # not implemented that I can see in LexStata.cxx
-        editor.styleSetFore(self.SCE_STATA_MACRO                 , (0,0,255))       # not implemented that I can see in LexStata.cxx
+        if ext in self.map_extensions:
+            self.map_extensions[ext].colorize(self)
+            self.lexer_name = self.map_extensions[ext].lexer_name
 
+        #### TODO: this block needs to move inside .colorize(), so needs to be reworked to be relative
         # ordering is important
         if self.nppver() < 8.410:
             self.ilexer_ptr = self.create_lexer_func(b'stata')
             #console.write("old: called create_lexer_func()\n")
         else:
-            self.ilexer_ptr = self.user32.SendMessageW(self.notepad_hwnd, HiddenLexers.NPPM_CREATELEXER, 0, addressof(self.lexer_name))
+            self.ilexer_ptr = windll.user32.SendMessageW(self.notepad_hwnd, HiddenLexerInterface.NPPM_CREATELEXER, 0, addressof(self.lexer_name))
             #console.write("new: sendmessage NPPM_CREATELEXER({:s})\n".format(self.lexer_name.value))
 
         editor_hwnd = self.editor1_hwnd if notepad.getCurrentView() == 0 else self.editor2_hwnd
-        self.user32.SendMessageW(editor_hwnd, self.SCI_SETILEXER, 0, self.ilexer_ptr)
+        windll.user32.SendMessageW(editor_hwnd, self.SCI_SETILEXER, 0, self.ilexer_ptr)
 
         editor.setKeyWords(0, "anova by ci clear correlate describe diagplot drop edit exit gen generate graph help if infile input list log lookup oneway pcorr plot predict qnorm regress replace save sebarr set sort stem summ summarize tab tabulate test ttest use")   # keywords SAS: %let %do
         editor.setKeyWords(1, "byte int long float double strL str") # types # SAS: also cards
@@ -166,7 +175,7 @@ class HiddenLexers:
         _, _, file_extension = notepad.getCurrentFilename().rpartition('.')
         if has_no_lexer_assigned and file_extension in self.known_extensions:
             if self.enabled:
-                self.init_lexer()
+                self.init_lexer(file_extension)
         console.write("check_lexers: old:{} lex:{} hasnt:{} oldlang:{} newlang:{}\n".format(
             old_lexer, editor.getLexerLanguage(), has_no_lexer_assigned,
             old_langtype, notepad.getCurrentLang()
@@ -202,7 +211,7 @@ class HiddenLexers:
 
     def nppver(self):
         self.NPPM_GETNPPVERSION = 1024 + 1000 + 50
-        nppv = self.user32.SendMessageW(self.notepad_hwnd, self.NPPM_GETNPPVERSION, 1, 0 )
+        nppv = windll.user32.SendMessageW(self.notepad_hwnd, self.NPPM_GETNPPVERSION, 1, 0 )
         # for v8.4.1 and newer, this will pad it as 8<<16 + 410 for easy comparison
         # v8.4 will be under old scheme of 8<<16 + 4, v8.3.3 is 8<<16 + 33
         ver = nppv >> 16    # major version
@@ -240,18 +249,16 @@ class HiddenLexers:
         self.on_bufferactivated(None)
 
 
-console.show()
-console.write("Run again\n")
 try:
-    stata_lexer.toggle()
+    lexer_interface.toggle()
+    notepad.clearCallbacks()
+    del lexer_interface
+    console.write("deleted callbacks and lexer_interface")
 except NameError:
-    stata_lexer = HiddenLexers()
-    stata_lexer.main()
+    lexer_interface = HiddenLexerInterface()
+    lexer_interface.main()
 
-    GenericLexer().draw()
-    StataLexer().draw()
-
-""" notepad.clearCallbacks(); del stata_lexer; del HiddenLexers; del StataLexer; del GenericLexer """
+""" notepad.clearCallbacks(); del lexer_interface; """
 
 """ example junk Stata (just lists some of the keywords):
 
