@@ -5,8 +5,8 @@ Makes lexilla's "hidden" lexers available for NPP.
 If you run it multiple times, it will toggle enabled/disabled.
 Note: when it disables, you have to switch out of that tab _on that view/editor#_ for it to stop highlighting
 
-A more generic version of 23275-enable-stata-lexer.py, which will eventually
-be a framework for handling all of the hidden lexers, not just SAS and Stata
+A more generic version of 23275-enable-stata-lexer.py, which can be extended
+as the framework for handling all of the hidden lexers, not just SAS and Stata
 
 The post https://community.notepad-plus-plus.org/post/78579 helped update it for Notepad++ v8.4.3
 '''
@@ -21,11 +21,209 @@ class GenericLexer:
     def __init__(self):
         self.lexer_name = create_unicode_buffer(self._lexer_name)
 
+    def announce(self, lexintf):
+        # console.write("I will colorize {} from {}\n".format(self._lexer_name, str(lexintf)))
+        pass
+
     def colorize(self, lexintf):
         raise NotImplementedError("You should be calling colorize() on a specific lexer, not on the {} parent class".format(__class__))
 
 # specific lexer subclasses
+class RakuLexer(GenericLexer):
+    """
+        Raku was Perl6
+
+    """
+
+    _lexer_name = b"raku"
+    SCE_RAKU_DEFAULT            = 0
+    SCE_RAKU_ERROR              = 1
+    SCE_RAKU_COMMENTLINE        = 2
+    SCE_RAKU_COMMENTEMBED       = 3
+    SCE_RAKU_POD                = 4
+    SCE_RAKU_CHARACTER          = 5
+    SCE_RAKU_HEREDOC_Q          = 6
+    SCE_RAKU_HEREDOC_QQ         = 7
+    SCE_RAKU_STRING             = 8
+    SCE_RAKU_STRING_Q           = 9
+    SCE_RAKU_STRING_QQ          = 10
+    SCE_RAKU_STRING_Q_LANG      = 11
+    SCE_RAKU_STRING_VAR         = 12
+    SCE_RAKU_REGEX              = 13
+    SCE_RAKU_REGEX_VAR          = 14
+    SCE_RAKU_ADVERB             = 15
+    SCE_RAKU_NUMBER             = 16
+    SCE_RAKU_PREPROCESSOR       = 17
+    SCE_RAKU_OPERATOR           = 18
+    SCE_RAKU_WORD               = 19
+    SCE_RAKU_FUNCTION           = 20
+    SCE_RAKU_IDENTIFIER         = 21
+    SCE_RAKU_TYPEDEF            = 22
+    SCE_RAKU_MU                 = 23
+    SCE_RAKU_POSITIONAL         = 24
+    SCE_RAKU_ASSOCIATIVE        = 25
+    SCE_RAKU_CALLABLE           = 26
+    SCE_RAKU_GRAMMAR            = 27
+    SCE_RAKU_CLASS              = 28
+
+
+    def colorize(self, lexintf):
+        self.announce(lexintf)
+
+        editor.styleSetFore(self.SCE_RAKU_DEFAULT               , notepad.getEditorDefaultForegroundColor())
+        editor.styleSetFore(self.SCE_RAKU_ERROR                 , (255,0,0))
+        editor.styleSetFore(self.SCE_RAKU_COMMENTLINE           , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_COMMENTEMBED          , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_POD                   , (32,32,32))
+        editor.styleSetFore(self.SCE_RAKU_CHARACTER             , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_HEREDOC_Q             , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_HEREDOC_QQ            , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_STRING                , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_STRING_Q              , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_STRING_QQ             , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_STRING_Q_LANG         , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_STRING_VAR            , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_REGEX                 , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_REGEX_VAR             , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_ADVERB                , (0,255,0))    # keywords7
+        editor.styleSetFore(self.SCE_RAKU_NUMBER                , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_PREPROCESSOR          , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_OPERATOR              , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_WORD                  , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_FUNCTION              , (0,255,0))    # keywords2
+        editor.styleSetFore(self.SCE_RAKU_IDENTIFIER            , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_TYPEDEF               , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_MU                    , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_POSITIONAL            , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_ASSOCIATIVE           , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_CALLABLE              , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_GRAMMAR               , (0,255,0))
+        editor.styleSetFore(self.SCE_RAKU_CLASS                 , (0,255,0))
+
+        # ordering is important
+        if lexintf.nppver() < 8.410:
+            self.ilexer_ptr = self.create_lexer_func(self.lexer_name.value)
+            #console.write("old: called create_lexer_func({})\n".format(self.lexer_name.value))
+        else:
+            self.ilexer_ptr = windll.user32.SendMessageW(lexintf.notepad_hwnd, lexintf.NPPM_CREATELEXER, 0, addressof(self.lexer_name))
+            #console.write("new: sendmessage NPPM_CREATELEXER({:s})\n".format(self.lexer_name.value))
+
+        editor_hwnd = lexintf.editor1_hwnd if notepad.getCurrentView() == 0 else lexintf.editor2_hwnd
+        windll.user32.SendMessageW(editor_hwnd, lexintf.SCI_SETILEXER, 0, self.ilexer_ptr)
+
+        editor.setKeyWords(0, "%let %do")
+        editor.setKeyWords(1, "also cards class data input model ods proc var where")
+        editor.setKeyWords(2, "%printz")
+        editor.setKeyWords(3, "run")
+
+class SasLexer(GenericLexer):
+    """
+        SAS is another language
+
+        %let
+        %do
+        also        cards        class
+        data        input        model
+        ods        proc        var
+        where
+        %printz
+        %blah
+        %peterfake
+        where        run
+        * ... comment style 1;
+        run
+        // ... comment style 2;
+        run
+        /* comment style 3 */
+        5 + 7 = 9
+        one
+    """
+
+    _lexer_name = b"sas"
+    SCE_SAS_DEFAULT                                        = 0
+    SCE_SAS_COMMENT                                        = 1
+    SCE_SAS_COMMENTLINE                                    = 2
+    SCE_SAS_COMMENTBLOCK                                   = 3
+    SCE_SAS_NUMBER                                         = 4
+    SCE_SAS_OPERATOR                                       = 5
+    SCE_SAS_IDENTIFIER                                     = 6
+    SCE_SAS_STRING                                         = 7
+    SCE_SAS_TYPE                                           = 8
+    SCE_SAS_WORD                                           = 9
+    SCE_SAS_GLOBAL_MACRO                                   = 10
+    SCE_SAS_MACRO                                          = 11
+    SCE_SAS_MACRO_KEYWORD                                  = 12
+    SCE_SAS_BLOCK_KEYWORD                                  = 13
+    SCE_SAS_MACRO_FUNCTION                                 = 14
+    SCE_SAS_STATEMENT                                      = 15
+
+
+    def colorize(self, lexintf):
+        self.announce(lexintf)
+
+        editor.styleSetFore(self.SCE_SAS_DEFAULT               , notepad.getEditorDefaultForegroundColor())
+        editor.styleSetFore(self.SCE_SAS_COMMENT               , (0,255,0))
+        editor.styleSetFore(self.SCE_SAS_COMMENTLINE           , (0,255,0))
+        editor.styleSetFore(self.SCE_SAS_COMMENTBLOCK          , (0,255,0))
+        editor.styleSetFore(self.SCE_SAS_NUMBER                , (255,0,0))
+        editor.styleSetFore(self.SCE_SAS_OPERATOR              , (128,64,0))
+        editor.styleSetFore(self.SCE_SAS_IDENTIFIER            , (64,64,64))
+        editor.styleSetFore(self.SCE_SAS_STRING                , (128,128,128))
+        editor.styleSetFore(self.SCE_SAS_TYPE                  , (128,0,255))       # not implemented
+        editor.styleSetFore(self.SCE_SAS_WORD                  , (255,128,0))       # not implemented
+        editor.styleSetFore(self.SCE_SAS_GLOBAL_MACRO          , (255,255,0))       # not implemented
+        editor.styleSetFore(self.SCE_SAS_MACRO                 , (0,0,255))         # start with %
+        editor.styleSetFore(self.SCE_SAS_MACRO_KEYWORD         , (0,255,255))       # keywords/keywords1
+        editor.styleSetFore(self.SCE_SAS_BLOCK_KEYWORD         , (0,0,127))         # keywords2
+        editor.styleSetFore(self.SCE_SAS_MACRO_FUNCTION        , (0,127,127))       # keywords3
+        editor.styleSetFore(self.SCE_SAS_STATEMENT             , (0xAA,0,0))        # keywords4
+
+        # ordering is important
+        if lexintf.nppver() < 8.410:
+            self.ilexer_ptr = self.create_lexer_func(self.lexer_name.value)
+            #console.write("old: called create_lexer_func({})\n".format(self.lexer_name.value))
+        else:
+            self.ilexer_ptr = windll.user32.SendMessageW(lexintf.notepad_hwnd, lexintf.NPPM_CREATELEXER, 0, addressof(self.lexer_name))
+            #console.write("new: sendmessage NPPM_CREATELEXER({:s})\n".format(self.lexer_name.value))
+
+        editor_hwnd = lexintf.editor1_hwnd if notepad.getCurrentView() == 0 else lexintf.editor2_hwnd
+        windll.user32.SendMessageW(editor_hwnd, lexintf.SCI_SETILEXER, 0, self.ilexer_ptr)
+
+        editor.setKeyWords(0, "%let %do")
+        editor.setKeyWords(1, "also cards class data input model ods proc var where")
+        editor.setKeyWords(2, "%printz")
+        editor.setKeyWords(3, "run")
+
 class StataLexer(GenericLexer):
+    """
+        Stata is a statistics language
+
+        * http://galton.uchicago.edu/~eichler/stat22000/Handouts/stata-commands.html
+
+        anova by ci clear correlate ...
+        ttest use
+
+        byte int long float double strL
+
+        local life_questions 42
+        display `life_questions'
+        foreach var in varlist yearmade-kwh {
+          summarize `var'
+        }
+
+        -(x+y^(x-y))/(x*y)
+
+        "string" + "string"
+
+        "string" * 5
+
+        < > <= >= == != ~=
+
+        generate incgt10k=income>10000 if income<.
+
+        a & b | c & !d
+    """
+
     _lexer_name = b"stata"
     SCE_STATA_DEFAULT                                  = 0
     SCE_STATA_COMMENT                                  = 1
@@ -41,7 +239,7 @@ class StataLexer(GenericLexer):
     SCE_STATA_MACRO                                    = 11
 
     def colorize(self, lexintf):
-        console.write("I will colorize {} from {}\n".format(self._lexer_name, str(lexintf)))
+        self.announce(lexintf)
 
         editor.styleSetFore(self.SCE_STATA_DEFAULT               , notepad.getEditorDefaultForegroundColor())
         editor.styleSetFore(self.SCE_STATA_COMMENT               , (0,128,0))
@@ -93,7 +291,7 @@ class HiddenLexerInterface:
         """
         self.map_extensions = {}
         self.map_extensions['do'] = self.map_extensions['stata'] = StataLexer()
-        #elf.map_extensions['sas'] = SasLexer()
+        self.map_extensions['sas'] = SasLexer()
 
         # initialize win32 interface info
         self.notepad_hwnd = windll.user32.FindWindowW(u'Notepad++', None)
@@ -123,7 +321,7 @@ class HiddenLexerInterface:
 
         self.enabled = False
 
-        console.write("Initialized Stata lexer\n")
+        console.write("Initialized {}\n".format(self.__class__.__name__))
 
     def init_lexer(self, ext):
         '''
@@ -136,7 +334,6 @@ class HiddenLexerInterface:
         if ext in self.map_extensions:
             self.map_extensions[ext].colorize(self)
             self.lexer_name = self.map_extensions[ext].lexer_name
-
 
         #console.write("Stata lexer: set styles\n")
 
@@ -157,10 +354,10 @@ class HiddenLexerInterface:
         if has_no_lexer_assigned and file_extension in self.map_extensions:
             if self.enabled:
                 self.init_lexer(file_extension)
-        console.write("check_lexers: old:{} lex:{} hasnt:{} oldlang:{} newlang:{} << \"{}\" \n".format(
-            old_lexer, editor.getLexerLanguage(), has_no_lexer_assigned,
-            old_langtype, notepad.getCurrentLang(), notepad.getCurrentFilename()
-        ))
+        #console.write("check_lexers: old:{} lex:{} hasnt:{} oldlang:{} newlang:{} << \"{}\" \n".format(
+        #    old_lexer, editor.getLexerLanguage(), has_no_lexer_assigned,
+        #    old_langtype, notepad.getCurrentLang(), notepad.getCurrentFilename()
+        #))
 
 
     def on_bufferactivated(self, args):
@@ -232,46 +429,10 @@ class HiddenLexerInterface:
 
 try:
     lexer_interface.toggle()
-    if True:
+    if False:
         notepad.clearCallbacks()
         del lexer_interface
         console.write("deleted callbacks and lexer_interface")
 except NameError:
     lexer_interface = HiddenLexerInterface()
     lexer_interface.main()
-
-""" notepad.clearCallbacks(); del lexer_interface; """
-
-""" example junk Stata (just lists some of the keywords):
-
-* http://galton.uchicago.edu/~eichler/stat22000/Handouts/stata-commands.html
-
-anova by ci clear correlate describe diagplot drop edit exit gen generate
-graph help if infile input list log lookup oneway pcorr plot predict qnorm
-regress replace save sebarr set sort stem summ summarize tab tabulate test
-ttest use
-
-byte int long float double strL
-
-local life_questions 42
-display `life_questions'
-foreach var in varlist yearmade-kwh {
-  summarize `var'
-}
-
--(x+y^(x-y))/(x*y)
-
-"string" + "string"
-
-"string" * 5
-
-< > <= >= == != ~=
-
-generate incgt10k=income>10000 if income<.
-
-a & b | c & !d
-
-sqrt(4)
-
-
-"""
