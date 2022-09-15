@@ -16,11 +16,11 @@
                 commentExpr="(?-s:--.*?$)"
             >
                 <function
-                    mainExpr="^\h*((private|queue_safe)\h+)*(procedure|function)\h*\w+"
+                    mainExpr="(?-s)^.*\b(procedure|function)\h+\w+.*?"
                     displayMode="$functionName"
                 >
                     <functionName>
-                        <nameExpr expr="^\h*((private|queue_safe)\h+)*(procedure|function)\h*\w+" />
+                        <nameExpr expr="(?-s)^.*\b\K(procedure|function)\h+\w+.*" />
                     </functionName>
                 </function>
             </parser>
