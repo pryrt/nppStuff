@@ -10,6 +10,8 @@ If you are willing to help us help you, and give us more details, and do some ba
 
 The [Please Read Before Posting](https://community.notepad-plus-plus.org/topic/21965/please-read-before-posting) contains important information to understand before your first post.  If you didn't notice it before making your post, please take this opportunity to read that important information.  We have a whole section of [FAQs](https://community.notepad-plus-plus.org/category/7/faq), all of which were written to help you get your answer more quickly -- either by giving you the answer, or by explaining how to better ask certain questions.  Look through that list of FAQs.
 
+## Include Critical Information
+
 The following are some critical pieces of information frequently left out of questions or requests for help:
 
 - Critical to any "I cannot get Notepad++ to work" problem is relevant information about your installation and usage of Notepad++.  The easiest way to get us much of that is to use the `?` menu, `Debug Info`, `copy debug info to clipboard`.  Paste this information into any post where the problem you are describing might be version-dependent, or any time you are asked to include the Debug Info.  
@@ -27,3 +29,25 @@ The following are some critical pieces of information frequently left out of que
 - Remember: we have not been watching over your shoulder, so we do not know exactly what you are seeing.  You have to clearly and accurately describes all the steps you are taking when trying to describe a problem.
 
 If you do not provide enough information for us to reasonably start answering your question, we will often direct you back to this post -- if you have been directed here before, then there is still some lesson contained herein that will help you clarify what your exact issue is.
+
+## Other Advice
+
+Show a willingness to put effort into your question, and to learn from the replies you get.
+
+Here are a couple of external sites that give solid advice for how to ask questions in technical forums like the Notepad++ Community
+- [Stack Overflow: How do I ask a good question?](https://stackoverflow.com/help/how-to-ask)
+- [BioStars: How To Ask Good Questions on Technical and Scientific Forums](https://www.biostars.org/p/75548/)
+- [SSCCE: Short, Self-Contained, Correct/Compilable Example](http://sscce.org)
+
+Boiling down some important points from that external advice:
+- Be polite
+- Use a meaningful title
+- Give enough information to reproduce the problem
+- Give context
+- Describe what you've already tried
+- Provide Input and Output - reasonably short, but enough to show the problem or the desired transformation
+- Proofread before posting - look at forum previews before submitting
+
+## In Summary
+
+We are here to help, but you need to help us help you by providing enough information for us to know how to help.
