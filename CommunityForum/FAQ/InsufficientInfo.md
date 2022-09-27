@@ -4,7 +4,7 @@ Hello, and welcome to the FAQ Desk.
 
 You have likely been directed here because you asked for help in another thread, but told us very little about the actual problem, so there’s not much we can do at this point except make wild guesses.
 
-The quality of the answers you receive is directly proportional 
+The quality of the answers you receive is directly proportional to the quality of your question.  The better you describe your problem, the better we can help.
 
 If you are willing to help us help you, and give us more details, and do some back and forth, the following may be helpful: this is my generic list of questions, which I've found over my time here that are helpful to start out with (and it's the steps I go through before even thinking of asking someone else for help, just to make sure that it's not PEBCAK).
 
