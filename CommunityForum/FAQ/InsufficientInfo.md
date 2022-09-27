@@ -4,71 +4,31 @@ Hello, and welcome to the FAQ Desk.
 
 You have likely been directed here because you asked for help in another thread, but told us very little about the actual problem, so there’s not much we can do at this point except make wild guesses.
 
-If you are willing to help us help you, and give us more details, and do some back and forth, the following may be helpful: this is my generic list of questions, which I've found over my time here that are helpful to start out with (and it's the steps I go through before even thinking of asking someone else for help, just to make sure that it's not PEBCAK)
+The quality of the answers you receive is directly proportional 
 
-Critical to any "I cannot get Notepad++ to work" problem is relevant information about your installation and usage of Notepad++.  The easiest way to get us much of that is to use the `?` menu, `Debug Info`, `copy debug info to clipboard`.  This can be pasted into your reply in one of three manners.
+If you are willing to help us help you, and give us more details, and do some back and forth, the following may be helpful: this is my generic list of questions, which I've found over my time here that are helpful to start out with (and it's the steps I go through before even thinking of asking someone else for help, just to make sure that it's not PEBCAK).
 
-1. The  easiest way is to paste the text into the forum's post-editor, highlight the new text, then click the `</>` button on the top of the post-editing toolbar.
+- The [Please Read Before Posting](https://community.notepad-plus-plus.org/topic/21965/please-read-before-posting) contains important information to understand before your first post.  If you didn't notice it before making your post, please take this opportunity to read that important information
 
-1. Indented: use the [Markdown syntax for a code block](https://daringfireball.net/projects/markdown/syntax#precode), by indenting by 4 spaces. (Since I have Notepad++ set up to replace TAB with 4 spaces, I just paste the Debug Info into an empty Notepad++ window, select all, TAB, and select all, copy, then paste in my post)
-and that will render as:
+- Critical to any "I cannot get Notepad++ to work" problem is relevant information about your installation and usage of Notepad++.  The easiest way to get us much of that is to use the `?` menu, `Debug Info`, `copy debug info to clipboard`.  Paste this information into any post where the problem you are describing might be version-dependent, or any time you are asked to include the Debug Info.  
+    - This will tell us many useful things, like version, installation location, whether you have a normal installation or a portable or are using a cloud configruation folder, and what plugins you are using
 
+- Example text should always be put in Literal/Code Blocks using the `</>` button (screenshot above) or with manual [Markdown syntax](https://community.notepad-plus-plus.org/topic/21925/faq-desk-formatting-forum-posts).  The forum interprets certain characters as Markdown syntax for formatting your post, and so might turn some of your text into forum formatting, making it hard for us to know what your text really is.  Using Literal/Code Blocks will help prevent the data getting mangled before we see it.
+    - ![](https://i.imgur.com/KOsSLNe.png)
 
-    Notepad++ v7.5.6   (32-bit)
-    Build time : Mar 19 2018 - 00:26:59
-    Path : C:\Program Files (x86)\Notepad++\notepad++.exe
-    Admin mode : OFF
-    Local Conf mode : OFF
-    OS : Windows 10 (64-bit)
-    Plugins : ComparePlugin.dll dbgpPlugin.dll DSpellCheck.dll MarkdownViewerPlusPlus.dll mimeTools.dll NppConverter.dll NppExec.dll NppExport.dll NppFTP.dll PluginManager.dll PreviewHTML.dll PythonScript.dll XMLTools.dll
+- If a screenshot is necessary to show your issue, you can just use Windows' built-in Alt+PrintScreen to put it on the clipboard, or the Windows 10 Snipping Tool, to grab your screenshot; then paste the image directly in your post -- no need to mess around with external image hosts.  If you include a screenshot of text, please _also_ include the actual text, because we cannot copy/paste text from your image into our copy of Notepad++.
 
-2. Using a trick that @Scott-Sumner recommends, wrap what you want to appear in \`\`\`z (opening delimiter) and \`\`\` (closing delimiter) on lines by themselves, example:
+- If you are asking a Search/Replace question
+   1. please make sure you have understood the following:
+      - [Template for Search/Replace Questions](https://community.notepad-plus-plus.org/topic/22022/template-for-search-replace-questions)
+      - [Formatting Forum Posts](https://community.notepad-plus-plus.org/topic/21925/faq-desk-formatting-forum-posts)
+      - [FAQ: Where to find regular expressions (regex) documentation](https://community.notepad-plus-plus.org/topic/15765/faq-desk-where-to-find-regular-expressions-regex-documentation)
+      - [Notepad++ Online User Manual: Searching/Regex](https://npp-user-manual.org/docs/searching/#regular-expressions)
+   2. There are many options in the Find/Replace dialogs that will influence the behavior.  If your search is not finding results you think it should, including a screenshot of the dialog will often show us an option that is causing the search to not work for you.
+   3. The quality of answers to Search/Replace questions (and any other question, really) is only going to be as good as
 
-\`\`\`z
-Notepad++ v7.5.6   (32-bit)
-Build time : Mar 19 2018 - 00:26:59
-Path : C:\Program Files (x86)\Notepad++\notepad++.exe
-Admin mode : OFF
-Local Conf mode : OFF
-OS : Windows 10 (64-bit)
-Plugins : ComparePlugin.dll dbgpPlugin.dll DSpellCheck.dll MarkdownViewerPlusPlus.dll mimeTools.dll NppConverter.dll NppExec.dll NppExport.dll NppFTP.dll PluginManager.dll PreviewHTML.dll PythonScript.dll XMLTools.dll
-\`\`\`
+- We have a whole section of [FAQs](https://community.notepad-plus-plus.org/category/7/faq), many of which were already linked from this document.  But others may be pertinent to your current situation.  Look through the list.
 
-which will render as:
+- Remember: we have not been watching over your shoulder, so we do not know exactly what you are seeing.  You have to clearly and accurately describes all the steps you are taking when trying to describe a problem.
 
-```z
-Notepad++ v7.5.6   (32-bit)
-Build time : Mar 19 2018 - 00:26:59
-Path : C:\Program Files (x86)\Notepad++\notepad++.exe
-Admin mode : OFF
-Local Conf mode : OFF
-OS : Windows 10 (64-bit)
-Plugins : ComparePlugin.dll dbgpPlugin.dll DSpellCheck.dll MarkdownViewerPlusPlus.dll mimeTools.dll NppConverter.dll NppExec.dll NppExport.dll NppFTP.dll PluginManager.dll PreviewHTML.dll PythonScript.dll XMLTools.dll
-```
----
-
-You may, also, use this alternate syntax :
-\~~~z
-Bloc
-~ ~ ~
-
----
-
-This will give us lots of relevant information about your installation of Notepad++, including
-* version
-* whether it’s 32b or 64b,
-* whether you're in Administrator mode, or opened as normal user
-* whether it’s a standard install or a “local configuration” / “portable install” (i.e., doesn’t use the %AppData% for storing settings)
-* specifics of your OS
-* It will also tell us which plugins are installed (there are some plugins with stability issues).
-
-Other things that might be relevant:
-
-* location of the problem file(s): local hard drive, network drive, ftp/remote server accessed through NppFTP, etc
-* Do you have huge amounts of your memory already used by some memory-hog application, or lots of free memory?
-* does it happen for any file(s), or just specific ones.  What's unique about that file / those files?
-* If there are any error messages, please quote the full, exact message.
-*  You can provide screenshots in two ways:
-    1. Use `Alt-PrintScreen` on the Notepad++ to get the screenshot into your copy buffer, then `Ctrl+V` to paste it into your reply; the forum will embed the image automatically (which you can see in the preview window).
-
-    2. If you like doing things manually, you can still save the screenshot file to [imgur.com](http://imgur.com/) or similar service, and then embed the image so it’s visible in your post using the syntax `![](https://i.imgur.com/_______.png)`, where you need to replace the `____` with imgur’s random name for your picture (or replace the whole URL, if it’s not imgur)
+If you do not provide enough information for us to reasonably start answering your question, we will often direct you back to this post -- if you have been directed here before, then there is still some lesson contained herein that will help you clarify what your exact issue is.
