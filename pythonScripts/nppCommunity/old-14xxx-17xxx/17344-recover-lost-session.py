@@ -1,11 +1,17 @@
 # encoding=utf-8
 """in response to https://community.notepad-plus-plus.org/topic/17344/
-specifically, translate https://community.notepad-plus-plus.org/post/79695 to PythonScript
-other notes go here
+specifically, translate the ideas behind https://community.notepad-plus-plus.org/post/79695 to PythonScript
+
+0. Install Python Script plugin, if not yet installed
+1. Use Plugins > PythonScript > New Script, give this a name (like `RecoverLostSession.py`)
+2. Plugins > PythonScript > Scripts > `RecoverLostSession` to recover it
+    1. click YES to load the recovered session immediately
+    2. click NO to save the recovered session into an XML file that you can later load with File > Load Session...
+    3. click CANCEL to ignore the recovered session
 """
 from Npp import editor,notepad,console
-#import sys
-import os.path
+import os
+import tempfile
 
 class SessionRecovery(object):
     xml_prefix = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?> \n<NotepadPlus> \n<Session activeView=\"0\"> \n<mainView activeIndex=\"2\">"
@@ -18,7 +24,12 @@ class SessionRecovery(object):
     def go(self):
         self.determine_directories()
         self.build_xml()
-        self.output_xml()
+        s = notepad.messageBox("YES to load recovered session now\nNO to save as a new session file\nCANCEL to ignore recovered session", "Recovered Session", MESSAGEBOXFLAGS.YESNOCANCEL)
+        if s == MESSAGEBOXFLAGS.RESULTYES:
+            self.load_session()
+        elif s == MESSAGEBOXFLAGS.RESULTNO:
+            self.saveas_session()
+        return
 
     def determine_directories(self):
         cfg_plg_cfg = notepad.getPluginConfigDir()
@@ -27,6 +38,7 @@ class SessionRecovery(object):
         self.bkup_dir = os.path.join(self.cfg_dir, 'backup')
         self.xml_full = self.xml_prefix
         self.session_xml_path = os.path.join(self.cfg_dir, 'session.xml')
+        return
 
     def build_xml(self):
         for (root, dirs, files) in os.walk(self.bkup_dir):
@@ -38,32 +50,28 @@ class SessionRecovery(object):
                 this_entry = self.xml_entry1 + entry_name + '" ' + self.xml_entry2 + filepath + '" ' + self.xml_endentry + "\n"
                 self.xml_full += "\n    " + this_entry
         self.xml_full += self.xml_suffix
+        return
 
-    def output_xml(self):
-        #console.write("====BEGIN\n" + self.xml_full + "\n====END\n")
+    def saveas_session(self):
         notepad.new()
         editor.setText(self.xml_full)
-        s = notepad.messageBox("YES to save as default session.xml\nNO to bring up SaveAs dialog\nCANCEL to not save at all", "Save session.xml", MESSAGEBOXFLAGS.YESNOCANCEL)
-        if s == MESSAGEBOXFLAGS.RESULTYES:
-            notepad.saveAs(self.session_xml_path)
-        elif s == MESSAGEBOXFLAGS.RESULTNO:
-            notepad.save()
-            editor.setSavePoint() # allow it to close even if the save dialog is canceled
-        else:
-            editor.setSavePoint() # allow it to close even if it isn't saved
+        notepad.save()
         notepad.close()
-        pass
+        return
 
+    def load_session(self):
+        _, fn = tempfile.mkstemp('.xml')
+        f = open(fn, 'w')
+        f.write(self.xml_full)
+        f.close()
+        notepad.loadSession(f.name)
+        try:
+            os.remove(f.name)
+        except WindowsError as e:
+            if e.winerror == 32: # cannot delete is fine, just ignore it
+                pass
+            else:
+                raise e
+        return
 
 SessionRecovery().go()
-
-"""
-TODO: the YES=>SaveAs will save the session.xml file in the right place,
-but then it immediately gets overwritten.
-
-I think I want to change the logic so that
-    YES     => saveAs to temporary, load session, and delete temporary
-    NO      => use SAVE dialog to save it wherever the user wants
-    CANCEL  => stop the SessionRecovery
-=> move this logic to the go() function, and call a separate function for each, so that I can keep them completely separate
-"""
