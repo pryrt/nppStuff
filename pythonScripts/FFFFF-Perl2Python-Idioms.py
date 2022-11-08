@@ -62,6 +62,10 @@ def py_introspectFunctionName():
     import inspect
     console.write("{:<12} {}()\n".format('inspect:', inspect.currentframe().f_code.co_name))
     console.write("==========\n\n")
+    """ other introspection:
+        __name__ is current module name (or "__main__")
+        __file__ is the current script's full path
+    """
 
 
 def perl_fileReadlineLoop():
