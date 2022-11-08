@@ -39,4 +39,11 @@ uiac = UriIndicatorAltClick.UIAC()
 #import MouseJiggleDaemon
 #mjd = MouseJiggleDaemon.MJD()
 
+# alan's Change-History hack script, which allows adding coloring to the text itself, not just the border
+#   He used a rounded box around it' I changed to a gradient-from-center...
+#   but it seems to sometimes use a triangle, sometimes not... and I don't like that triangle,
+#   and I don't find the inline change marker as helpful to me, so I'm disabling it for now
+#import gh12380_ChangeHistoryHacks
+#chh_instance = gh12380_ChangeHistoryHacks.CHH()
+
 console.write("END of user startup.py\n\n")
