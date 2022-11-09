@@ -102,64 +102,47 @@ _italic_
         console.write("isDarkMode? {}\n".format(self.isDarkMode()))
 
         self.colorize()
+        sleep(5)
+        notepad.close()
         return
 
     def colorize(self):
+        default_fg = editor.styleGetFore(0)
         default_bg = editor.styleGetBack(0)
-        L = self.rgbLum(default_bg)
+        console.write("default_fg = {}\ndefault_bg = {}\n".format(default_fg, default_bg))
+        sleep(1)
 
-        # if the UDL has a dark background and it's in Light Mode,
-        #   or UDL has a light background and it's in Dark Mode,
-        #   adjust the colors
-        if True or (L<0.5 and not(self.isDarkMode())) or (L>0.5 and self.isDarkMod()):
+        ###OLD### # if the UDL has a dark background and it's in Light Mode,
+        ###OLD### #   or UDL has a light background and it's in Dark Mode,
+        ###OLD### #   adjust the colors
+        ###OLD### #
+        ###OLD### if (L<0.5 and not(self.isDarkMode())) or (L>0.5 and self.isDarkMode()):
+        # now assumes that you have a light mode UDL and want to invert it only when you are in Dark Mode; just use a not after the if to get it to invert a dark UDL in a LightMode NPP
+        if self.isDarkMode():
             console.write("COLORIZING...\n")
-            for s in range(0,25):   # UDL has style numbers 0..24
-                fg = editor.styleGetFore(s)
-                lf = self.rgbLum(fg)
+            for sty in range(0,25):   # UDL has style numbers 0..24
+                # only invert the foreground if it wasn't transparent/inherited or otherwise the same as the default fg
+                fg = editor.styleGetFore(sty)
+                if fg != default_fg:
+                    hsl = self.rgb2hsl(fg)
+                    hsl2 = (hsl[0], hsl[1], 1-hsl[2])   # invert the luminosity
+                    rgb = self.hsl2rgb(hsl2)
+                    console.write("DEBUG: FG#{}\t{} = HSL:{} => HSL2:{} = rgb:{}\n".format(sty, fg, hsl, hsl2, rgb))
+                    editor.styleSetFore(sty,tuple(rgb))
 
-                scale = 0
+                # TODO: the HSL->RGB doesn't look right; need to check out why (0,0,128)->(4,0,.25) but (4,0,.75)->(191,191,191)
+                #       and (255, 128, 0) = HSL:(0, 1.0, 0.5) => HSL2:(0, 1.0, 0.5) = rgb:(255, 0, 0)
 
-                if lf == 0.0:
-                    fg2 = (255,255,255)
-                else:
-                    scale = (1-lf)/lf
-                    fg2 = ( int(scale*fg[0]), int(scale*fg[1]), int(scale*fg[2]) )
-
-                console.write("DEBUG: FG#{}\t{}:{} [scale:{}] {}:{}\n".format(s, fg, lf, scale, fg2, self.rgbLum(fg2)))
-
-                bg = editor.styleGetBack(s)
-                lb = self.rgbLum(bg)
-
-                if lb == 0.0:
-                    bg2 = (255,255,255)
-                else:
-                    scale = (1-lb)/lb
-                    bg2 = ( int(scale*bg[0]), int(scale*bg[1]), int(scale*bg[2]) )
-
-                console.write("DEBUG: BG#{}\t{}:{} [scale:{}] {}:{}\n".format(s, bg, lb, scale, bg2, self.rgbLum(bg2)))
-
-                # TODO: after some playing around in excel, what I want to do is determine the full HSL for the RGB color,
-                #   then to "invert", I want to figure out the RGB for Linv = 100% - L(RGB).
-                #   I started to code an rgb2hsl below.  I will also want hsl2rgb.  And a wrapper that
-                #   takes the rgb, converts it, inverts the luminosity, and converts back to rgb.  That way,
-                #   I don't have to duplicate as much code in the fg and bg sections above.
-
-                ##### return
-                #####
-                ##### bg = editor.styleGetBack(s)
-                ##### lb = self.rgbLum(bg)
-                ##### if lb == 0.0:
-                #####     bg2 = (255,255,255)
-                ##### else:
-                #####     s = (1-lb)/lb
-                #####     r2,g2,b2 = int(s*bg[0]), int(s*bg[1]), int(s*bg[2])
-                #####     bg2 = (r2,g2,b2)
-                #####
-                ##### console.write("style#{}\n\tfg = {}:{}, bg = {}:{} =>\n\tfg = {}:{}, bg = {}:{}\n".format(int(s),
-                #####     fg,self.rgbLum(fg),bg,self.rgbLum(bg),
-                #####     fg2,self.rgbLum(fg2),bg2,self.rgbLum(bg2)))
-                ##### #editor.styleSetFore(s, f2)
-                ##### #editor.styleSetBack(s, b2)
+                # only invert the background if it wasn't transparent/inherited or otherwise the same as the default bg
+                bg = editor.styleGetBack(sty)
+                if bg != default_bg:
+                    hsl = self.rgb2hsl(bg)
+                    hsl2 = (hsl[0], hsl[1], 1-hsl[2])   # invert the luminosity
+                    rgb = self.hsl2rgb(hsl2)
+                    console.write("DEBUG: BG#{}\t{} = HSL:{} => HSL2:{} = rgb:{}\n".format(sty, bg, hsl, hsl2, rgb))
+                    editor.styleSetBack(sty,tuple(rgb))
+        else:
+            console.write("NO INVERSION...\n")
 
         notepad.activateFile(notepad.getCurrentFilename()) # refresh UI
 
@@ -173,8 +156,9 @@ _italic_
         #return int(floor(sqrt(rgb[0]**2 + rgb[1]**2 + rgb[2]**2)/sqrt(3)))
 
     def rgb2hsl(self, rgb):
-        """ fractional hsv: "h" is H/60deg or H/40hue, so a number from 0 to 6, s and v are from 0 to 1, inclusive """
+        """ rgb to fractional hsl tuple: "h" is H/60deg or H/40hue, so a number from 0 to 6, s and v are from 0 to 1, inclusive """
         c = (max(rgb) - min(rgb))
+        l = 0.5*(max(rgb) + min(rgb))/255
         if c==0:
             h = 0
         elif max(rgb) == rgb[0]:
@@ -185,6 +169,33 @@ _italic_
             h = (rgb[0]-rgb[1])/c + 4
         else:
             raise ValueError("rgb2hsl(RGB={}) => c={}, max={}: max not found?!".format(rgb, c, max(rgb)))
+
+        s = 0 if (l==0.0 or l==1.0) else c/255 / (1 - abs(2*l-1))
+        #console.write("\tRGB:{} => HSL:({:d},{:06.2%},{:06.2%})\n".format(rgb, h, s, l))
+        return (h,s,l)
+
+    def hsl2rgb(self, hsl):
+        """ fractional hsl back to rgb tuple """
+        h,s,l = hsl
+        c = (1-abs(2*l-1)) * s * 255
+        x = c*(1-abs(h%2 - 1))
+        m = (l*255 - c/2)
+        if h<1:
+            rgb = ([int(floor(q+m)) for q in [c,x,0]])
+        elif h<2:
+            rgb = ([int(floor(q+m)) for q in [x,c,0]])
+        elif h<3:
+            rgb = ([int(floor(q+m)) for q in [0,c,x]])
+        elif h<4:
+            rgb = ([int(floor(q+m)) for q in [0,x,c]])
+        elif h<5:
+            rgb = ([int(floor(q+m)) for q in [x,0,c]])
+        else:
+            rgb = ([int(floor(q+m)) for q in [c,0,x]])
+
+        return tuple(rgb)
+
+
 
 ThisIsTheClass().example()
 
