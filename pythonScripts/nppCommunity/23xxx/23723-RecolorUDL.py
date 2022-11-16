@@ -27,8 +27,7 @@ class RecolorUDL(object):
     dark_udls = ["Markdown (preinstalled dark mode)"]
     light_udls = ["Markdown (preinstalled)"]
     all_udls = dark_udls + light_udls
-    _lexer_name = b"Markdown (preinstalled)"
-    #_lexer_name = b"Markdown (preinstalled dark mode)"
+
     notepad_hwnd = windll.user32.FindWindowW(u'Notepad++', None)
     editor1_hwnd = windll.user32.FindWindowExW(notepad_hwnd, None, u"Scintilla", None)
     editor2_hwnd = windll.user32.FindWindowExW(notepad_hwnd, editor1_hwnd, u"Scintilla", None)
@@ -60,15 +59,18 @@ class RecolorUDL(object):
     SCE_USER_STYLE_DELIMITER8           = 23
     SCE_USER_STYLE_IDENTIFIER           = 24
 
+    DEBUG = False
+
     def __init__(self):
 
         console.show()
         console.clear()
         console.write("NPPv{} PythonScript {}\n".format(self.nppver(), notepad.getPluginVersion()))
 
-        ## TODO: register the callbacks
         self.example()
-        console.write("finished init")
+
+        ## TODO: register the callbacks
+        return
 
 
     def nppver(self):
@@ -88,6 +90,7 @@ class RecolorUDL(object):
         return ver
 
     def example(self):
+        self.DEBUG = True
         notepad.new()
         editor.setText("""# Hello World
 
@@ -106,14 +109,14 @@ _italic_
 """
         )
         editor.setSavePoint() # fake save point
-        editor.gotoPos(0xFFFF)
+        editor.gotoPos(0xFFFFFFFF)
         sleep(1)
 
-        console.write("isDarkMode? {}\n".format(self.isDarkMode()))
+        if self.DEBUG: console.write("isDarkMode? {}\n".format(self.isDarkMode()))
         for udl in self.all_udls:
             if udl is not None:
                 notepad.runMenuCommand('Language', udl)
-            console.write("set to UDL = '{}'\n".format(udl))
+            if self.DEBUG: console.write("set to UDL = '{}'\n".format(udl))
             sleep(2)
             self.colorize(udl)
             sleep(2)
@@ -130,7 +133,7 @@ _italic_
         lightUDLinDarkMode = (udl in self.light_udls) and (self.isDarkMode())
 
         if darkUDLinLightMode or lightUDLinDarkMode:
-            console.write("COLORIZING...\n")
+            if self.DEBUG: console.write("COLORIZING...\n")
             for sty in range(0,25):   # UDL has style numbers 0..24
                 # only invert the foreground if it wasn't transparent/inherited or otherwise the same as the default fg
                 fg = editor.styleGetFore(sty)
@@ -138,7 +141,7 @@ _italic_
                     hsl = self.rgb2hsl(fg)
                     hsl2 = (hsl[0], hsl[1], 1-hsl[2])   # invert the luminosity
                     rgb = self.hsl2rgb(hsl2)
-                    console.write("DEBUG: FG#{}\t{} = HSL:{} => HSL2:{} = rgb:{}\n".format(sty, fg, hsl, hsl2, rgb))
+                    if self.DEBUG: console.write("DEBUG: FG#{}\t{} = HSL:{} => HSL2:{} = rgb:{}\n".format(sty, fg, hsl, hsl2, rgb))
                     editor.styleSetFore(sty,tuple(rgb))
 
                 # only invert the background if it wasn't transparent/inherited or otherwise the same as the default bg
@@ -147,10 +150,10 @@ _italic_
                     hsl = self.rgb2hsl(bg)
                     hsl2 = (hsl[0], hsl[1], 1-hsl[2])   # invert the luminosity
                     rgb = self.hsl2rgb(hsl2)
-                    console.write("DEBUG: BG#{}\t{} = HSL:{} => HSL2:{} = rgb:{}\n".format(sty, bg, hsl, hsl2, rgb))
+                    if self.DEBUG: console.write("DEBUG: BG#{}\t{} = HSL:{} => HSL2:{} = rgb:{}\n".format(sty, bg, hsl, hsl2, rgb))
                     editor.styleSetBack(sty,tuple(rgb))
         else:
-            console.write("NO INVERSION...\n")
+            if self.DEBUG: console.write("NO INVERSION...\n")
 
         notepad.activateFile(notepad.getCurrentFilename()) # refresh UI
 
