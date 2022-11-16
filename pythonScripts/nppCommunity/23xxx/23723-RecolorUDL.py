@@ -10,9 +10,6 @@ listed UDLs, it will do logic:
     if UDL id dark and DarkMode is not enabled, it will recolor the UDL
     otherwise, it will use the normal colors for the UDL
 
-TODO:
-- Workig on the check-UDL-vs-list
-- Callbacks
 """
 from Npp import editor,notepad,console
 from ctypes import windll, WINFUNCTYPE, addressof, create_unicode_buffer
@@ -60,16 +57,21 @@ class RecolorUDL(object):
     SCE_USER_STYLE_IDENTIFIER           = 24
 
     DEBUG = False
+    VERSION = '1.0.0'
 
     def __init__(self):
+        self.in_callback = False
 
         console.show()
         console.clear()
-        console.write("NPPv{} PythonScript {}\n".format(self.nppver(), notepad.getPluginVersion()))
+        console.write("RecolorUDL v{} in NPP v{} PythonScript v{}\n".format(self.VERSION, self.nppver(), notepad.getPluginVersion()))
 
-        self.example()
+        #self.example()
 
-        ## TODO: register the callbacks
+        ## register the callbacks, so that BufferActivated or LanguageChanged will trigger re-colorizing, as appropriate
+        notepad.callback(self.callback, [NOTIFICATION.LANGCHANGED, NOTIFICATION.BUFFERACTIVATED])
+
+        self.callback(None)
         return
 
 
@@ -118,13 +120,35 @@ _italic_
                 notepad.runMenuCommand('Language', udl)
             if self.DEBUG: console.write("set to UDL = '{}'\n".format(udl))
             sleep(2)
-            self.colorize(udl)
+            self.callback(None)
             sleep(2)
 
         notepad.close()
         return
 
-    def colorize(self, udl):
+    def callback(self, args):
+        if self.in_callback:
+            return              # don't do a second callback if inside a first
+
+        self.in_callback = True
+
+        if self.DEBUG: console.write("callback called with args={}\n".format(args))
+        ty = notepad.getLangType()
+        if self.DEBUG: console.write("callback sees langtype={}\n".format(ty))
+        if ty == LANGTYPE.USER:
+            udl = (notepad.getLanguageName(ty))[6:]
+            if self.DEBUG:
+                console.write("DEBUG:\n\tgetLexerLanguage={}\n\tgetCurrentLanguage={}\n\tgetLanguageName={}\n\tgetLanguageDesc={}\n\tUDL = '{}'\n".format(
+                    editor.getLexerLanguage(), notepad.getCurrentLang(),
+                    notepad.getLanguageName(ty), notepad.getLanguageDesc(ty),
+                    udl
+                ))
+            if udl in self.all_udls:
+                self.recolorize(udl)
+
+        self.in_callback = False
+
+    def recolorize(self, udl):
         default_fg = editor.styleGetFore(0)
         default_bg = editor.styleGetBack(0)
 
@@ -133,7 +157,7 @@ _italic_
         lightUDLinDarkMode = (udl in self.light_udls) and (self.isDarkMode())
 
         if darkUDLinLightMode or lightUDLinDarkMode:
-            if self.DEBUG: console.write("COLORIZING...\n")
+            if self.DEBUG: console.write("RE-COLORIZING...\n")
             for sty in range(0,25):   # UDL has style numbers 0..24
                 # only invert the foreground if it wasn't transparent/inherited or otherwise the same as the default fg
                 fg = editor.styleGetFore(sty)
@@ -212,3 +236,5 @@ _italic_
 
 
 RecolorUDL()
+
+# use `notepad.clearCallbacks(); del(RecolorUDL)` in PythonScript console to reset everything during debug
