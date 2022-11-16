@@ -1,8 +1,18 @@
 # encoding=utf-8
 """in response to https://community.notepad-plus-plus.org/topic/23723/
 
-My idea is to look at the HiddenLexers, especially the Colorize method,
-and try to see if I can live-edit the UDL colors
+The user needs to update the list of dark_udls and light_udls a few lines down,
+    where the names must exactly match the UDL name (as displayed in the Language menu)
+
+Whenever you switch to a tab (or open a file in a new tab) and that tab has one of the
+listed UDLs, it will do logic:
+    if UDL is light and DarkMode is enabled, it will recolor the UDL
+    if UDL id dark and DarkMode is not enabled, it will recolor the UDL
+    otherwise, it will use the normal colors for the UDL
+
+TODO:
+- Workig on the check-UDL-vs-list
+- Callbacks
 """
 from Npp import editor,notepad,console
 from ctypes import windll, WINFUNCTYPE, addressof, create_unicode_buffer
@@ -13,9 +23,12 @@ from math import sqrt, floor
 windll.user32.SendMessageW.argtypes = [HWND, UINT, WPARAM, LPARAM]
 windll.user32.SendMessageW.restype  = LPARAM
 
-class ThisIsTheClass(object):
+class RecolorUDL(object):
+    dark_udls = ["Markdown (preinstalled dark mode)"]
+    light_udls = ["Markdown (preinstalled)"]
+    all_udls = dark_udls + light_udls
     _lexer_name = b"Markdown (preinstalled)"
-    _lexer_unic = create_unicode_buffer(_lexer_name)
+    #_lexer_name = b"Markdown (preinstalled dark mode)"
     notepad_hwnd = windll.user32.FindWindowW(u'Notepad++', None)
     editor1_hwnd = windll.user32.FindWindowExW(notepad_hwnd, None, u"Scintilla", None)
     editor2_hwnd = windll.user32.FindWindowExW(notepad_hwnd, editor1_hwnd, u"Scintilla", None)
@@ -51,11 +64,11 @@ class ThisIsTheClass(object):
 
         console.show()
         console.clear()
-        console.write("NPPv{}\ttxt:'{}' uni:'{}'\n".format(self.nppver(), self._lexer_name, self._lexer_unic))
-        #if self.nppver() < 8.410:
-        #    raise ValueError("NPP v{} is too old; upgrade to at least NPP v8.4.1".format(self.nppver()))
-        #
-        #self.ilexer_ptr = windll.user32.SendMessageW(self.notepad_hwnd, self.NPPM_CREATELEXER, 0, addressof(self._lexer_unic))
+        console.write("NPPv{} PythonScript {}\n".format(self.nppver(), notepad.getPluginVersion()))
+
+        ## TODO: register the callbacks
+        self.example()
+        console.write("finished init")
 
 
     def nppver(self):
@@ -76,8 +89,6 @@ class ThisIsTheClass(object):
 
     def example(self):
         notepad.new()
-
-        notepad.runMenuCommand('Language', self._lexer_name)
         editor.setText("""# Hello World
 
 This is it
@@ -96,29 +107,29 @@ _italic_
         )
         editor.setSavePoint() # fake save point
         editor.gotoPos(0xFFFF)
-        #for s in range(0,25):
-        #    fg, bg = editor.styleGetFore(s), editor.styleGetBack(s)
-        #    console.write("style#{}\tfg = {}:{}, bg = {}:{}\n".format(int(s),fg,self.rgbLum(fg),bg,self.rgbLum(bg)))
-        console.write("isDarkMode? {}\n".format(self.isDarkMode()))
+        sleep(1)
 
-        self.colorize()
-        sleep(5)
+        console.write("isDarkMode? {}\n".format(self.isDarkMode()))
+        for udl in self.all_udls:
+            if udl is not None:
+                notepad.runMenuCommand('Language', udl)
+            console.write("set to UDL = '{}'\n".format(udl))
+            sleep(2)
+            self.colorize(udl)
+            sleep(2)
+
         notepad.close()
         return
 
-    def colorize(self):
+    def colorize(self, udl):
         default_fg = editor.styleGetFore(0)
         default_bg = editor.styleGetBack(0)
-        console.write("default_fg = {}\ndefault_bg = {}\n".format(default_fg, default_bg))
-        sleep(1)
 
-        ###OLD### # if the UDL has a dark background and it's in Light Mode,
-        ###OLD### #   or UDL has a light background and it's in Dark Mode,
-        ###OLD### #   adjust the colors
-        ###OLD### #
-        ###OLD### if (L<0.5 and not(self.isDarkMode())) or (L>0.5 and self.isDarkMode()):
-        # now assumes that you have a light mode UDL and want to invert it only when you are in Dark Mode; just use a not after the if to get it to invert a dark UDL in a LightMode NPP
-        if self.isDarkMode():
+        # If it's a DarkUDL and LightMode, it will invert; or if it's a LightUDL and DarkMode, but not if mode matches UDL
+        darkUDLinLightMode = (udl in self.dark_udls) and (not self.isDarkMode())
+        lightUDLinDarkMode = (udl in self.light_udls) and (self.isDarkMode())
+
+        if darkUDLinLightMode or lightUDLinDarkMode:
             console.write("COLORIZING...\n")
             for sty in range(0,25):   # UDL has style numbers 0..24
                 # only invert the foreground if it wasn't transparent/inherited or otherwise the same as the default fg
@@ -129,9 +140,6 @@ _italic_
                     rgb = self.hsl2rgb(hsl2)
                     console.write("DEBUG: FG#{}\t{} = HSL:{} => HSL2:{} = rgb:{}\n".format(sty, fg, hsl, hsl2, rgb))
                     editor.styleSetFore(sty,tuple(rgb))
-
-                # TODO: the HSL->RGB doesn't look right; need to check out why (0,0,128)->(4,0,.25) but (4,0,.75)->(191,191,191)
-                #       and (255, 128, 0) = HSL:(0, 1.0, 0.5) => HSL2:(0, 1.0, 0.5) = rgb:(255, 0, 0)
 
                 # only invert the background if it wasn't transparent/inherited or otherwise the same as the default bg
                 bg = editor.styleGetBack(sty)
@@ -149,37 +157,40 @@ _italic_
         return
 
     def isDarkMode(self):
-        return 1L == windll.user32.SendMessageW(ThisIsTheClass.notepad_hwnd, 1024 + 1000 + 107, 0, 0)
-
-    def rgbLum(self, rgb):
-        return 0.5*(min(rgb) + max(rgb))/255
-        #return int(floor(sqrt(rgb[0]**2 + rgb[1]**2 + rgb[2]**2)/sqrt(3)))
+        return 1L == windll.user32.SendMessageW(RecolorUDL.notepad_hwnd, 1024 + 1000 + 107, 0, 0)
 
     def rgb2hsl(self, rgb):
         """ rgb to fractional hsl tuple: "h" is H/60deg or H/40hue, so a number from 0 to 6, s and v are from 0 to 1, inclusive """
-        c = (max(rgb) - min(rgb))
+        # https://en.wikipedia.org/wiki/HSL_and_HSV
+        # need to do a whole bunch of float conversion, because when I left it as integers from the RGB tuple, it did integer division,
+        #   which caused saturation to be 0 or 1 all the time
+
+        c = float(max(rgb) - min(rgb))
         l = 0.5*(max(rgb) + min(rgb))/255
         if c==0:
             h = 0
         elif max(rgb) == rgb[0]:
-            h = (rgb[1]-rgb[2])/c % 6
+            h = float(rgb[1]-rgb[2])/c % 6.0
         elif max(rgb) == rgb[1]:
-            h = (rgb[2]-rgb[0])/c + 2
+            h = float(rgb[2]-rgb[0])/c + 2.0
         elif max(rgb) == rgb[2]:
-            h = (rgb[0]-rgb[1])/c + 4
+            h = float(rgb[0]-rgb[1])/c + 4.0
         else:
             raise ValueError("rgb2hsl(RGB={}) => c={}, max={}: max not found?!".format(rgb, c, max(rgb)))
 
-        s = 0 if (l==0.0 or l==1.0) else c/255 / (1 - abs(2*l-1))
-        #console.write("\tRGB:{} => HSL:({:d},{:06.2%},{:06.2%})\n".format(rgb, h, s, l))
+        s = 0.0 if (l==0.0 or l==1.0) else (c/255.0) / (1.0 - abs(2.0*l - 1.0))
+
+        #console.write("\tRGB:{} => c={} HSL:({:04.2f},{:06.2%},{:06.2%})\n".format(rgb, c, h, s, l))
         return (h,s,l)
 
     def hsl2rgb(self, hsl):
         """ fractional hsl back to rgb tuple """
+        # https://en.wikipedia.org/wiki/HSL_and_HSV
+
         h,s,l = hsl
-        c = (1-abs(2*l-1)) * s * 255
-        x = c*(1-abs(h%2 - 1))
-        m = (l*255 - c/2)
+        c = (1.0 - abs(2.0 * l - 1.0)) * s * 255.0
+        x = c*(1.0 - abs(h % 2.0 - 1.0))
+        m = (l * 255.0 - c / 2.0)
         if h<1:
             rgb = ([int(floor(q+m)) for q in [c,x,0]])
         elif h<2:
@@ -197,61 +208,4 @@ _italic_
 
 
 
-ThisIsTheClass().example()
-
-
-"""
-144,224,224 => 120/135/173
-0,80,80     => 120/240/38
-18,67,67    => 120/135/40
-
-HSL to RGB:
-    M,m=Max,Min(R,G,B)  in the range [0..1]
-    C = M-m
-    H = { any               | C==0
-          (G-B)/C mod 6     | M==R
-          (B-R)/C + 2       | M==G
-          (R-G)/C + 4       | M==B
-        } * 40hue                       -- wikipedia uses 60deg, windows uses H from 0:240, so I will call the units "hue" instead of "deg"
-    L = 0.5*(M+m)       [0..1]
-
-
-M,m=224,144
-C=80
-H=[(224-144)/80 + 2]*40hue = 120
-
-
-Claims HSL->RGB:
-120/135/173
-C = (1-|2*L/240-1|) * S = (1-|2*173/240-1|)*135/240
-    = (1-0.4416)*0.5625 = 0.314
-H' = H/60 = 120/60 = 2
-X = C*(1-|H' mod 2 - 1|) = 0.314*(1-|-1|) = 0
-RGB'= {         | for H':
-        (C,X,0) | 0 .. 1
-        (X,C,0) | 1 .. 2
-        (0,C,X) | 2 .. 3
-        (0,X,C) | 3 .. 4
-        (X,0,C) | 4 .. 5
-        (C,0,X) | 5 .. 6
-      }
-m = L - C/2
-RGB = RGB' + m
-
-H' = 2 -> (0,C,0) = (0,.314,0)*255 = (0,80,0)
-m = 173/240 - .314/2 = 0.563 => 144
-    144,224,144
-
-
-Windows uses H from 0..240 as well.  So it's 40hue instead of 60hue each
-
-
-C = max:224 - min:144 = range:80
-H = (B-R)/C + 2 = (224-144)/80 + 2 = 3 => 120hue
-L = 0.5*(max+min) => 0.5*(144+224)/255 = 184/255 = 0.72157 => 173.17
-
-S = 0 if L-1 or 0 (no) or C/(1-|2L-1|)
-    (80/255) / (1-|2*.72157-1|) = 0.314 / ( 1-.44314) = .564
-    .564*240 = 135
-
-"""
+RecolorUDL()
