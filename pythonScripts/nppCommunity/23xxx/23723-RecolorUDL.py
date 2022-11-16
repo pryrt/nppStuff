@@ -11,7 +11,7 @@ listed UDLs, it will do logic:
     otherwise, it will use the normal colors for the UDL
 
 """
-from Npp import editor,notepad,console
+from Npp import editor,notepad,console,NOTIFICATION,LANGTYPE
 from ctypes import windll, WINFUNCTYPE, addressof, create_unicode_buffer
 from ctypes.wintypes import HWND, UINT, WPARAM, LPARAM, HMODULE, LPCWSTR, LPCSTR, LPVOID
 from time import sleep
@@ -58,6 +58,7 @@ class RecolorUDL(object):
 
     DEBUG = False
     VERSION = '1.0.0'
+    # use `notepad.clearCallbacks(); del(RecolorUDL)` in PythonScript console to reset everything during debug
 
     def __init__(self):
         self.in_callback = False
@@ -233,8 +234,15 @@ _italic_
 
         return tuple(rgb)
 
+if __name__ == '__main__':
+    RecolorUDL()
 
-
-RecolorUDL()
-
-# use `notepad.clearCallbacks(); del(RecolorUDL)` in PythonScript console to reset everything during debug
+"""
+to run at startup,
+1. edit user-startup (Plugins > PythonScript > Scripts > right click on `startup (user)`)
+2. add
+    import RecolorUDL
+    RecolorUDL.RecolorUDL()
+3. save
+4. restart Notepad++
+"""
