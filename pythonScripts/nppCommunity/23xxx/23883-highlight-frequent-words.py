@@ -50,8 +50,16 @@ class FrequentHighlighter(object):
         word = editor.getTextRange(m.span(0)[0], m.span(0)[1]).lower()
         if word in self.histogram_dict:
             editor.setIndicatorCurrent(self.INDICATOR_ID)
-            editor.setIndicatorValue(randint(0,255))
+            editor.setIndicatorValue(randint(192,255))
             editor.indicatorFillRange(a, b-a)
 
 
 FrequentHighlighter().go()
+
+# editor.indicSetStyle(0, INDICATORSTYLE.TEXTFORE)
+# editor.indicSetFlags(0, INDICFLAG.VALUEFORE)
+# console.write("current = {}\r\n".format(editor.getIndicatorCurrent()))
+# editor.setIndicatorCurrent(0)
+# console.write("current = {}\r\n".format(editor.getIndicatorCurrent()))
+# editor.setIndicatorValue(255)
+# editor.indicatorFillRange(0,4)
