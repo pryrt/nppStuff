@@ -10,7 +10,7 @@ Edit the contents of the stopwords variable to change which words are ignored
 
 Edit the list of appended colors in createPalette() to change the color palette
     - you can change the colors to your liking
-    - you can or remove colors to change the nu
+    - you can add or remove colors to change the number of words that are colored
     - the default color list is based on mspaint.exe's palette on my laptop
 
 Based heavily on these:
