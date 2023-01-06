@@ -12,7 +12,7 @@ for(notepad->getCurrentFilename()) {
     s{\.py$}{}g;
     my @menuNames = ('Plugins', 'Python Script', 'Scripts', split(m{[\\/]}, $tail), $_);
     my $status = notepad->runMenuCommand(@menuNames) || 0;
-    print "runMenuCommand(", join(' | ', @menuNames), ") => $status\n";
+    #print "runMenuCommand(", join(' | ', @menuNames), ") => $status\n";
 }
 
-# Run entry should be `perl "C:\Users\PJones2\AppData\Roaming\Notepad++\plugins\config\PythonScript\scripts\runCurrentPythonScript.pl"`
+# Run entry should be `wperl "C:\Users\PJones2\AppData\Roaming\Notepad++\plugins\config\PythonScript\scripts\runCurrentPythonScript.pl"`
