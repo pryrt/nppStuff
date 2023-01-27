@@ -79,7 +79,7 @@ class NppOnSaveSyntaxCheck:
             el = int(e.lineno)-1
             annotation = caret + "\n" + e.msg
             editor.annotationSetVisible(ANNOTATIONVISIBLE.BOXED)
-            editor.annotationSetStyle(el, 2)    # style#2 = NUMBER (red)
+            #editor.annotationSetStyle(el, 2)    # style#2 = NUMBER (red)
             editor.annotationSetText(el, annotation)
             editor.gotoLine(el)
 
