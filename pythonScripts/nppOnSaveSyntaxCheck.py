@@ -7,7 +7,8 @@ Run `compile()` on the active pythonscript file
 Inspired by @Alan-Kilborn's https://community.notepad-plus-plus.org/post/71021
 and the https://dail8859.github.io/LuaScript/examples/luasyntaxchecker.lua.html that he linked to
 
-Starting with just Perl, but might eventually do others
+Started with just Perl, then added python2 (using the PS engine); could eventually do others
+- 2023-Jan-31: when checking .py file, need to ignore files with python3 shebang
 """
 
 import subprocess
@@ -62,8 +63,16 @@ class NppOnSaveSyntaxCheck:
 
     def annotatePythonScriptErrors(self, fname):
         """runs compile() on a PythonScript file and uses results to annotate"""
+        # bail out if not a .py file, or if it's a python3 file
         if fname[-3:] != '.py': return
+        firstLine = editor.getLine(0).strip()
+        if firstLine[0:2] == '#!':
+            p=firstLine.find("python3")
+            if p >= 0:
+                return
+        # clear existing annotations
         editor.annotationClearAll()
+        # try to compile; add annotations on compiler error
         try:
             compile(editor.getText(), "<python script:{}>".format(fname), 'exec')
             #console.writeError("\n\nClean\n\n")
@@ -109,6 +118,7 @@ class NppOnSaveSyntaxCheck:
 
     def register_OnSave_callback(self):
         """registers the OnSave callback"""
+        editor.annotationClearAll() # start with a blank slate
         notepad.clearCallbacks(self.syntaxCheckOnSave, [NOTIFICATION.FILESAVED])
         notepad.callback(self.syntaxCheckOnSave, [NOTIFICATION.FILESAVED])
         self._is_registered = True
@@ -116,6 +126,7 @@ class NppOnSaveSyntaxCheck:
 
     def unregister_OnSave_callback(self):
         """unregisters the OnSave callback"""
+        editor.annotationClearAll() # don't keep annotations
         notepad.clearCallbacks(self.syntaxCheckOnSave, [NOTIFICATION.FILESAVED])
         self._is_registered = False
         console.write("NppOnSaveSyntaxCheck Unregistered\n")
