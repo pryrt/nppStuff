@@ -56,7 +56,7 @@ class NppOnSaveSyntaxCheck:
                 editor.annotationSetVisible(ANNOTATIONVISIBLE.BOXED)
                 for key, value in results.items():
                     #console.write("line({}) => |{}|\n".format(key, value))
-                    editor.annotationSetStyle(int(key)-1, 4)    # style#4 = NUMBER (red)
+                    #editor.annotationSetStyle(int(key)-1, 4)    # style#4 = NUMBER (red)
                     editor.annotationSetText(int(key)-1, value)
                     editor.gotoLine(int(key)-1)
                 #editor.annotationSetText(editor.getLineCount()-1, e.output)

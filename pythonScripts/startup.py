@@ -26,6 +26,7 @@ __plide.initialize()
 # see nppOnSaveSyntaxCheck.py for references
 from nppOnSaveSyntaxCheck import _SINGLETON_CHECKER
 _SINGLETON_CHECKER.toggle_OnSave_callback()
+# _SINGLETON_CHECKER.toggle_OnSave_callback(); del(_SINGLETON_CHECKER); del(nppOnSaveSyntaxCheck.nppOnSaveSyntaxCheck);
 
 # https://community.notepad-plus-plus.org/post/59148
 # make the full-line selection extend to right margin instead of just to EOL marker
