@@ -12,15 +12,15 @@ Most XML validators will accept the XSD schema files in two ways: either being r
 
 Using an externally-specified XSD file is good because you can then validate an XML file directly generated or installed by Notepad++ without editing the XML; not editing the XML files also keeps them clean, so that users who don't have your exact filesystem structure will not have problems on their end.  On the other hand, for a tool like the XMLTools plugin which can automatically validate while you are editing, it may save time and effort to have the XSD linked from inside the XML, so that it doesn't have to ask you for the XSD every time it validates.  How you do the validation on your end is completely up to you; however, it is recommended that you do not link to a local XSD file in the XML that you are going to distribute to the public (especially if you are submitting it to the UDL Repository or trying to get your Functino List definition for a builtin lexer added to the Notepad++ codebase for distribution), in case that causes problems for the repository or end user.
 
-### XML Tools
+### Validating with XML Tools
 
-The XML Tools plugin will read the XSD filename from the XML file if it's there, and if it's not, it will ask in a dialog box to "Please select an XML Schema (XSD)" where you can click on the **...** button and pick the `.xsd` file to use for validating the active XML.
+The XML Tools plugin will validate the active XML file if you use **Plugins > XML Tools > Validate Now** (or if you have **Enable auto-validation** checkmarked).  When it validates, it will look for the the XSD filename inside the XML file if it's there, and if it's not, it will ask in a dialog box to "Please select an XML Schema (XSD)" where you can click on the **...** button and pick the `.xsd` file to use for validating the active XML.
 
-### `xmllint.exe`
+### Validating with `xmllint.exe`
 
 To run using the internally-linked XSD file:
 ```
-xmllint --noout --schema path\to\external.xsd filename.xml
+xmllint --noout filename.xml
 ```
 ... where `filename.xml` is the name of the XML file you'd like to check.
 
@@ -44,8 +44,8 @@ FOR /F %%F ('DIR /D UDLs/*.xml') DO @xmllint --noout --schema path\to\userDefine
 The `<NotepadPlus>` element normally has no attributes.  But if you add a couple of attributes (as shown below), you can link to the XSD from inside the XML:
 ```
 <NotepadPlus
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:noNamespaceSchemaLocation="_______.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="_______.xsd"
 >
 ```
 
