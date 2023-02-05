@@ -2,7 +2,7 @@
 
 If you are developing Notepad++ config-file XML for distribution (Function List definitions, autoCompletion files, and User Defined Languages), you may want to validate that the XML is reasonable before trying to use it (and distribute it).
 
-If you have a DTD or XSD Schema File for each of the config XML types, you can use an interal tool (like the XMLTools plugin) or an external tool (like xmllint.exe, available in the [Git for Windows](https://gitforwindows.org/) or [Strawberry Perl](https://strawberryperl.com) distributions); those are by no means the only such tools, but are just the ones the author of this FAQ is familiar with, and you should be able to use any XML validation tool in a manner similar to the methods described for these two tools.
+If you have a DTD or XSD Schema File for each of the config XML types, you can use an interal tool (like the XMLTools plugin) or an external tool (like `xmllint.exe`, available in the [Git for Windows](https://gitforwindows.org/) or [Strawberry Perl](https://strawberryperl.com) distributions); those are by no means the only such tools, but are just the ones the author of this FAQ is familiar with, and you should be able to use any XML validation tool in a manner similar to the methods described for these two tools.
 
 If you would like a pre-made XSD for any of those three config-file types, they can be found in the [UDL Collection's validation folder](https://github.com/notepad-plus-plus/userDefinedLanguages/tree/master/.validators), or possibly attached to this FAQ.
 
