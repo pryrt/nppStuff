@@ -54,3 +54,7 @@ There are options for the `_______.xsd`:
 - If the XSD file is in a nearby directory compared to the XML, you can specify a relative file, like `subdirectory\filename.xsd` if the XSD is in a subdirectory compared to the XML, or `..\siblingDirectory\filename.xsd` if the XSD is in a sibling directory alongside the XML directory.
 - If the XSD file is somewhere else in your filesystem, you might want to use an absolute path, like `c:\path\to\filename.xsd`.
 - If the XSD is in a URL online, you can actually supply that URL (for example, `https://raw.githubusercontent.com/notepad-plus-plus/userDefinedLanguages/master/.validators/userDefineLangs.xsd` will link to the UDL Repository's schema for UDL files), but that will mean that the tool may have to re-download the URL every time it validates (depending on how the tool is designed).
+
+\---
+
+_This FAQ entry was birthed out of [this discussion](https://community.notepad-plus-plus.org/topic/24092/how-to-add-autocomplete-schema-to-npp-distro) and the [issue that was submitted](https://github.com/notepad-plus-plus/userDefinedLanguages/issues/154)._
