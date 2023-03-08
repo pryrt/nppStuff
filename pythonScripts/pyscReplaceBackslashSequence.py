@@ -14,6 +14,8 @@ For now, it recognizes shortcuts of the form
     unicode character at the hexadecimal codepoint XXXX.
     * EXAMPLE: \u+2611 => ☑
     * EXAMPLE: |\U+2611other| => |☑other| if the cursor is between 1 and o
+* &#D+;? (where D+ is one or more decimal digit): convert HTML decimal entity (added 2023-Mar-08)
+* &#xX+;? (where X+ is one or more hex digit): convert HTML hex entity (added 2023-Mar-08)
 * FUTURE: I might do other snippets or shorcuts; however, after learning of the
     nppQuickText plugin, which VinsWorldcom/VincentMichael converted to 64-bit
     and did fixes for at https://github.com/vinsworldcom/nppQuickText, I am not
@@ -40,8 +42,10 @@ def run_pyscReplaceBackslashSequence():
     #console.clear()
     currentCursorPosition = editor.getCurrentPos()
 
+    foundAmperand = False
     foundstartpos = -1
     searchpos = currentCursorPosition
+    s_prev = None
     #console.write(__file__ + "::" + __name__ + "::{}..{}".format(searchpos, currentCursorPosition) + "\n")
     while searchpos > 0:
         searchpos -= 1
@@ -84,6 +88,15 @@ def run_pyscReplaceBackslashSequence():
             foundstartpos = searchpos
             break
 
+        # check for HTML &# and &#x encodings:
+        if (s_prev is not None) and (s_prev == "#") and (s == "&"):
+            foundstartpos = searchpos
+            foundAmperand = True
+            break
+
+        # store previous values
+        s_prev = s
+
     #console.write(__file__ + "::" + __name__ + "::{}..{}..{}".format(foundstartpos, searchpos, currentCursorPosition) + "\n")
 
     if foundstartpos<0:
@@ -97,8 +110,18 @@ def run_pyscReplaceBackslashSequence():
     # \u2611
     # \U+2611
     # \0x2611
+    # &#9745;
+    # &#x2611;
+    # &#x1f644;
     editor.beginUndoAction();
-    editor.rereplace( r'\\(?:u\+?|0x)([0-9A-F]{4})', lambda m : unichr( int(m.group(1), 16) ).encode('utf-8') , re.IGNORECASE, foundstartpos, currentCursorPosition)
+    if foundAmperand:
+        try:
+            editor.rereplace( r'\&#([0-9]+);?', lambda m : unichr( int(m.group(1), 10) ).encode('utf-8') , re.IGNORECASE, foundstartpos, currentCursorPosition)
+            editor.rereplace( r'\&#x([0-9A-F]+);?', lambda m : unichr( int(m.group(1), 16) ).encode('utf-8') , re.IGNORECASE, foundstartpos, currentCursorPosition)
+        except ValueError as e:
+            console.write("escape sequence |{:s}| is not known: |{:s}|\n".format( editor.getTextRange(foundstartpos, currentCursorPosition), str(e) ))
+    else:
+        editor.rereplace( r'\\(?:u\+?|0x)([0-9A-F]{4})', lambda m : unichr( int(m.group(1), 16) ).encode('utf-8') , re.IGNORECASE, foundstartpos, currentCursorPosition)
     editor.endUndoAction();
 
     # TODO: lookup the found text in the shortcuts ini file, or wherever it is
