@@ -42,7 +42,7 @@ def run_pyscReplaceBackslashSequence():
     #console.clear()
     currentCursorPosition = editor.getCurrentPos()
 
-    foundAmperand = False
+    foundAmpersand = False
     foundstartpos = -1
     searchpos = currentCursorPosition
     s_prev = None
@@ -91,7 +91,7 @@ def run_pyscReplaceBackslashSequence():
         # check for HTML &# and &#x encodings:
         if (s_prev is not None) and (s_prev == "#") and (s == "&"):
             foundstartpos = searchpos
-            foundAmperand = True
+            foundAmpersand = True
             break
 
         # store previous values
@@ -114,7 +114,7 @@ def run_pyscReplaceBackslashSequence():
     # &#x2611;
     # &#x1f644;
     editor.beginUndoAction();
-    if foundAmperand:
+    if foundAmpersand:
         try:
             editor.rereplace( r'\&#([0-9]+);?', lambda m : unichr( int(m.group(1), 10) ).encode('utf-8') , re.IGNORECASE, foundstartpos, currentCursorPosition)
             editor.rereplace( r'\&#x([0-9A-F]+);?', lambda m : unichr( int(m.group(1), 16) ).encode('utf-8') , re.IGNORECASE, foundstartpos, currentCursorPosition)
