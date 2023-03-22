@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<NotepadPlus>
+    <functionList>
+        <parser
+            displayName="Oeloo"
+            id         ="oeloo_outline"
+            commentExpr=""
+        >
+            <function
+                mainExpr="(?-s)^(\d+\.)+\h.*"
+                displayMode="$functionName">
+                <functionName>
+                    <nameExpr expr="(?-s)^(\d+\.)+\h.*"/>
+                </functionName>
+            </function>
+        </parser>
+    </functionList>
+</NotepadPlus>
