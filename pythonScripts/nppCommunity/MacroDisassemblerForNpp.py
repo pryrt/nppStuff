@@ -12,9 +12,38 @@ from __future__ import print_function
 from Npp import *
 import inspect
 import os
-import xml.etree.ElementTree as et  # https://docs.python.org/3/library/xml.etree.elementtree.html
+import re
 from datetime import datetime as dt
+import xml.etree.ElementTree as et  # https://docs.python.org/3/library/xml.etree.elementtree.html
 import DisassemblerData as dd
+
+#-------------------------------------------------------------------------------
+
+mock_shortcuts_xml_file_str = ''
+if 0:
+    mock_shortcuts_xml_file_str = '''
+<?xml version="1.0" encoding="UTF-8" ?>
+<NotepadPlus>
+    <Macros>
+        <Macro name="Compare" Ctrl="yes" Alt="no" Shift="no" Key="107">
+            <Action type="0" message="2024" wParam="6" lParam="0" sParam="" />
+            <Action type="0" message="2999" wParam="7" lParam="0" sParam="" />
+            <Action type="0" message="2301" wParam="0" lParam="0" sParam="" />
+            <Action type="2" message="0" wParam="22004" lParam="0" sParam="" />
+            <Action type="0" message="2024" wParam="7" lParam="0" sParam="" />
+        </Macro>
+    </Macros>
+</NotepadPlus>
+'''
+
+# some problem data:
+'''
+<Macro name="Insert HEARTS &#xD83D;&#xDC99;" Ctrl="no" Alt="no" Shift="no" Key="0" FolderName="TEST MACROS FOR DISASSEMBLER ------------------&gt;">
+    <Action type="1" message="2170" wParam="0" lParam="0" sParam="&#xD83D;&#xDC99;" />
+    <Action type="1" message="2170" wParam="0" lParam="0" sParam="&#xD83D;&#xDC99;" />
+    <Action type="1" message="2170" wParam="0" lParam="0" sParam="&#xD83D;&#xDC99;" />
+</Macro>
+'''
 
 #-------------------------------------------------------------------------------
 
@@ -66,6 +95,7 @@ find_msg_cracker_dict = {
             1666 : 'find_in_projects',
         },
         'numeric_value_to_relevant_options' : {
+        #          ww  mc  pp  bm   sub  hid  sel   wrp   bwd   dot
             1    : 1 | 2 |                          256 | 512 | 1024,             # find_next
             1608 : 1 | 2 |                          256 | 512 | 1024,             # replace
             1609 : 1 | 2 |                    128 | 256 | 512 | 1024,             # replace_all
@@ -77,24 +107,41 @@ find_msg_cracker_dict = {
             1641 : 1 | 2 |                                      1024,             # find_in_active_tab
             1656 : 1 | 2 |          32 | 64 |                   1024,             # find_in_files
             1660 : 1 | 2 |          32 | 64 |                   1024,             # replace_in_files
+        #                                     prj1  prj2  prj3
             1665 : 1 | 2 |                    128 | 256 | 512 | 1024,             # replace_in_projects
             1666 : 1 | 2 |                    128 | 256 | 512 | 1024,             # find_in_projects
+        },
+        'value_to_required_previous_commands_list' : {
+            #        init  fw    mode  rw    dir   filt  opt
+            1    : [ 1700, 1601, 1625,                   1702, ],            # find_next
+            1608 : [ 1700, 1601, 1625, 1602,             1702, ],            # replace
+            1609 : [ 1700, 1601, 1625, 1602,             1702, ],            # replace_all
+            1614 : [ 1700, 1601, 1625,                   1702, ],            # count
+            1615 : [ 1700, 1601, 1625,                   1702, ],            # mark
+            1633 : [ 1700,                               1702, ],            # clear_marking
+            1635 : [ 1700, 1601, 1625, 1602,             1702, ],            # replace_in_open_tabs
+            1636 : [ 1700, 1601, 1625,                   1702, ],            # find_in_open_tabs
+            1641 : [ 1700, 1601, 1625,                   1702, ],            # find_in_active_tab
+            1656 : [ 1700, 1601, 1625,       1653, 1652, 1702, ],            # find_in_files
+            1660 : [ 1700, 1601, 1625, 1602, 1653, 1652, 1702, ],            # replace_in_files
+            1665 : [ 1700, 1601, 1625, 1602,       1652, 1702, ],            # replace_in_projects
+            1666 : [ 1700, 1601, 1625,             1652, 1702, ],            # find_in_projects
         },
     },
     1702 : {
         'name' : 'options',
         'where' : 'lParam',
         'bit_weights_numeric_value_to_str' : {
-            1 : 'whole_word',
-            2 : 'match_case',
-            4 : 'purge_before',
-            16 : 'bookmark_line',
-            32 : 'in_subfolders',
-            64 : 'in_hidden',
-            128 : 'in_selection__OR__project1',
-            256 : 'wrap_around__OR__project2',
-            512 : 'backward_dir__OR__project3',
-            1024 : 'dot_matches_newline',
+            1    : 'match_whole_word_only',
+            2    : 'match_case',
+            4    : 'purge_marks_before_new_search',
+            16   : 'bookmark_line',
+            32   : 'in_subfolders',
+            64   : 'in_hidden_folders',
+            128  : 'in_selection__OR__project1',
+            256  : 'wrap_around__OR__project2',
+            512  : 'forward_direction__OR__project3',
+            1024 : 'dot_matches_newline_for_regex',
         },
     },
 }
@@ -120,13 +167,17 @@ class MDFN(object):
         #self.dprint('shortcuts_xml:', shortcuts_xml)
         assert os.path.isfile(shortcuts_xml)
 
+        if len(mock_shortcuts_xml_file_str) > 0:
+            root = et.fromstring(mock_shortcuts_xml_file_str.strip())
+        else:
+            root = et.parse(shortcuts_xml)
+
         notepad.new()
         eol = [ '\r\n', '\n', '\r' ][ editor.getEOLMode() ]
 
-        macro_node_format_template = '<Macro name="{name}" Ctrl="{Ctrl}" Alt="{Alt}" Shift="{Shift}" Key="{Key}">{comment}'
+        macro_node_format_template = '<Macro name="{name}" Ctrl="{Ctrl}" Alt="{Alt}" Shift="{Shift}" Key="{Key}">'
+        macro_node_format_with_foldername_template = '<Macro name="{name}" Ctrl="{Ctrl}" Alt="{Alt}" Shift="{Shift}" Key="{Key}" FolderName="{FolderName}">'
         action_node_format_template = '    <Action type="{type}" message="{message}" wParam="{wParam}" lParam="{lParam}" sParam="{sParam}" />' + eol + '        {comment}'
-
-        root = et.parse(shortcuts_xml)
 
         line_output_list = []
 
@@ -134,43 +185,63 @@ class MDFN(object):
 
             #self.dprint('mac node:', macro_node.attrib)
 
-            key_comment = ''
+            key_comment = 'none'
             key = int(macro_node.attrib['Key'])
             if key != 0:
-                key_comment = '    '
                 if key not in dd.key_id_to_key_str_dict:
-                    key_comment += 'unknown-key:{}'.format(key)
+                    key_comment = '???UNKNOWN-KEY???:{}'.format(key)
                 else:
+                    key_comment = ''
                     virtual_key_str = dd.key_id_to_key_str_dict[key]
+                    # remove VK_ prefix if only a single character follows, e.g. VK_B, VK_5:
+                    virtual_key_str = re.sub(r'VK_(.)\b', r'\1', virtual_key_str)
                     key_modifiers = ''
-                    if macro_node.attrib['Shift'] == 'yes': key_modifiers += '+'
-                    if macro_node.attrib['Ctrl'] == 'yes': key_modifiers += '^'
-                    if macro_node.attrib['Alt'] == 'yes': key_modifiers += '%'
-                    if len(key_modifiers) > 0: key_comment += key_modifiers + '('
+                    key_mod_list = []
+                    if macro_node.attrib['Ctrl'] == 'yes': key_mod_list.append('Ctrl')
+                    if macro_node.attrib['Alt'] == 'yes': key_mod_list.append('Alt')
+                    if macro_node.attrib['Shift'] == 'yes': key_mod_list.append('Shift')
+                    key_modifiers = '+'.join(key_mod_list)
+                    if len(key_modifiers) > 0: key_comment += key_modifiers + '+'
+                    if len(virtual_key_str) == 1 and 'Shift' not in key_mod_list:
+                        virtual_key_str = virtual_key_str.lower()
                     key_comment += virtual_key_str
-                    if len(key_modifiers) > 0: key_comment += ')'
-            macro_node.attrib['comment'] = key_comment
 
             #self.dprint(macro_node_format_template.format(**(macro_node.attrib)))
 
-            line_output_list.append('')  # create a blank line between macros in output
-            line_output_list.append(macro_node_format_template.format(**(macro_node.attrib)))
+            if 'FolderName' in macro_node.attrib:
+                line_output_list.append(macro_node_format_with_foldername_template.format(**(macro_node.attrib)))
+            else:
+                line_output_list.append(macro_node_format_template.format(**(macro_node.attrib)))
+            line_output_list.append('    KEYCOMBO:{}'.format(key_comment))
 
             for action_node in macro_node.iter('Action'):
 
                 #self.dprint('act node:', action_node.attrib)
 
+                # avoid a true \r or \n in our output:
                 if '\r' in action_node.attrib['sParam']: action_node.attrib['sParam'] = action_node.attrib['sParam'].replace('\r', '\\r')
                 if '\n' in action_node.attrib['sParam']: action_node.attrib['sParam'] = action_node.attrib['sParam'].replace('\n', '\\n')
 
                 msg = int(action_node.attrib['message'])
                 wp = int(action_node.attrib['wParam'])
+                lp = int(action_node.attrib['lParam'])
+                sp = action_node.attrib['sParam']
 
                 action_comment = ''
 
                 if msg in dd.cmd_id_to_cmd_str_dict:
 
                     action_comment += dd.cmd_id_to_cmd_str_dict[msg]
+
+                    assert dd.cmd_id_to_cmd_str_dict[msg].startswith('SCI_')
+
+                    the_type = int(action_node.attrib['type'])
+                    if the_type == 0:
+                        action_comment += '({wp},{lp})'.format(wp=wp, lp=lp)
+                    elif the_type == 1:
+                        action_comment += '({wp},"{sp}")'.format(wp=wp, sp=sp)
+                    else:
+                        assert 0
 
                 elif wp in dd.cmd_id_to_cmd_str_dict:
 
@@ -194,24 +265,37 @@ class MDFN(object):
                                 value_str = 'BOGUS-NUMERIC-VALUE'
 
                         elif 'bit_weights_numeric_value_to_str' in find_msg_cracker_dict[msg]:
-                            value_str = ''
                             numeric_data = int(the_data)
                             running_single_bitweight = 1
                             search_options_str_list = []
                             while numeric_data != 0:
-                                if (numeric_data & running_single_bitweight) != 0:
-                                    search_options_str_list.append(find_msg_cracker_dict[msg]['bit_weights_numeric_value_to_str'][running_single_bitweight])
+                                if running_single_bitweight in find_msg_cracker_dict[1702]['bit_weights_numeric_value_to_str']:
+                                    if (numeric_data & running_single_bitweight) != 0:
+                                        search_options_str_list.append(find_msg_cracker_dict[1702]['bit_weights_numeric_value_to_str'][running_single_bitweight])
                                 numeric_data &= ~running_single_bitweight
                                 running_single_bitweight <<= 1
-                            value_str += '/'.join(search_options_str_list)
+                            value_str = 'none' if len(search_options_str_list) == 0 else '/'.join(search_options_str_list)
+
+                        elif which_attrib_has_this_msgs_data == 'sParam':
+                            value_str += '"' + the_data.encode('utf-8') + '"'
 
                     if len(value_str) > 0: value_str = ':' + value_str
+
+                    if msg == 1702:
+                        previous_1702_value = int(the_data)
+
+                    if msg == 1701:
+                        find_cmd_to_execute = int(the_data)
+                        relevant_options_val = find_msg_cracker_dict[1701]['numeric_value_to_relevant_options'][find_cmd_to_execute]
+                        unneded_options = previous_1702_value & ~relevant_options_val
+                        __ = self.options_int_to_descriptive_str(unneded_options)
+                        if __ is not None: value_str += '(IRRELEVANT options:{})'.format(__)
 
                     action_comment += 'SEARCH:' + find_msg_cracker_dict[msg]['name'] + value_str
 
                 else:
 
-                    action_comment += 'unknown-action'
+                    action_comment += '???UNKNOWN-ACTION???'
 
                 action_node.attrib['comment'] = action_comment
 
@@ -220,9 +304,23 @@ class MDFN(object):
                 #self.dprint(action_node_format_template.format(**(action_node.attrib)))
                 line_output_list.append(action_node_format_template.format(**(action_node.attrib)))
 
+            line_output_list.append('')  # create a blank line between macros in output
+
         document_text = eol.join(line_output_list) + eol
         editor.setText(document_text)
         editor.setSavePoint()
+
+    def options_int_to_descriptive_str(self, numeric_data):
+        running_single_bitweight = 1
+        search_options_str_list = []
+        while numeric_data != 0:
+            if running_single_bitweight in find_msg_cracker_dict[1702]['bit_weights_numeric_value_to_str']:
+                if (numeric_data & running_single_bitweight) != 0:
+                    search_options_str_list.append(find_msg_cracker_dict[1702]['bit_weights_numeric_value_to_str'][running_single_bitweight])
+            numeric_data &= ~running_single_bitweight
+            running_single_bitweight <<= 1
+        retval = None if len(search_options_str_list) == 0 else '/'.join(search_options_str_list)
+        return retval
 
     def print(self, *args, **kwargs):
         try:
