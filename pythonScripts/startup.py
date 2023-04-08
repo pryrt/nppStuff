@@ -47,4 +47,17 @@ uiac = UriIndicatorAltClick.UIAC()
 #import gh12380_ChangeHistoryHacks
 #chh_instance = gh12380_ChangeHistoryHacks.CHH()
 
+
+##
+#import ctypes
+#FindWindow = ctypes.windll.user32.FindWindowW
+#SendMessage = ctypes.windll.user32.SendMessageW
+#notepad.hwnd = FindWindow(u"Notepad++", None)
+#console.write("hwnd = 0x{:08x} = {}\n".format(notepad.hwnd,notepad.hwnd))
+#winv = SendMessage(notepad.hwnd, 1024+1000+42,0,0)
+#console.write("Win v{}\n".format(winv))
+#nppv = SendMessage(notepad.hwnd, 1024+1000+50,0,0)
+#console.write("NPP v{}.{}\n".format(nppv>>16, nppv&0xFFFF))
+
+######################
 console.write("END of user startup.py\n\n")
