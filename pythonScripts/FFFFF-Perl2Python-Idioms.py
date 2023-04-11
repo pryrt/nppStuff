@@ -88,6 +88,11 @@ def perl_fileReadlineLoop():
     console.write("list: length {} lines\n".format(len(list_of_strings)))
 
     console.write("==========\n\n")
+    
+def perl_fileWriteInWith():
+    """perl: open my $fh, '>', $filename or die "$!"; print {$fh} ...; # autocloses $fh when exit scope"""
+    with open(filename, 'w') as f:
+        f.write("something\n")
 
 def perl_regex():
     """perl's regular expressions are builtin
