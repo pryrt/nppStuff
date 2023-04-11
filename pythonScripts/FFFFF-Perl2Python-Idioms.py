@@ -193,6 +193,22 @@ def perl_list_grep():
     console.write("\n".join(sorted([x for x in sys.path if not ".svn" in x])) + "\n")
     console.write("==========\n\n")
 
+def perl_die():
+    """perl: die "message"; """
+    # https://docs.python.org/2/library/exceptions.html
+    # https://docs.python.org/2/reference/simple_stmts.html?highlight=raise#the-raise-statement
+    raise Exception("message")
+
+def python_try_except():
+    # use try/except : https://docs.python.org/2/tutorial/errors.html#handling-exceptions
+    #   can have multiple except, to look for different types of errors
+    try:
+        perl_die()
+    except IOError as e:
+        console.writeError("won't find this error {}:{}".format(e.errno, e.strerror))
+        raise   # re-raises the exception
+    except Exception as e:
+        console.writeError("found this error {}".format(e.message))
 
 if __name__ == '__main__':
     console.clear()
