@@ -31,6 +31,8 @@ I know it had been asked previously, similar to https://community.notepad-plus-p
 
 I actually wanted it to be more like MS Word's Alt+X functionality, where if you type the 4-digit hex for a unicode, then press Alt+X, it will replace those four digits with the unicode character.
 
+2023-Mar-08: add &# and &#x for up to &#xFFFF
+2023-Apr-13: added surrogate pair, so now it can handle U+0000 to U+10FFFF in _any_ of the notations, which is the whole unicode range; add \\x{123456} notation as well
 
 """
 from Npp import *
@@ -38,15 +40,17 @@ import re
 
 def run_pyscReplaceBackslashSequence():
     """this is the function's doc string"""
-    #console.show()
-    #console.clear()
+    DEBUG=False
+    if DEBUG:
+        console.show()
+        console.clear()
     currentCursorPosition = editor.getCurrentPos()
 
     foundAmpersand = False
     foundstartpos = -1
     searchpos = currentCursorPosition
     s_prev = None
-    #console.write(__file__ + "::" + __name__ + "::{}..{}".format(searchpos, currentCursorPosition) + "\n")
+    if DEBUG: console.write(__file__ + "::" + __name__ + "::{}..{}".format(searchpos, currentCursorPosition) + "\n")
     while searchpos > 0:
         searchpos -= 1
         c = editor.getCharAt(searchpos)
@@ -57,11 +61,13 @@ def run_pyscReplaceBackslashSequence():
                 searchpos -= 1
                 c = editor.getCharAt(searchpos)
                 q = editor.positionAfter(searchpos)
-                #s = "searching"
-                #console.write("\t{}: {}..{}\n".format(s, searchpos, q))
+                if DEBUG:
+                    s = "searching"
+                    console.write("\t{}: {}..{}\n".format(s, searchpos, q))
 
-            #s = "found"
-            #console.write("\t{}: {}..{}\n".format(s, searchpos, q))
+            if DEBUG:
+                s = "found"
+                console.write("\t{}: {}..{}\n".format(s, searchpos, q))
             s = editor.getTextRange(searchpos,q).decode('utf-8')
             if len(s)==1:
                 c = ord(s)
@@ -77,8 +83,9 @@ def run_pyscReplaceBackslashSequence():
         else:
             s = unichr(c)
 
-        #info = "#{0:5}# '{2}' = HEX:0x{1:04X} = DEC:{1} ".format(searchpos, c, s.encode('utf-8') if c not in [13, 10, 0] else 'LINE-ENDING' if c != 0 else 'END-OF-FILE')
-        #console.write(info + "\n")
+        if DEBUG:
+            info = "#{0:5}# '{2}' = HEX:0x{1:04X} = DEC:{1} ".format(searchpos, c, s.encode('utf-8') if c not in [13, 10, 0] else 'LINE-ENDING' if c != 0 else 'END-OF-FILE')
+            console.write(info + "\n")
 
         if c in [0, 10, 13, 8, 32]: # nul, newline, horizontal whitespace
             foundstartpos = -1
@@ -110,21 +117,50 @@ def run_pyscReplaceBackslashSequence():
     # \u2611
     # \U+2611
     # \0x2611
+    # \x{2611}
     # &#9745;
     # &#x2611;
+    # and some others to test surrogates
     # &#x1f644;
-    editor.beginUndoAction();
-    if foundAmpersand:
-        try:
-            editor.rereplace( r'\&#([0-9]+);?', lambda m : unichr( int(m.group(1), 10) ).encode('utf-8') , re.IGNORECASE, foundstartpos, currentCursorPosition)
-            editor.rereplace( r'\&#x([0-9A-F]+);?', lambda m : unichr( int(m.group(1), 16) ).encode('utf-8') , re.IGNORECASE, foundstartpos, currentCursorPosition)
-        except ValueError as e:
-            console.write("escape sequence |{:s}| is not known: |{:s}|\n".format( editor.getTextRange(foundstartpos, currentCursorPosition), str(e) ))
-    else:
-        editor.rereplace( r'\\(?:u\+?|0x)([0-9A-F]{4})', lambda m : unichr( int(m.group(1), 16) ).encode('utf-8') , re.IGNORECASE, foundstartpos, currentCursorPosition)
-    editor.endUndoAction();
+    # &#128570;
+    # \x{1f644}
+    # \U+1F923
+    # \u1F4A6
+    # \u10FFFD  -- last valid
+    # \u10FFFE  -- shows four bytes
+    # \u10FFFF  -- shows four bytes
+    # \u110000  -- too high
+    # \u123456  -- too high
 
-    # TODO: lookup the found text in the shortcuts ini file, or wherever it is
+    def _replc(CP, orig):
+        if DEBUG: console.write( "#REPLC# '{:s}' => int:{:d}\n".format(orig, CP) )
+        if CP < 0x10000:
+            return unichr(CP).encode('utf-8')
+        elif CP < 0x110000:
+            # convert to surrogates
+            L = 0xDC00 + (CP & 0x3FF)
+            H = 0xD800 + (((CP-0x10000)>>10)&0x3FF)
+            surrogate_pair = unichr(H) + unichr(L)
+            if DEBUG: console.write( "#REPLC# '{:s}' => H=0x{:04X} L=0x{:04X} => '{:s}'\n".format(orig, H, L, surrogate_pair.encode('utf-8')) )
+            return surrogate_pair.encode('utf-8')
+        else:
+            console.writeError("escape sequence '{:s}' is not known: codepoint=0x{:x} should be from 0 to 0x{:x}\n".format( orig, CP, 0x10FFFF ))
+            return orig
+
+    def b16(m):
+        CP = int(m.group(1), 16)
+        return _replc(CP, m.group(0))
+
+    def b10(m):
+        CP = int(m.group(1))
+        return _replc(CP, m.group(0))
+
+    if foundAmpersand:
+        editor.rereplace( r'\&#([0-9]+);?', b10 , re.IGNORECASE, foundstartpos, currentCursorPosition)
+        editor.rereplace( r'\&#x([0-9A-F]{1,6});?', b16 , re.IGNORECASE, foundstartpos, currentCursorPosition)
+    else:
+        editor.rereplace( r'\\x{([0-9A-F]{1,6})}', b16 , re.IGNORECASE, foundstartpos, currentCursorPosition)
+        editor.rereplace( r'\\(?:u\+?|0x)([0-9A-F]{1,6})', b16 , re.IGNORECASE, foundstartpos, currentCursorPosition)
 
 
 if __name__ == '__main__': run_pyscReplaceBackslashSequence()
