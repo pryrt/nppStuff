@@ -48,7 +48,7 @@ Also, normally, the forum takes `"quoted text"` and changes the quotes to "smart
 
 ### Red Typewriter Text in your paragraph
 
-To get `red typewriter text` inside your paragraph, use `` `red typewriter text` ``.  Like the literal code blocks above, this will make the forum's special characters not do anything, so `` `1*2*3` `` will show up as `1*2*3`.
+To get `red typewriter text` inside your paragraph, use `` `red typewriter text` ``.  Like the literal code blocks above, this will make the forum's special characters not do anything, so `` `1*2*3` `` will show up as `1*2*3`.  It also works so you can show raw HTML entities, so `` `<` `` will render as `<` (though entities in the forum confuse the forum's WYSIWYG editor, so if you edit a post with such text, the forum editor will convert it to the character; sorry, we can't fix that).
 
 In the forum, we often use the `red typewriter text` for search and replace strings (regular expressions), so they stand out, and so that special characters come through.
 
@@ -56,7 +56,38 @@ In the forum, we often use the `red typewriter text` for search and replace stri
 
 As mentioned above, the sequence 1\*2\*3 will show up as 1*2*3 with 2 in italics, because single asterisks \*  around text makes it italic.  To be able to show special characters, you can use a backslash \ before it, like 1\\\*2\\\*3 .  If you _need_ to include the special forum formatting characters in your normal text, that's how.  But really, you should be using literal text blocks and `red typewriter text` when giving us example text and regular expressions.
 
-However, one sequence needs special attention, even inside of `red typewriter text` backslash open bracket or multiline literal text blocks: \\[.  The forum treats that more special than others, so backtick backslash open-bracket backtick \`\\[\` will render as just `\[`, rather than the expected `\\[`; even worse, the forum PREVIEW tab makes it look like you got it right, but really, it still will be wrong in the final post. With the right number of escapes, it is possible to get it right; but if you have the backslash open-bracket in your example text or your regex, you might want to include a screenshot as well, to make sure you communicate it properly.  For a regular expression, where backslash bracket is used to tell the regex to search for a literal open-bracket, it might be best to use an alternate regex for matching the literal open-bracket, like `\x5B`, which will format properly in the forum and can be easily copy/pasted, but will still work in your regular expression in Notepad++'s search-and-replace.
+However, two sequences needs special attention, even inside of `red typewriter text` backslash open bracket or multiline literal text blocks: \\\\[ and \\\\].  The forum treats that more special than others, so backtick backslash open-bracket backtick \`\\\\[\` will render as just `[`, rather than the expected `\\[`; even worse, the forum PREVIEW tab makes it look like you got it right, but really, it still will be wrong in the final post. With the right number of escapes, it is possible to get it right; but if you have the backslash open-bracket in your example text or your regex, you might want to include a screenshot as well, to make sure you communicate it properly.  For a regular expression, where backslash bracket is used to tell the regex to search for a literal open-bracket, it might be best to use an alternate regex for matching the literal open-bracket or closed-bracked, like `\x5B` and `\x5D`, which will format properly in the forum and can be easily copy/pasted, but will still work in your regular expression in Notepad++'s search-and-replace.
+
+Examples of the rendering:
+backslash count | raw | in backticks | raw | in backticks
+--|--|--|--|--
+0 | ] | `]` | [ | `[`
+1 | \] | `\]` | \[ | `\[`
+2 | \\] | `\\]` | \\[ | `\\[`
+3 | \\\] | `\\\]` | \\\[ | `\\\[`
+4 | \\\\] | `\\\\]` | \\\\[ | `\\\\[`
+
+The preview of that showed:
+![40c67edc-fa38-488a-b1ee-6e6e295e1760-image.png](/assets/uploads/files/1663090113277-40c67edc-fa38-488a-b1ee-6e6e295e1760-image.png) 
+
+But that's not how it rendered, which actually showed up as:
+![502969ef-7c34-4ac5-89bd-91a46b22d08f-image.png](/assets/uploads/files/1663090162595-502969ef-7c34-4ac5-89bd-91a46b22d08f-image.png) 
+
+Similar happens in code-text-blocks
+```txt
+0 | ]        | [
+1 | \]        | \[
+2 | \\]       | \\[
+3 | \\\]      | \\\[
+4 | \\\\]     | \\\\[
+```
+
+![7c8a96db-3960-4f04-96ea-4fc70102f330-image.png](/assets/uploads/files/1663089851494-7c8a96db-3960-4f04-96ea-4fc70102f330-image.png) 
+
+Further, **if you edit your post**, it will start collapsing backslashes, so they won't all be there when you start your edit, and it will again render incorrectly.
+
+Because of that issue, if you're posting a regex in the forum, it's highly recommended to use `\x5B` and `\x5D` in regexes where you wanted to match a literal [ or ] .
+
 
 ### Images in your post
 
@@ -115,4 +146,3 @@ Headers: use one or more hashtags followed by a space and the text for the heade
 
 * https://daringfireball.net/projects/markdown/syntax
 * https://community.notepad-plus-plus.org/topic/14262/how-to-markdown-code-on-this-forum/4
-
