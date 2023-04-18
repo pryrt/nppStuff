@@ -4,7 +4,7 @@ from __future__ import print_function
 #########################################
 #
 #  MacroDisassemblerForNpp (MDFN)
-#
+#       https://gist.github.com/alankilborn/4190d0efcf6a3eab31a1a808de5711dd
 #########################################
 
 #-------------------------------------------------------------------------------
@@ -239,7 +239,7 @@ class MDFN(object):
                     if the_type == 0:
                         action_comment += '({wp},{lp})'.format(wp=wp, lp=lp)
                     elif the_type == 1:
-                        action_comment += '({wp},"{sp}")'.format(wp=wp, sp=sp)
+                        action_comment += '({wp},"{sp}")'.format(wp=wp, sp=sp.encode('utf-8'))
                     else:
                         assert 0
 
