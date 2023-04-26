@@ -60,4 +60,11 @@ uiac = UriIndicatorAltClick.UIAC()
 #console.write("NPP v{}.{}\n".format(nppv>>16, nppv&0xFFFF))
 
 ######################
+
+#### change EOL representation to the cool diagonal Control Pictures
+####    => must be done every change of buffer, and doesn't honor the "normal text" or custom-color setting unless I change that setting after
+####        probably other ps I could use to adjust the color/boxes after the fact, but at that point, it's too complicated for my needs.
+#editor.setRepresentation(u'\u000A', u'\u240A')
+#editor.setRepresentation(u'\u000D', u'\u240D')
+
 console.write("END of user startup.py\n\n")
