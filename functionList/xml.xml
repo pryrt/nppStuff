@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ==========================================================================\
+|
+|   To learn how to make your own language parser, please check the following
+|   link:
+|       https://npp-user-manual.org/docs/function-list/
+|
+\=========================================================================== -->
+<NotepadPlus>
+	<functionList>
+		<!-- ========================================================= [ XML ] -->
+		<!-- XML - eXtensible Markup Language                                  -->
+
+		<parser
+			displayName="XML Node"
+			id         ="xml_node"
+			commentExpr="(?x)                                               # Utilize inline comments (see `RegEx - Pattern Modifiers`)
+							(?:\x3C!--(?:[^\-]|-(?!-\x3E))*--\x3E)          # Multi Line Comment
+						"
+		>
+			<function
+				mainExpr="(?x)                                              # Utilize inline comments (see `RegEx - Pattern Modifiers`)
+						\x3C                                                # begin of node
+						(?:
+							(?-i:\?XML)                                     # only name of root node is allowed to start with a question mark
+						|	\w+(?::\w+)?                                    # a node name can contain a colon e.g. `xs:schema`
+						)
+						\h*                                                 # 0 or more spaces
+                        (?=/?>)                                             # followed by end of tag
+					"
+			>
+				<functionName>
+					<nameExpr expr="[^\x3C]*" />
+				</functionName>
+			</function>
+		</parser>
+	</functionList>
+</NotepadPlus>
