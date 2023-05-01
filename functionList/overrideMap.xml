@@ -132,6 +132,7 @@
 			<!-- ======================================================================== -->
 
 			<!-- ==================== Peter's Customizations ============================ -->
+            <association id= "my_xml.xml"			langID= "9" />
             <association id= "my_perl.xml"			langID= "21" />
 			<association id= "udl_cadence.xml"		userDefinedLangName="Cadence"/>
 			<association id= "udl_evo.xml"			userDefinedLangName="LtxMxEnVision"/>
