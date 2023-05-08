@@ -22,4 +22,6 @@ Actions that can be taken include:
 
 As an aside, the author of Notepad++ will occasionally put a political statement or off-color joke, hidden or obvious, inside the application or the source code.  The Notepad++ Community members have no control over such decisions.  If you want to complain about his politics or rant against his exercise of free speech, the [Boycott Notepad++](https://community.notepad-plus-plus.org/category/8/boycott-notepad) is available for such posts.  But even there, users are expected to not violate this policy.
 
+If Community users notice a post or user which they believe to be in violation of this policy, they are encouraged to "flag" such a post and/or user, and the administrators and moderators should then investigate and take appropriate action.
+
 Moderators and Administrators are given discretion in interpreting when such behavior violates this policy, and in deciding which actions are appropriate for a given violation.  They are not here to be "thought police" or to enforce personal vendettas against particular users, but they are here to ensure that this Community forum is a place for reasonable discussion about Notepad++.
