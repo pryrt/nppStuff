@@ -16,6 +16,6 @@ Please note that while we will try to help you, and even can try to confirm soft
 
 English is the primary language of this Forum. If you choose to post in another language, it is considered polite to translate your text into English as well. There are free online translators avaialble, like translate.google.com and deepl.com.  Feel free to make use of those to help you communicate in English.
 
-Please be polite and treat other Community Forum members with respect.
+To maintain a high quality of posts, accounts which post spam and accounts which post significant technical nonsense may be banned, at the moderators'/administrators' discretion.  (Being _wrong_ is not grounds for banning; but persisting in posting misleading or confusingly-wrong posts, or persisting in using Generative AI (like ChatGPT) or similar programs to create posts, _is_ grounds for banning.)
 
-_Technical Note_: Despite what your Notepad++ Community account "settings" page may imply, the email notification for the Community does not work, and you will _not_ be emailed when you get replies to your questions.  You have to come back to the Community to check for answers and other replies.  Sorry for the inconvenience.
+Please be polite and treat other Community Forum members with respect. Ad hominem attacks, personal insults, hate speech, and other such violations of this policy are grounds for immediate and permanent banning from this Forum.
