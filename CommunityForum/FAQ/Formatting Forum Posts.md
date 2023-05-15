@@ -88,6 +88,24 @@ Further, **if you edit your post**, it will start collapsing backslashes, so the
 
 Because of that issue, if you're posting a regex in the forum, it's highly recommended to use `\x5B` and `\x5D` in regexes where you wanted to match a literal [ or ] .
 
+### Entities
+
+You can use HTML entities in your post.  So `&#x263a;` will render as &#x263a; .  
+
+When you edit a post that had entities (correcting a typo or something), the forum software will "kindly" convert all those entities to the underlying characters, which is great... except whjen you had an entity inside the red-text back-ticks `` `&#x263a;` `` or inside a code/plaintext block (between \`\`\` rows): in that case, it will convert entities that you didn't intend, so the sentence
+```
+> For example, `☺` would be stored as `&#x263a;` or `π` as `&#x03C0;` .
+```
+
+would be rendered as
+
+> For example, `☺` would be stored as `☺` or `π` as `π` .
+
+(which is rather non-sensical) instead of the intended
+
+> For example, `☺` would be stored as `&#x263a;` or `π` as `&#x03C0;` .
+
+So if you edit a post that had entities inside red-text \`xxx\` or code/plaintext blocks, you will have to convert them back to entities; sorry.
 
 ### Images in your post
 
