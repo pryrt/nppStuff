@@ -105,7 +105,7 @@ would be rendered as
 
 > For example, `☺` would be stored as `&#x263a;` or `π` as `&#x03C0;` .
 
-So if you edit a post that had entities inside red-text \`xxx\` or code/plaintext blocks, you will have to convert them back to entities; sorry.
+So **if you edit a post** that had entities inside red-text \`xxx\` or code/plaintext blocks, you will have to convert them back to entities, or they will render incorrectly.  Sorry.
 
 ### Images in your post
 
