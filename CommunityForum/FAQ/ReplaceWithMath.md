@@ -34,7 +34,7 @@ If you have direct questions that are related to the Notepad++\-specific aspects
 
 If you understand and agree to those terms, feel free to continue.
 
-## Apply Math to the match
+## Apply Math to the match for the replacement
 
 ### Add a value to each match (or subtract, or multiply, or divide, or other f(x))
 
@@ -264,6 +264,23 @@ custom_replace_func.counter = 1  # starting value
 editor.rereplace(r'(?s)^{.+?^},?\h*$', custom_replace_func)
 ```
 The `rereplace` function call is working on the whole section from `{` to `},`. Inside that, you use the `re` engine of Python (not Notepad++) to do a replacement of the `zone_1` or `zone 1` with the next value of the running counter.
+
+## Search
+
+The examples above were all focused on replacements using math. Instead, if you want to do math that limits a search, you can use the `editor.search()` and `editor.research()`, which call a function on any matched text, and allow you to do any manipulation (including converting to numbers and doing comparisons).  So you could do set a regex that looks for something number-like, and then have the callback function convert the text to a number, and do the mathematical comparison or other manipulation, and only perform some other follow-on action (updating the editor view's active selection, or such as setting a bookmark, or anything else you can code) on text that matches both the textual regex _and_ the conditions defined in your callback's code.
+
+### Examples of Mathematical Searches
+
+#### Search for integers greater than or equal to 25
+
+The regex in the search needs to be for a generic integer (`\b\d+\b`).  Then the callback does the math:
+
+```py
+TBD
+```
+
+The `editor.research()` method call is working on the whole integer.  Inside that, it sets the selection.
+
 
 ## Conclusion
 
