@@ -8,19 +8,35 @@ There are many forms that this question can take, including but not limited to:
 - "Can I find all numbers that match some pattern and increment the replacement for each?"
 - "Can I find all numbers that match some pattern and round them to the nearest 1 (or 1000, or 0.001, or 0.000001, or ...)?"
 
-## Native Notepad++
+## In Short: No
 
-In native Notepad++, with no extra plugins, the short answer is "no".  The replacement engine, even with "regular expression" mode turned on, does not have a counter it can use while doing replacements, and it does not do math on the matches that it can output in the replacement.
+Notepad++ itself doesn't do math on the text during search-and-replace.  That is not what text editors are designed to do.
 
-## Allowing Plugins
+The replacement engine, even with "regular expression" mode turned on, does not have a counter it can use while doing replacements, and it does not do math on the matches that it can output in the replacement.
 
-If you allow us to recommend a plugin, then the answer is "yes".  With a scripting plugin like PythonScript, Lua Script, and others, you can bring the full power of the underlying scripting langauge that those plugins provide to bear on the math you want to do. 
+So Notepad++ cannot do this.
+
+## Scripting Plugins
+
+If you allow us to recommend a plugin, then the answer is "yes, with caveats".
+
+With a scripting plugin like PythonScript, Lua Script, and others, you can bring the full power of the underlying scripting language that those plugins provide to bear on the math you want to do. 
 
 The remainder of this FAQ will be showing examples using the PythonScript plugin, but the concepts will work in any of the scripting plugins.  For instructions on how to install the PythonScript plugin and to install and use the specific scripts, see our [FAQ: How to install and run a script in PythonScript](https://community.notepad-plus-plus.org/topic/23039/faq-desk-how-to-install-and-run-a-script-in-pythonscript).
 
+## Caveat
+
+The following contains regular expressions and programming (in Python).  If you are not familiar with both, then the solutions described below might be too difficult for you to customize: feel free to give it a try, but understand that, for you, the full answer might be "Notepad++ (or any text editor) is the wrong task for the job if you want a replacement to do math, and you do not have the skills necessary to make use of scripting-based solutions".  
+
+The Community Forum members are not obliged to custom-write a solution for your exact transformation, nor will they handhold you through the entire process of you customizing these examples to your actual specifications.  
+
+If you have direct questions that are related to the Notepad++\-specific aspects of these solutions, we can answer questions, but if your questions stray into the realm of generic regex advice and generic Python programming questions, we will direct you to the regex and python documentation, as those aspects of your problem have nothing to do with Notepad++, and are off topic for this Community Forum.
+
+If you understand and agree to those terms, feel free to continue.
+
 ## Apply Math to the match
 
-### Add a value to each match
+### Add a value to each match (or subtract, or multiply, or divide, or other f(x))
 
 This example actually comes directly from the PythonScript documentation (**Plugins > Python Script > Context-Help**, then choose **Editor Object**, and go to the `editor.rereplace()` section):
 ```
@@ -48,7 +64,7 @@ To customize this:
     - To access the text of the whole match, use `m.group(0)`.
     - To access the text of one of the parenthetical "capture groups", use `m.group(1)` for the first group, and so on.
     - To convert the text of a group to a number in python, use `int(m.group(1))` to make it an integer, or `float(m.group(1))` to make it a floating point number.
-    - You can use as many lines of code as are needed in the `add_1` function, and use any variables and other function calls you want
+    - You can use as many lines of code as are needed in the `add_1` function, and use any variables and other function calls you want, and include any algebraic operators like add `+` or subtract `-` or multiply `*` or divide `/` or exponentiate `**` or modulus `%`, or combinations of those with any Python mathematical operators.
     - To convert your mathy number back to a string, wrap it in the `str()` function.
     - The return value of the `add_1()` function _must_ be the string to use in the replacement
 
@@ -62,7 +78,7 @@ from Npp import editor
 def round_to_penny(m):
     return str(round(float(m.group(1)), 2))
 
-editor.rereplace(r'(\d*\.*\d+)', round_to_penny)
+editor.rereplace(r'(\d*\.?\d+)', round_to_penny)
 ```
 
 This would take
@@ -92,46 +108,119 @@ three=3.00
 1.62x
 ```
 
-## Counters and Cycles
+### Counters and Cycles
 
-### Replace with a simple counter
-
-If you have text that has a bunch of `zone_1` instances, and you want want to have each replacement count up from 1 (so `zone_1` then `zone_2` and so on), you could do something like,
+#### ADD HARD LINE NUMBERS TO THE CURRENT FILE
+Let's say you have some text in a file:
+```txt
+The rose is red, the violet's blue,
+The honey's sweet, and so are you.
+Thou are my love and I am thine;
+I drew thee to my Valentine:
+The lot was cast and then I drew,
+And Fortune said it should be you.
 ```
+And you want it to be replaced with this:
+```txt
+1  The rose is red, the violet's blue,
+2  The honey's sweet, and so are you.
+3  Thou are my love and I am thine;
+4  I drew thee to my Valentine:
+5  The lot was cast and then I drew,
+6  And Fortune said it should be you.
+```
+Well, with only 6 lines it is easy enough manually or with the Column-Editor feature of Notepad++; but if you had 20,000 lines, you could use a script like:
+```py
+# encoding=utf-8
 from Npp import *
 
-counter = 0
+def custom_replace_func(m):
+    new_text = "{C:{P}{D}}{S}".format(
+        C=custom_replace_func.counter,
+        D=custom_replace_func.digits,
+        P='0' if custom_replace_func.zero_pad else ' ',
+        S=' ' * custom_replace_func.spaces_after)
+    custom_replace_func.counter += custom_replace_func.increment
+    return new_text
 
-def repl_with_counter(m):
-    global counter
-    counter += 1
-    return "zone_{}".format(counter)
-
-editor.rereplace(r'zone_(\d+)', repl_with_counter)
+custom_replace_func.counter = 1  # starting value
+custom_replace_func.increment = 1
+custom_replace_func.digits = len(str(editor.getLineCount()))  # don't change this
+custom_replace_func.zero_pad = False  # zero- or space- padding of line number
+custom_replace_func.spaces_after = 2  # spaces between line number and line content
+editor.rereplace('^', custom_replace_func)
 ```
+You can do some tweaking to the output format, by changing the `zero_pad` and `spaces_after` values.
 
-### Replace from a small list of values
-
-If you have a small list of replacements that you want to cycle through, it is similar.  This example will look for an `&` in your text, and replace it with the next `a`, `b`, `c`, `x`, `y`, `z`, wrapping around if there are more than 6 `&`:
-```
+#### REPLACE WITH A SIMPLE COUNTER (i.e., RENUMBERING)
+If you have text that has many "`zone_`digit(s)" instances, and you want want to have each replacement count up from 1 (so `zone_1` then `zone_2` and so on), you could do something like:
+```py
+# encoding=utf-8
 from Npp import *
 
-counter = 0
-replacements = ('a','b','c','x','y','z')
+def custom_replace_func(m):
+    new_text = "zone_{}".format(custom_replace_func.counter)
+    custom_replace_func.counter += custom_replace_func.increment
+    return new_text
 
-def replace_with_cycle(m):
-    global counter
-    repl = replacements[counter]
-    counter = (counter + 1) % len(replacements)
-    return repl
-
-editor.rereplace(r'&', replace_with_cycle) 
+custom_replace_func.counter = 1  # starting value
+custom_replace_func.increment = 1
+editor.rereplace(r'zone_(\d+)', custom_replace_func)
+```
+This would take this input text:
+```txt
+zone_235 zone_249 zone_193 zone_151
+zone_207 zone_172 zone_5 zone_221
+zone_2 zone_270 zone_186 zone_228
+```
+And produce this output text:
+```txt
+zone_1 zone_2 zone_3 zone_4
+zone_5 zone_6 zone_7 zone_8
+zone_9 zone_10 zone_11 zone_12
+```
+-------------------------------------------------------------------------------
+We could change our starting-value and increment-value to begin renumbering at 60, and go in steps of 5, by changing the relevant line in the code to:
+```py
+custom_replace_func.counter = 60  # starting value
+custom_replace_func.increment = 5
+```
+And produce this output text:
+```txt
+zone_60 zone_65 zone_70 zone_75
+zone_80 zone_85 zone_90 zone_95
+zone_100 zone_105 zone_110 zone_115
 ```
 
-### Increment the counter per-group instead of per-match
+#### REPLACE FROM A SMALL LIST OF VALUES
+If you have a small list of replacements that you want to cycle through, it is similar. This example will look for an `&` in your text, and replace it with the next value in the sequence `c`, `a`, `b`, `z`, `y`, `x`, wrapping around and starting with `c` again if there are more than 6 `&`:
+```py
+# encoding=utf-8
+from Npp import *
 
-Let's say you have some groups between `{...}`, like:
+def custom_replace_func(m):
+    replace_with = custom_replace_func.repl_list[custom_replace_func.index]
+    custom_replace_func.index = (custom_replace_func.index + 1) % len(custom_replace_func.repl_list)
+    return replace_with
+
+custom_replace_func.index = 0
+custom_replace_func.repl_list = ['c', 'a', 'b', 'z', 'y', 'x']
+editor.rereplace(r'&', custom_replace_func)
 ```
+This would take this input text:
+```txt
+this & that & more & less & who &
+what & where & when & why & how
+```
+And produce this output text:
+```txt
+this c that a more b less z who y
+what x where c when a why b how
+```
+
+#### INCREMENT THE COUNTER (RENUMBER) PER-SECTION INSTEAD OF PER-MATCH
+Let's say you have some text in `{`...`}` -delimited sections, like this:
+```txt
 {
     'zone_1': "Name Goes Here",
     'other': "This is zone 1",
@@ -145,8 +234,8 @@ Let's say you have some groups between `{...}`, like:
     'other': "Now zone 1",
 },
 ```
-and you want it to come out like
-```
+And you want it to be replaced with this:
+```txt
 {
     'zone_1': "Name Goes Here",
     'other': "This is zone 1",
@@ -160,26 +249,21 @@ and you want it to come out like
     'other': "Now zone 3",
 },
 ```
+You could use a script like:
+```py
+# encoding=utf-8
+from Npp import *
+import re  # to be able to use Python's regular expression library
 
-You could use a script like,
+def custom_replace_func(m):
+    replace_with = re.sub(r'(?<=zone[ _])\d+', str(custom_replace_func.counter), m.group(0))
+    custom_replace_func.counter += 1
+    return replace_with
+
+custom_replace_func.counter = 1  # starting value
+editor.rereplace(r'(?s)^{.+?^},?\h*$', custom_replace_func)
 ```
-from Npp import editor
-import re  # required for the in-group replacement
-
-counter = 1
-
-def replace_group(m):
-    global counter
-    out = re.sub(r'(?<=zone[ _])\d+', str(counter), m.group(0))
-    counter = counter + 1
-    return out
-
-editor.beginUndoAction()
-editor.rereplace(r'(?s)^{\h*$.*?^},?\h*$', replace_group)
-editor.endUndoAction()
-```
-
-The `rereplace` call is working on the whole group from `^{` to `^},`.  Inside that, you use the `re` engine of Python to do a replacement of the `zone_1` with the next value of the counter.
+The `rereplace` function call is working on the whole section from `{` to `},`. Inside that, you use the `re` engine of Python (not Notepad++) to do a replacement of the `zone_1` or `zone 1` with the next value of the running counter.
 
 ## Conclusion
 
