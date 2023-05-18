@@ -276,11 +276,20 @@ The examples above were all focused on replacements using math. Instead, if you 
 The regex in the search needs to be for a generic integer (`\b\d+\b`).  Then the callback does the math:
 
 ```py
-TBD
+# encoding=utf-8
+from Npp import editor, notepad, MENUCOMMAND
+import re  # to be able to use Python's regular expression library
+
+def custom_match_func(m):
+    i = int(m.group(0))
+    if i >= 25:
+        editor.setSel( m.start(0), m.end(0) )
+        notepad.menuCommand(MENUCOMMAND.SEARCH_TOGGLE_BOOKMARK)
+
+editor.research(r'^\b\d+\b', custom_match_func)
 ```
 
-The `editor.research()` method call is working on the whole integer.  Inside that, it sets the selection.
-
+The `editor.research()` method call is working on the whole integer.  Inside the callback, it sets the selection, and then bookmarks the selection's line(s).
 
 ## Conclusion
 
