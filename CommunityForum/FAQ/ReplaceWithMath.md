@@ -273,7 +273,9 @@ The examples above were all focused on replacements using math. Instead, if you 
 
 #### Search for integers greater than or equal to 25
 
-The regex in the search needs to be for a generic integer (`\b\d+\b`).  Then the callback does the math:
+The regex in the search needs to be for a generic integer (`\b\d+\b`): `editor.research()` invokes the callback on any string that looks like an integer, without regard for the mathematical requirement.  Then the callback does the math to determine whether or not the text represents an integer that meets the mathematical restriction, and will then "do something" if the text _and_ math meet the requirements.
+
+In this version, the callback will toggle the bookmark on each matched line.  After running this script, you can use the **Search > Bookmark > ...** sub-menu to navigate between the various bookmarks:
 
 ```py
 # encoding=utf-8
@@ -289,7 +291,24 @@ def custom_match_func(m):
 editor.research(r'^\b\d+\b', custom_match_func)
 ```
 
-The `editor.research()` method call is working on the whole integer.  Inside the callback, it sets the selection, and then bookmarks the selection's line(s).
+Alternatively, if you want a "find next" with the same restriction, so that it will just move the selection forward, without doing any bookmarking:
+
+```py
+# encoding=utf-8
+from Npp import *
+
+def custom_match_func(m):
+    if custom_match_func.stop: return
+    i = int(m.group(0))
+    if i >= 25:
+        editor.setSel( m.start(0), m.end(0) )
+        custom_match_func.stop = True
+
+custom_match_func.stop = False
+editor.research(r'^\b\d+\b', custom_match_func, 0, editor.getCurrentPos())
+```
+
+The `stop` flag was used, instead of just using `editor.research()`'s `maxCount`, because `maxCount` refers to the number of times that the `editor.research()` finds the matching text (ie, any integer), but the custom match function callback only updates the selection when it _also_ matches the mathematical condition, so those two counts aren't always the same.
 
 ## Conclusion
 
