@@ -1,6 +1,8 @@
 # encoding=utf-8
 """StatusBar Manipulation
 
+published as https://community.notepad-plus-plus.org/post/69314
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!! USER WARNING: STATUS BAR MAY FLASH DURING UPDATE !!!
 !!! FLASH-SENSITIVE USERS SHOULD NOT USE THIS SCRIPT !!!
