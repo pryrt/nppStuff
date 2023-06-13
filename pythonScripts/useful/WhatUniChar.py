@@ -8,7 +8,7 @@ def get_wide_ordinal(char):
 
 def callback_sci_UPDATEUI(args):
     c = editor.getCharAt(editor.getCurrentPos())
-    console.write("c=0x{0:04X}={0}dec\n".format(c));
+    #console.write("c=0x{0:04X}={0}dec\n".format(c));
     if c < 0 or c > 255:
         p = editor.getCurrentPos()
         q = editor.positionAfter(p)
