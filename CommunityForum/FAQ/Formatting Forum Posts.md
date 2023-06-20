@@ -14,7 +14,7 @@ The results of the Markdown syntax can be seen in the **PREVIEW** pane next to t
 
 To make post-creation easy, there is an editor toolbar over the post-entry box, so you can just type your text in the entry, highlight a portion of text, and use the toolbar to apply formatting to that text.  If you click the button without selecting text first, it will put in some dummy text that will be formatted in that style, and you can just edit that text with whatever you're trying to say.  The screenshot below shows the buttons available, and tells what each of those buttons do.
 
-![](https://i.imgur.com/KOsSLNe.png)
+![](https://community.notepad-plus-plus.org/assets/uploads/files/1687269718593-ce652379-4ede-4ac5-af76-ab3e2b322a42-image.png)
 
 ## Formatting
 
@@ -22,7 +22,7 @@ In a forum discussing the Notepad++ text editor, some of the most useful formatt
 
 ### Literal Text Blocks
 
-![7584aac5-d690-46c5-8e8e-52f779d0c7de-image.png](/assets/uploads/files/1633357286910-7584aac5-d690-46c5-8e8e-52f779d0c7de-image.png)  When you want to show us data from your editor window ("I have paragraphs X Y Z that I need help with"), you can use the `</>` button on the toolbar, which will insert \`\`\` on a line before and after your selected text.  When your text is between those lines of three backticks each, it will be formatted as a block of typewriter text
+![7584aac5-d690-46c5-8e8e-52f779d0c7de-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1633357286910-7584aac5-d690-46c5-8e8e-52f779d0c7de-image.png)  When you want to show us data from your editor window ("I have paragraphs X Y Z that I need help with"), you can use the `</>` button on the toolbar, which will insert \`\`\` on a line before and after your selected text.  When your text is between those lines of three backticks each, it will be formatted as a block of typewriter text
 
 ~~~txt
 ```
@@ -68,10 +68,10 @@ backslash count | raw | in backticks | raw | in backticks
 4 | \\\\] | `\\\\]` | \\\\[ | `\\\\[`
 
 The preview of that showed:
-![40c67edc-fa38-488a-b1ee-6e6e295e1760-image.png](/assets/uploads/files/1663090113277-40c67edc-fa38-488a-b1ee-6e6e295e1760-image.png) 
+![40c67edc-fa38-488a-b1ee-6e6e295e1760-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1663090113277-40c67edc-fa38-488a-b1ee-6e6e295e1760-image.png) 
 
 But that's not how it rendered, which actually showed up as:
-![502969ef-7c34-4ac5-89bd-91a46b22d08f-image.png](/assets/uploads/files/1663090162595-502969ef-7c34-4ac5-89bd-91a46b22d08f-image.png) 
+![502969ef-7c34-4ac5-89bd-91a46b22d08f-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1663090162595-502969ef-7c34-4ac5-89bd-91a46b22d08f-image.png) 
 
 Similar happens in code-text-blocks
 ```txt
@@ -82,7 +82,7 @@ Similar happens in code-text-blocks
 4 | \\\\]     | \\\\[
 ```
 
-![7c8a96db-3960-4f04-96ea-4fc70102f330-image.png](/assets/uploads/files/1663089851494-7c8a96db-3960-4f04-96ea-4fc70102f330-image.png) 
+![7c8a96db-3960-4f04-96ea-4fc70102f330-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1663089851494-7c8a96db-3960-4f04-96ea-4fc70102f330-image.png) 
 
 Further, **if you edit your post**, it will start collapsing backslashes, so they won't all be there when you start your edit, and it will again render incorrectly.
 
@@ -107,13 +107,17 @@ would be rendered as
 
 So **if you edit a post** that had entities inside red-text \`xxx\` or code/plaintext blocks, you will have to convert them back to entities, or they will render incorrectly.  Sorry.
 
+### Non-breaking spaces
+
+Also, it is known that characters like the non-breaking space (**NBSP**, U+0020) do _not_ make it through: if you paste the **NBSP** character in your example text, the forum will show it as a normal space when it renders, whether it's in the `red-text` or \`\`\` code blocks.  If your code includes non-breaking space characters (or other fancy space or newline characters or control characters or zero-width characters), you will want to use a screenshot of your text in Notepad++, with **View > Show Symbol > Show Non-Printing Characters** and **View > Show Symbol > Show Control Characters & Unicode EOL** options turned on.
+
 ### Images in your post
 
 The easiest way to include a screenshot in your post is to use normal Windows methods to take the screenshot (for example, `Alt+PrintScreen` to grab the whole Notepad++ window, or use the Windows Snip & Sketch `Win+Shift+S` to grab smaller section of the screen), and then just use Windows paste `Ctrl+V` to paste it in your post.  
 
-![1c1a19a5-5c66-4a33-98e6-e47a992c3aa7-image.png](/assets/uploads/files/1633357334602-1c1a19a5-5c66-4a33-98e6-e47a992c3aa7-image.png) If you've already saved the screenshot as an image on your computer, you can use the **Upload Image** button on the toolbar to manually upload the image from your computer.  
+![1c1a19a5-5c66-4a33-98e6-e47a992c3aa7-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1633357334602-1c1a19a5-5c66-4a33-98e6-e47a992c3aa7-image.png) If you've already saved the screenshot as an image on your computer, you can use the **Upload Image** button on the toolbar to manually upload the image from your computer.  
 
-![a8ca2516-1104-4a75-996d-1456b5d55ff6-image.png](/assets/uploads/files/1633357616638-a8ca2516-1104-4a75-996d-1456b5d55ff6-image.png) If the image is on a server like imgur, you can use the ![]() **Image** button to type `![alt text](image url)` in the forum, and then replace `image url` with the URL of the image; for example, to include the toolbar screenshot in the FAQ post above, I used `![](https://i.imgur.com/KOsSLNe.png)` . (_Please note_: for services like imgur, the URL they usually give you is the wrapper page, like https://imgur.com/KOsSLNe, which won't properly work as an image in the forum; make sure you grab the URL for the imgage .gif or .png file itself; imgur calls it the "direct link".)
+![a8ca2516-1104-4a75-996d-1456b5d55ff6-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1633357616638-a8ca2516-1104-4a75-996d-1456b5d55ff6-image.png) If the image is on an external server, you can use the ![]() **Image** button to type `![alt text](image url)` in the forum, and then replace `image url` with the URL of the image; for example, `![](https://some.example.url/KOsSLNe.png)` . (_Please note_: the service `imgur.com` used to be used significantly in this forum, but in mid-2023, sopmething happened between the forum's host and imgur's website, and we can no longer embed pictures from imgur in our posts.  We can link to them, using the link button in the forum, but you cannot see the "live" image from that service.  Sorry for the inconvenience.  If you have a service _like_ imgur, the URL they give you might be the wrapper page, like https://imgur.com/KOsSLNe, which won't properly work as an image in the forum; make sure you grab the URL for the imgage .gif or .png file itself; imgur calls it the "direct link".  But imgur itself does not work here anymore.)
 
 ### Other formatting
 
