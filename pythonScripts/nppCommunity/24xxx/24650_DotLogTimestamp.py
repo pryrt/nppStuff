@@ -24,30 +24,19 @@ class DLTS(object):
 
     def toggle(self):
         self.active = not self.active
-        console.write("Registered DotLogTimestamp.py callbacks {}\n".format('active' if self.active else 'inactive'))
+        console.write("DotLogTimestamp.py callbacks are {}\n".format('active' if self.active else 'inactive'))
 
     def fileopened_callback(self, args):
         if self.active:
-            line1 = editor.getLine(0)
-            console.show()
-            console.write("fileopened bufferID: {}\n".format(args['bufferID']))
             self.bufferIDs.append(args['bufferID'])
 
     def bufferactivated_callback(self, args):
         if self.active:
-            console.write("args(bufferID={}) vs {}".format(args['bufferID'], self.bufferIDs))
             if args['bufferID'] in self.bufferIDs:
                 line = editor.getLine(0).strip()
                 if line[0:4] == ".LOG":
-                    console.write("\tYES in list with .LOG: \"{}\"\n".format(line))
                     editor.appendText("{}\n".format(datetime.now().strftime("%Y-%b-%d %H:%M:%S")))
-                else:
-                    console.write("\tYES in list but without .LOG: \"{}\"\n".format(line))
                 self.bufferIDs.remove(args['bufferID'])
-            else:
-                console.write("\tNot in there\n")
-        else:
-            console.write("inactive\n");
 
 if __name__ == '__main__':
     try:
