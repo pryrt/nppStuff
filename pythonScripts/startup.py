@@ -67,4 +67,9 @@ uiac = UriIndicatorAltClick.UIAC()
 #editor.setRepresentation(u'\u000A', u'\u240A')
 #editor.setRepresentation(u'\u000D', u'\u240D')
 
+######################
+def CCB():
+    notepad.clearCallbacks()
+    editor.clearCallbacks()
+
 console.write("END of user startup.py\n\n")
