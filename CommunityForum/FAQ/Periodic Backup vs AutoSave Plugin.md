@@ -97,22 +97,6 @@ Only one of those two options can be active ⦿.
 
 `○ Save autorecover here`: If this option is active ⦿, you need to choose a directory when you enable this option; the default `$CDIR$\autorecover` doesn't seem to carry any meaning; choose a real directory.  When AutoSave is triggered, the plugin will create a file called `new #` (matching Notepad++'s naming scheme) in that folder; however, it still keeps the file that's shown in Notepad++ as a new/unsaved/unnamed file, so Notead++ and AutoSave Plugin both treat the file as "unsaved" and "unnamed".  This configuration doesn't reset Notepad++'s `new #` numbering, so new files created won't generally collide with the existing autorecover files.  When you close a `new #` tab without saving, the AutoSave plugin's autorecover file will still exist; however, the next time you create a new tab, if Notepad++ re-uses that number, then the new autorecover file will overwrite the old autorecover file of the same name.
 
-#### AutoSave v2.00 (September 2022)
-
-The v2.00 options were greatly simplified:
-
-![dfd25063-1e19-4f2e-8bd0-28f7fef76f68-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1688130926697-dfd25063-1e19-4f2e-8bd0-28f7fef76f68-image.png)
-
-It added options to the **Auto Save when** list:
-
-- `☐ File tab changes`: If this option is checkmarked on ☑, it saves every time you activate a different tab in Notepad++.
-
-- `☐ Notepad++ exits`: If this option is checkmarked on ☑, it saves when you exit Notepad++.
-
-It removed options for the "autorecover" style of backup -- so now it will always overwrite the existing file, rather than creating a recovery file alongside the original.  And v2.00 removed the handling of the **Unnamed/new Files**, forcing you to rely on Notepad++'s native handling of unnamed files (and thus strengthening the argument behind the admonishment to always manually save your unnamed files to a known location as soon as you can, since AutoSave isn't helping you with that anymore).
-
-Also, if you upgraded from v1.61 or earlier to v2.00, you will need to check your settings, to make sure it's still set up in a way that functions with your workflow.
-
 
 ### In Summary
 
@@ -129,3 +113,25 @@ It is highly recommend that you spend some time experimenting with how exactly N
 * [Notepad++ Online User Manual](https://npp-user-manual.org/) => with a section on [backup preferences](https://npp-user-manual.org/docs/preferences/#backup)
 * [AutoSave Plugin](https://github.com/francostellari/NppPlugins) by Franco Stellari => maintained separately from Notepad++
 * [Recuva](https://www.google.com/search?q=recuva) => completely unaffiliated with Notepad++ or the Notepad++ Community Forum; listed as an example of [file recovery software for Windows](https://www.google.com/search?q=file+recovery+software+windows) with no guarantee or warranty, explicit or implied, by its listing in this FAQ
+
+----- 
+
+SECOND POST 
+
+-----
+
+#### AutoSave v2.00 (September 2022)
+
+The v2.00 options were greatly simplified:
+
+![dfd25063-1e19-4f2e-8bd0-28f7fef76f68-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1688130926697-dfd25063-1e19-4f2e-8bd0-28f7fef76f68-image.png)
+
+It added options to the **Auto Save when** list:
+
+- `☐ File tab changes`: If this option is checkmarked on ☑, it saves every time you activate a different tab in Notepad++.
+
+- `☐ Notepad++ exits`: If this option is checkmarked on ☑, it saves when you exit Notepad++.
+
+It removed options for the "autorecover" style of backup -- so now it will always overwrite the existing file, rather than creating a recovery file alongside the original.  And v2.00 removed the handling of the **Unnamed/new Files**, forcing you to rely on Notepad++'s native handling of unnamed files (and thus strengthening the argument behind the admonishment to always manually save your unnamed files to a known location as soon as you can, since AutoSave isn't helping you with that anymore).
+
+Also, if you upgraded from v1.61 or earlier to v2.00, you will need to check your settings, to make sure it's still set up in a way that functions with your workflow.
