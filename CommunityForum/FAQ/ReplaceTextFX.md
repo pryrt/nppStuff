@@ -134,7 +134,10 @@ Please note that all search/replace actions below assume Search Mode is set to R
 - Most of the useful space-related are now in **Edit > Blank Operations**
 - Indent and surround with: _macro_
 - Strip/Split: _macro_
-- LineUp == Plugin:**Elastic Tabstops**
+- LineUp:
+    - Plugin: [**Elastic Tabstops**](https://github.com/mariusv-github/ElasticTabstops) (available in Plugins Admin)
+    - Plugin: [**Columns++**](https://github.com/Coises/ColumnsPlusPlus)
+    - PythonScript[¹](#:~:text=NOTE%20ON%20PYTHONSCRIPT%20SOLUTIONS): [Scripts to Align Text](https://community.notepad-plus-plus.org/post/87693)
 - Unwrap == similar to join followed by a replace, or just a replace
 - Rewrap == this can be implemented in PythonScript[¹](#:~:text=NOTE%20ON%20PYTHONSCRIPT%20SOLUTIONS): [this "rewrap script"](https://community.notepad-plus-plus.org/post/78262)
 - Pad Rectangular == modern notepad++ already allows column-select beyond end of line, to keep it a rectangle
