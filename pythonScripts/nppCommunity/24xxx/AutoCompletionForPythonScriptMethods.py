@@ -5,6 +5,10 @@ Auto-completion for PythonScript methods (complete-on-dot) when a dot is entered
 
 Derived from https://github.com/bruderstein/PythonScript/issues/275#issuecomment-1383132656 as starting point
 
+Installation Instructions:
+- call it `AutoCompletionForPythonScriptMethods.py`
+- see FAQ for instructions: https://community.notepad-plus-plus.org/topic/23039/faq-desk-how-to-install-and-run-a-script-in-pythonscript
+
 """
 from Npp import editor,notepad,console,SCINTILLANOTIFICATION
 
