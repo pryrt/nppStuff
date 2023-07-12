@@ -18,7 +18,7 @@ The following are some critical pieces of information frequently left out of que
     - This will tell us many useful things, like version, installation location, whether you have a normal installation or a portable or are using a cloud configruation folder, and what plugins you are using
 
 - Example text should always be put in Literal/Code Blocks using the `</>` button (screenshot above) or with manual [Markdown syntax](https://community.notepad-plus-plus.org/topic/21925/faq-desk-formatting-forum-posts).  The forum interprets certain characters as Markdown syntax for formatting your post, and so might turn some of your text into forum formatting, making it hard for us to know what your text really is.  Using Literal/Code Blocks will help prevent the data getting mangled before we see it.
-    - ![](https://i.imgur.com/KOsSLNe.png)
+    - ![](https://community.notepad-plus-plus.org/assets/uploads/files/1687269718593-ce652379-4ede-4ac5-af76-ab3e2b322a42-image.png)
 
 - If a screenshot is necessary to show your issue, you can just use Windows' built-in Alt+PrintScreen to put it on the clipboard, or the Windows 10 Snipping Tool, to grab your screenshot; then paste the image directly in your post -- no need to mess around with external image hosts.  If you include a screenshot of text, please _also_ include the actual text, because we cannot copy/paste text from your image into our copy of Notepad++.
 
