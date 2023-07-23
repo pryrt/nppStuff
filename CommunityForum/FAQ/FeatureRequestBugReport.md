@@ -2,7 +2,9 @@
 
 Hello, and welcome to the FAQ Desk.  You have likely been directed here because you asked for a new feature to be added to Notepad++, or have reported a bug, in the Notepad++ Community Forums.
 
-**Being directed to this FAQ does not mean "end of discussion".  It is solely to inform you of these facts for the first time, or to remind you of them if you've previously seen them.  You _are_ allowed and even encouraged to discuss new features ideas or potential bugs found in the Community, as long as you understand that a discussion in this Community Forum is _not_ the same as making an official Feature Request or Bug Report.**
+|   |
+|---|
+|**Being directed to this FAQ does not mean "end of discussion".  It is solely to inform you of these facts for the first time, or to remind you of them if you've previously seen them.  You _are_ allowed and even encouraged to discuss new features ideas or potential bugs found in the Community, as long as you understand that a discussion in this Community Forum is _not_ the same as making an official Feature Request or Bug Report.**|
 
 ### Feature Requests and Bug Reports do NOT go in the Community Forum
 
