@@ -2,14 +2,15 @@
 
 Hello, and welcome to the FAQ Desk.  You have likely been directed here because you asked for a new feature to be added to Notepad++, or have reported a bug, in the Notepad++ Community Forums.
 
-### Feature Requests and Bug Reports do NOT go in the Community Forum
+**Being directed to this FAQ does not mean "end of discussion".  It is solely to inform you of these facts for the first time, or to remind you of them if you've previously seen them.  You _are_ allowed and even encouraged to discuss new features ideas or potential bugs found in the Community, as long as you understand that a discussion in this Community Forum is _not_ the same as making an official Feature Request or Bug Report.**
 
+### Feature Requests and Bug Reports do NOT go in the Community Forum
 
 The developers do not look for or track feature requests or bug reports in this Community Forum; they only track feature requests or bug reports that have been properly posted in the official [Notepad++ Issues tracker](https://github.com/notepad-plus-plus/notepad-plus-plus/issues) on the GitHub project at https://github.com/notepad-plus-plus/notepad-plus-plus/issues.  That Issues tracker is the only official feature-request-and-bug-report location.
 
 ![2739236d-88c9-469d-aa61-dcc84e60d6c7-image.png](/assets/uploads/files/1653664607944-2739236d-88c9-469d-aa61-dcc84e60d6c7-image.png) 
 
-In the Forum, we have the ability to talk about problems or new features, and the ability to give possible workarounds.  But, in the end, if you want something to change in the Notepad++ application, you are going to have to make an Issue in the official Issues tracker.  Do not wrongly assume that a post in the Community Forum will be implemented as a change in Notepad++ : without an official Issue, the chances of that happening are virtually zero.
+In the Forum, we have the ability to talk about problems or new features, and the ability to give possible workarounds.  But, in the end, if you want something to change in the Notepad++ application, you are going to have to make an Issue in the official Issues tracker.  Do not wrongly assume that a post in the Community Forum will be implemented as a change in Notepad++ : without an official Issue, you should have **no expectation** of a change to Notepad++.
 
 ### Search for existing requests
 
