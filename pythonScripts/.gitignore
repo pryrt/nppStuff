@@ -1,2 +1,4 @@
 *.pyc
 *.dll
+dummy.py
+delme.py
