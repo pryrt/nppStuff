@@ -92,7 +92,7 @@ Because of that issue, if you're posting a regex in the forum, it's highly recom
 
 You can use HTML entities in your post.  So `&#x263a;` will render as &#x263a; .  
 
-When you edit a post that had entities (correcting a typo or something), the forum software will "kindly" convert all those entities to the underlying characters, which is great... except whjen you had an entity inside the red-text back-ticks `` `&#x263a;` `` or inside a code/plaintext block (between \`\`\` rows): in that case, it will convert entities that you didn't intend, so the sentence
+When you edit a post that had entities (correcting a typo or something), the forum software will "kindly" convert all those entities to the underlying characters, which is great... except when you had an entity inside the red-text back-ticks `` `&#x263a;` `` or inside a code/plaintext block (between \`\`\` rows): in that case, it will convert entities that you didn't intend, so the sentence
 ```
 > For example, `☺` would be stored as `&#x263a;` or `π` as `&#x03C0;` .
 ```
