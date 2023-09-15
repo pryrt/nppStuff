@@ -37,3 +37,10 @@ class ThisIsTheClass(object):
 ThisIsTheClass().go()
 console.show()
 console.write(str(ThisIsTheClass.CONFIG)+"\n")
+
+"""
+Development Notes:
+- see https://github.com/Ekopalypse/NppPythonScripts/blob/master/npp/EnhanceAnyLexer.py
+- set UDL using notepad.runMenuCommand('Language', NAME_OF_UDL)
+
+"""
