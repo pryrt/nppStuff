@@ -90,12 +90,10 @@ fields
 fileno
 filetest
 finally
-flags
 flock
 for
 foreach
 fork
-format
 format
 formline
 ge
@@ -132,7 +130,6 @@ goto
 grep
 gt
 hex
-if
 if
 import
 index
@@ -177,12 +174,10 @@ not
 oct
 ok
 open
-open
 opendir
 ops
 or
 ord
-order
 our
 overload
 overloading
@@ -193,7 +188,6 @@ perlfaq
 pipe
 pop
 pos
-precision,
 print
 printf
 prototype
@@ -254,7 +248,6 @@ sleep
 socket
 socketpair
 sort
-sort
 splice
 split
 sprintf
@@ -301,7 +294,6 @@ utime
 values
 vars
 vec
-vector
 version
 vmsish
 wait
