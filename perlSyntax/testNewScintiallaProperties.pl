@@ -23,7 +23,7 @@ print for my $re = qr/regex with $var embedded/i;
 print for "hello" =~ m/this $var here/;
 print for "hello" =~ s/this $var her/and $var there/r;
 print my $x = ("5" x int(5)) . "string";
-
+if( -s $0 ) { print "-X are instruction words, even though they aren't in the list\n" }
 
 print for my $hdnoquote = <<EOF;
 This is a noquote heredoc with embedded $var
