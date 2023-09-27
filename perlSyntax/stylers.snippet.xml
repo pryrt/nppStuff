@@ -20,7 +20,7 @@
             <WordsStyle name="STRING QW"                    styleID="30" fgColor="CF34CF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="REGEX MATCH"                  styleID="17" fgColor="8080FF" bgColor="F8FEDE" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="REGEX SUBSTITUTION"           styleID="18" fgColor="8080C0" bgColor="FFEEEC" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="TRANSLATION"                  styleID="44" fgColor="8080C0" bgColor="FFEEEC" fontName="" fontStyle="4" fontSize="" />
+            <WordsStyle name="TRANSLATION"                  styleID="44" fgColor="8080C0" bgColor="FFEEEC" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="HEREDOC DELIMITER"            styleID="22" fgColor="550055" bgColor="EEEEFF" fontName="" fontStyle="1" fontSize="" />
             <WordsStyle name="HEREDOC SINGLEQUOTE"          styleID="23" fgColor="7F007F" bgColor="EEEEFF" fontName="" fontStyle="2" fontSize="" />
             <WordsStyle name="HEREDOC DOUBLEQUOTE"          styleID="24" fgColor="7F007F" bgColor="EEEEFF" fontName="" fontStyle="0" fontSize="" />
@@ -28,14 +28,14 @@
             <WordsStyle name="VAR IN STRING"                styleID="43" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="3" fontSize="" />
             <WordsStyle name="VAR IN REGEX"                 styleID="54" fgColor="8080FF" bgColor="F8FEDE" fontName="" fontStyle="3" fontSize="" />
             <WordsStyle name="VAR IN REGEX SUBSTITUTION"    styleID="55" fgColor="8080C0" bgColor="FFEEEC" fontName="" fontStyle="3" fontSize="" />
-            <WordsStyle name="VAR IN BACKTICKS"             styleID="57" fgColor="FFCC00" bgColor="808080" fontName="" fontStyle="2" fontSize="" />
+            <WordsStyle name="VAR IN BACKTICKS"             styleID="57" fgColor="FFFF00" bgColor="808080" fontName="" fontStyle="3" fontSize="" />
             <WordsStyle name="VAR IN HEREDOC DOUBLEQUOTE"   styleID="61" fgColor="7F007F" bgColor="EEEEFF" fontName="" fontStyle="3" fontSize="" />
             <WordsStyle name="VAR IN HEREDOC BACKTICK"      styleID="62" fgColor="8000FF" bgColor="FFEEEC" fontName="" fontStyle="3" fontSize="" />
             <WordsStyle name="VAR IN STRING QQ"             styleID="64" fgColor="804080" bgColor="FFFFFF" fontName="" fontStyle="3" fontSize="" />
-            <WordsStyle name="VAR IN STRING QX"             styleID="65" fgColor="D00000" bgColor="FFEEEC" fontName="" fontStyle="6" fontSize="" />
+            <WordsStyle name="VAR IN STRING QX"             styleID="65" fgColor="8000FF" bgColor="FFEEEC" fontName="" fontStyle="3" fontSize="" />
             <WordsStyle name="VAR IN STRING QR"             styleID="66" fgColor="8080FF" bgColor="F8FEDE" fontName="" fontStyle="3" fontSize="" />
-            <WordsStyle name="FORMAT IDENTIFIER"            styleID="41" fgColor="C000C0" bgColor="FFFFFF" fontName="" fontStyle="6" fontSize="" />
-            <WordsStyle name="FORMAT BODY"                  styleID="42" fgColor="C000C0" bgColor="FFF0FF" fontName="" fontStyle="4" fontSize="" />
+            <WordsStyle name="FORMAT IDENTIFIER"            styleID="41" fgColor="C000C0" bgColor="FFFFFF" fontName="" fontStyle="2" fontSize="" />
+            <WordsStyle name="FORMAT BODY"                  styleID="42" fgColor="C000C0" bgColor="FFF0FF" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="DATA SECTION"                 styleID="21" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="POD"                          styleID="3" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="POD VERBATIM"                 styleID="31" fgColor="004000" bgColor="EEFFEE" fontName="" fontStyle="0" fontSize="" />
