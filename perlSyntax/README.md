@@ -18,14 +18,6 @@ TBD:
 
 - convertTheme.pl ⇒ TBD ⇒ converts theme(s) to include the new LexPerl attributes
 
-## Notes
-
-ADJUST
-bigfloat
-builtin
-
-
-
 ## Issues
 
 ### Perl keywords need updating
