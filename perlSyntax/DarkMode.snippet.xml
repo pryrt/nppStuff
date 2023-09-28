@@ -34,7 +34,7 @@
             <WordsStyle name="VAR IN STRING QQ" styleID="64" fgColor="CC9393" bgColor="3F3F3F" fontName="" fontStyle="3" fontSize="" />
             <WordsStyle name="VAR IN STRING QX" styleID="65" fgColor="DCDCCC" bgColor="3F3F3F" fontName="" fontStyle="3" fontSize="" />
             <WordsStyle name="VAR IN STRING QR" styleID="66" fgColor="CC9393" bgColor="3F3F3F" fontName="" fontStyle="3" fontSize="" />
-            <WordsStyle name="FORMAT IDENTIFIER" styleID="41" fgColor="7F9F7F" bgColor="3F3F3F" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="FORMAT IDENTIFIER" styleID="41" fgColor="9FBF9F" bgColor="3F3F3F" fontName="" fontStyle="3" fontSize="" />
             <WordsStyle name="FORMAT BODY" styleID="42" fgColor="9FBF9F" bgColor="3F3F3F" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="DATASECTION" styleID="21" fgColor="7F9F7F" bgColor="3F3F3F" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="POD" styleID="3" fgColor="7F9F7F" bgColor="3F3F3F" fontName="" fontStyle="0" fontSize="" />
