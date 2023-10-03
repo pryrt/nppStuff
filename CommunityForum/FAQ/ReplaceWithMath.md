@@ -28,7 +28,13 @@ The following example (derived from [this post](/post/89472)) will search for te
   **Replace With**: `num_1=(?=match), num_2=(?=98+2*match)`
   **Search Mode**: `☑ Regular Expression`
 
-_Coming Soon: a quick table of essential tokens that you will need to know to be able to get a counter or the numerical value of matched groups, etc_
+## Columns++: Formula Replacement Quick Start
+
+All Formula Replacements go inside of a `(?=...)` wrapper: the math / formula goes where I've shown `...` .  Any of the expressions below can go inside a Formula Replacement wrapper, as well as any math using `+ - * / % ^` for the addition, subtraction, multiplication, division, modulo, and exponentiation operators, and other mathematical functions described in [the ExprTk Math Library](https://github.com/ArashPartow/exprtk) used by this plugin.
+
+- `match` ⇒ This variable is the number of times the regular expression has matched (essentially, a counter for matches).
+- `reg(ℕ)` ⇒ This grabs the numerical value of the ℕth capture group (similar to `$ℕ` or `${ℕ}` in a normal regex).
+- `this` ⇒ This variable is the numeric value of the entire match — only useful if the entire match is, in fact, a number.
 
 # Scripting Plugins
 
