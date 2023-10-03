@@ -16,7 +16,9 @@ The replacement engine, even with "regular expression" mode turned on, does not 
 
 So Notepad++ cannot do this.
 
-However, if you allow us to recommend a plugin, then the answer is, "yes, with certain plugins, you might be able to get the math replacement you want".
+# Actually: No, but Plugins might work for you
+
+However, if you allow us to recommend a plugin, then the answer is, "yes, with certain plugins, you might be able to get the math replacement you want".  See below for examples of how plugins might help you do specific math searches or replacements.
 
 # Plugin: Columns++
 
