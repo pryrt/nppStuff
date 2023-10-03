@@ -30,11 +30,13 @@ The following example (derived from [this post](/post/89472)) will search for te
 
 ## Columns++: Formula Replacement Quick Start
 
-All Formula Replacements go inside of a `(?=...)` wrapper: the math / formula goes where I've shown `...` .  Any of the expressions below can go inside a Formula Replacement wrapper, as well as any math using `+ - * / % ^` for the addition, subtraction, multiplication, division, modulo, and exponentiation operators, and other mathematical functions described in [the ExprTk Math Library](https://github.com/ArashPartow/exprtk) used by this plugin.
+All Formula Replacements go inside of a `(?=...)` wrapper: the math / formula goes in place of the  `...` .  Any of the expressions below can go inside a Formula Replacement wrapper, as well as any standard math using `+ - * /` for the addition, subtraction, multiplication, and division operators.
 
-- `match` ⇒ This variable is the number of times the regular expression has matched (essentially, a counter for matches).
-- `reg(ℕ)` ⇒ This grabs the numerical value of the ℕth capture group (similar to `$ℕ` or `${ℕ}` in a normal regex).
+- `match` ⇒ This variable is the number of times the regular expression has matched (essentially, a counter for matches).  So a replacement of `(?=match)` will replace with `1` on the first match, `2` on the second match, `3` on the third, etc.
+- `reg(ℕ)` ⇒ This grabs the numerical value of the ℕth capture group (similar to `$ℕ` or `${ℕ}` in a normal regex).  
 - `this` ⇒ This variable is the numeric value of the entire match — only useful if the entire match is, in fact, a number.
+
+For all the details, see the [Columns++ Documentation > Formulas](https://coises.github.io/ColumnsPlusPlus/help.htm#formulas) -- it includes other functions and operators for getting and manipulating data from your file, as well as other math functions and operators
 
 # Scripting Plugins
 
