@@ -22,12 +22,13 @@ However, if you allow us to recommend a plugin, then the answer is, "yes, with c
 
 It might not sound like a math-related plugin, but the [Columns++](https://github.com/Coises/ColumnsPlusPlus) is able to do calculations in its search-and-replace.  You can download the plugin from the [Columns++ repo](https://github.com/Coises/ColumnsPlusPlus) and manually install it.  (Eventually, @Coises might get it submitted to the Notepad++ Plugins Admin list, but it's not there yet.)
 
-The following example (derived from [this post](/post/89472)) will search for text that looks like `num_1=1, num_2=100` and replace so that num_2 will always be 98 + 2 * num_1 (so 1 will yield 100, 2 will yield 102, and so on).
+The following example (derived from [this post](/post/89472)) will search for text that looks like `num_1=1, num_2=100` and replace so that num_1 will count from 1 and up with each match, and num_2 will count by twos, starting at 100.
 - **Plugins > Columns++ > Search...**
 - **Find What**: `num_1=\d+, num_2=\d+`
   **Replace With**: `num_1=(?=match), num_2=(?=98+2*match)`
   **Search Mode**: `☑ Regular Expression`
- 
+
+_Coming Soon: a quick table of essential tokens that you will need to know to be able to get a counter or the numerical value of matched groups, etc_
 
 # Scripting Plugins
 
