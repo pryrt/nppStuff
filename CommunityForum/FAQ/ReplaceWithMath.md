@@ -8,7 +8,7 @@ There are many forms that this question can take, including but not limited to:
 - "Can I find all numbers that match some pattern and increment the replacement for each?"
 - "Can I find all numbers that match some pattern and round them to the nearest 1 (or 1000, or 0.001, or 0.000001, or ...)?"
 
-## In Short: No
+# In Short: No
 
 Notepad++ itself doesn't do math on the text during search-and-replace.  That is not what text editors are designed to do.
 
@@ -16,9 +16,22 @@ The replacement engine, even with "regular expression" mode turned on, does not 
 
 So Notepad++ cannot do this.
 
-## Scripting Plugins
+However, if you allow us to recommend a plugin, then the answer is, "yes, with certain plugins, you might be able to get the math replacement you want".
 
-If you allow us to recommend a plugin, then the answer is "yes, with caveats".
+# Plugin: Columns++
+
+It might not sound like a math-related plugin, but the [Columns++](https://github.com/Coises/ColumnsPlusPlus) is able to do calculations in its search-and-replace.  You can download the plugin from the [Columns++ repo](https://github.com/Coises/ColumnsPlusPlus) and manually install it.  (Eventually, @Coises might get it submitted to the Notepad++ Plugins Admin list, but it's not there yet.)
+
+The following example (derived from [this post](/post/89472)) will search for text that looks like `num_1=1, num_2=100` and replace so that num_2 will always be 98 + 2 * num_1 (so 1 will yield 100, 2 will yield 102, and so on).
+- **Plugins > Columns++ > Search...**
+- **Find What**: `num_1=\d+, num_2=\d+`
+  **Replace With**: `num_1=(?=match), num_2=(?=98+2*match)`
+  **Search Mode**: `☑ Regular Expression`
+ 
+
+# Scripting Plugins
+
+If you are willing to use a scripting plugin, you can perform math to do replaceplacements; however, there is a big **Caveat** below, which you must understand in order to make use of a scripting plugin solution.
 
 With a scripting plugin like PythonScript, Lua Script, and others, you can bring the full power of the underlying scripting language that those plugins provide to bear on the math you want to do. 
 
