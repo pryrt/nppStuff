@@ -8,7 +8,7 @@ There are many forms that this question can take, including but not limited to:
 - "Can I find all numbers that match some pattern and increment the replacement for each?"
 - "Can I find all numbers that match some pattern and round them to the nearest 1 (or 1000, or 0.001, or 0.000001, or ...)?"
 
-## In Short: No
+# In Short: No
 
 Notepad++ itself doesn't do math on the text during search-and-replace.  That is not what text editors are designed to do.
 
@@ -16,9 +16,33 @@ The replacement engine, even with "regular expression" mode turned on, does not 
 
 So Notepad++ cannot do this.
 
-## Scripting Plugins
+# Actually: No, but Plugins might work for you
 
-If you allow us to recommend a plugin, then the answer is "yes, with caveats".
+However, if you allow us to recommend a plugin, then the answer is, "yes, with certain plugins, you might be able to get the math replacement you want".  See below for examples of how plugins might help you do specific math searches or replacements.
+
+# Plugin: Columns++
+
+It might not sound like a math-related plugin, but the [Columns++](https://github.com/Coises/ColumnsPlusPlus) is able to do calculations in its search-and-replace.  You can download the plugin from the [Columns++ repo](https://github.com/Coises/ColumnsPlusPlus) and manually install it.  (Eventually, @Coises might get it submitted to the Notepad++ Plugins Admin list, but it's not there yet.)
+
+The following example (derived from [this post](/post/89472)) will search for text that looks like `num_1=1, num_2=100` and replace so that num_1 will count from 1 and up with each match, and num_2 will count by twos, starting at 100.
+- **Plugins > Columns++ > Search...**
+- **Find What**: `num_1=\d+, num_2=\d+`
+  **Replace With**: `num_1=(?=match), num_2=(?=98+2*match)`
+  **Search Mode**: `☑ Regular Expression`
+
+## Columns++: Formula Replacement Quick Start
+
+All Formula Replacements go inside of a `(?=...)` wrapper: the math / formula goes in place of the  `...` .  Any of the expressions below can go inside a Formula Replacement wrapper, as well as any standard math using `+ - * /` for the addition, subtraction, multiplication, and division operators.
+
+- `match` ⇒ This variable is the number of times the regular expression has matched (essentially, a counter for matches).  So a replacement of `(?=match)` will replace with `1` on the first match, `2` on the second match, `3` on the third, etc.
+- `reg(ℕ)` ⇒ This grabs the numerical value of the ℕth capture group (similar to `$ℕ` or `${ℕ}` in a normal regex).  
+- `this` ⇒ This variable is the numeric value of the entire match — only useful if the entire match is, in fact, a number.
+
+For all the details, see the [Columns++ Documentation > Formulas](https://coises.github.io/ColumnsPlusPlus/help.htm#formulas) -- it includes other functions and operators for getting and manipulating data from your file, as well as other math functions and operators
+
+# Scripting Plugins
+
+If you are willing to use a scripting plugin, you can perform math to do replaceplacements; however, there is a big **Caveat** below, which you must understand in order to make use of a scripting plugin solution.
 
 With a scripting plugin like PythonScript, Lua Script, and others, you can bring the full power of the underlying scripting language that those plugins provide to bear on the math you want to do. 
 

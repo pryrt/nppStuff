@@ -21,7 +21,7 @@ print for my @array2 = ('one', 'two', "three");
 print for my %hash = ( key => 'value', another => 'string');
 print for my $re = qr/regex with $var embedded/i;
 print for "hello" =~ m/this $var here/;
-print for "hello" =~ s/this $var her/and $var there/r;
+print for "hello" =~ s/this $var here/and $var there/r;
 print for "hello" =~ y/one $var one/one $var one/;
 print my $x = ("5" x int(5)) . "string";
 if( -s $0 ) { print "-X are instruction words, even though they aren't in the list\n" }
