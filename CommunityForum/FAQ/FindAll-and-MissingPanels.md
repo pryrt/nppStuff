@@ -14,21 +14,19 @@ If it finds something, it will list the results in the **Search Results** window
 
 But some users have accidentally "lost" that window, so it appears that nothing happens when the search is performed, and **Search > Search Results Window** (or the `F7` default shortcut) does not _appear_ to bring up the window as expected.
 
+If you _have_ done one of the **Find All**, then it _is_ open... somewhere.  You just might not be able to see it.
+
 ## Finding a Missing Panel
 
-Mentions of `F7` or **Search > Search Results Window** are specific to the **Find All** results not being visible.  However, the bulk of the advice below will help you find _any_ of the Panels that are missing.
-
-If you _have_ done one of the **Find All**, then it _is_ open... somewhere.  You just might not be able to see it.
-* By default, it's docked to the bottom of your Notepad++ window.  But it may have been re-docked to another edge, or floated.
-* It might be have been closed, in which case F7 (**Search > Search Results Window**) will re-enable it.
-* It may be docked, but shrunk down until you cannot see it.  If you see a small gap between the editor and the status bar or another edge of the editor, hover over it and see if you get the up-down arrow ↕ that you can click+drag to resize the panel.
+* By default, a Panel is docked to one of the edges of your Notepad++ window (**Search Results** is docked at the bottom by default, but other Panels are usually docked to the right or left sides).  But any Panel may have been re-docked to another edge, or even "floated" as a separate window.
+* It may be docked, but shrunk down until you cannot see it.  If you see a small gap between the editor and the status bar or another edge of the editor, hover over it and see if you get the up-down arrow ↕ (for the top and bottom edges) or left-right arrow ↔ (for the left and right edges) that you can click+drag to resize the panel.
     - screenshot: 
 ![9cef56b8-8298-4b82-b929-140b2d71f951-image.png](/assets/uploads/files/1659629486898-9cef56b8-8298-4b82-b929-140b2d71f951-image.png)
     - zoomed 4x: 
 ![zoomed](/assets/uploads/files/1693436693775-ed6cf59a-978d-45af-a1fb-dbdb560caa08-image.png) 
 * if it was undocked, it may have been dragged off screen (either to another monitor, or in rare occasions, off-monitor, or nearly so).  In this case
     1. Click in your editor panel
-    2. Hit `F7`, which will activate the Search Results Window (even if it is off screen)
+    2. Hit `F7`, which will activate the **Search Results Window** (even if it is off screen).  (For non-**Search Results Windows** panels, use the menu action that is supposed to activate that Panel.)
     3. Hit `Alt+Spacebar`, which will activate the Windows special menu (with Move/Size/Minimize/Maximize) for that window.
     4. Hit `M` (or whatever character in your language is underlined in the normal Move entry for that menu on any window)
     5. If you move your mouse around at this point, the outline of the window should snap near your cursor, and you can now click to place the window in a visible location
