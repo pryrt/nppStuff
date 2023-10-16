@@ -1,6 +1,8 @@
-# FAQ Desk: Where are my Find All results?
+# FAQ Desk: Where are my Find All results? (or other Panel)
 
-Hello, and welcome to the FAQ Desk.  You have likely been directed here because you have run one of the **Find All** searches, but you don't see your **Search Results** window.
+Hello, and welcome to the FAQ Desk.  You have likely been directed here because you have run one of the **Find All** searches, but you don't see your **Search Results** window -- or because one of your other Panels (Project Panels, Folder as Workspace Panel, Document List Panel, Function List Panel, ...)
+
+## Find All results specifics
 
 When you run one of the following **Find All** searches, the results are put into a **Search Results** window, which may be docked (by default, at the lower edge of the Notepad++ window) or may be floating (as a separate window).
 - **Search > Find > Find All In Current Document** - looks just in the active document
@@ -11,6 +13,10 @@ When you run one of the following **Find All** searches, the results are put int
 If it finds something, it will list the results in the **Search Results** window, with a heading per search, and pointers to the matches in the file or in each matching file.  If there are no matches, the **Search Results** window still displays a result, saying `0 hits in 0 files of N searched`.
 
 But some users have accidentally "lost" that window, so it appears that nothing happens when the search is performed, and **Search > Search Results Window** (or the `F7` default shortcut) does not _appear_ to bring up the window as expected.
+
+## Finding a Missing Panel
+
+Mentions of `F7` or **Search > Search Results Window** are specific to the **Find All** results not being visible.  However, the bulk of the advice below will help you find _any_ of the Panels that are missing.
 
 If you _have_ done one of the **Find All**, then it _is_ open... somewhere.  You just might not be able to see it.
 * By default, it's docked to the bottom of your Notepad++ window.  But it may have been re-docked to another edge, or floated.
