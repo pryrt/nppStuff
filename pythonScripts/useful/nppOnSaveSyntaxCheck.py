@@ -42,6 +42,8 @@ class NppOnSaveSyntaxCheck:
             #editor.annotationSetText(0, e.output)
             results = dict()
             regex = re.compile(r"^(.*?) at (.*?) line (\d+)", re.IGNORECASE | re.MULTILINE)
+
+            firstErrLine = None
             for m in regex.finditer(e.output):
                 #console.write("blah = |{}|\n".format(m.group()))
                 msg, fn, ln = m.groups()
@@ -52,6 +54,9 @@ class NppOnSaveSyntaxCheck:
                     results[ln] += "\n" + m.group()
                 else:
                     results[ln] = m.group()
+                if firstErrLine == None:
+                    firstErrLine = int(ln)
+
             if len(results)>0:
                 editor.annotationSetVisible(ANNOTATIONVISIBLE.BOXED)
                 for key, value in results.items():
@@ -60,6 +65,11 @@ class NppOnSaveSyntaxCheck:
                     editor.annotationSetText(int(key)-1, value)
                     editor.gotoLine(int(key)-1)
                 #editor.annotationSetText(editor.getLineCount()-1, e.output)
+
+            if firstErrLine != None:
+                if firstErrLine > 0:
+                    --firstErrLine
+                editor.gotoLine(firstErrLine-1);
 
     def annotatePythonScriptErrors(self, fname):
         """runs compile() on a PythonScript file and uses results to annotate"""
