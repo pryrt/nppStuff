@@ -22,7 +22,7 @@ However, if you allow us to recommend a plugin, then the answer is, "yes, with c
 
 See the replies below for scripting Plugins (like PythonScript Plugin or LuaScript Plugin or similar) or Columns++ Plugin or MultiReplace Plugin.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
 
 # Scripting Plugins
@@ -326,7 +326,7 @@ The possibilities of this mechanism are limited only by your imagination, and yo
 You may be able to convince a Community member to customize one of these for your exact circumstances... but the chances will be much higher if you try it on your own first, and show us what you tried, before asking us to write it for you.
 
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
 # Plugin: Columns++
 
@@ -445,7 +445,7 @@ use:
 
 **Replace with : ```zone_(?=55+5*match)```**
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
 # MultiReplace Plugin
 
