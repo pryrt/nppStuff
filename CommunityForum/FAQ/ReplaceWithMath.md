@@ -20,124 +20,10 @@ So Notepad++ cannot do this.
 
 However, if you allow us to recommend a plugin, then the answer is, "yes, with certain plugins, you might be able to get the math replacement you want".  See below for examples of how plugins might help you do specific math searches or replacements.
 
-# Plugin: Columns++
+See the replies below for scripting Plugins (like PythonScript Plugin or LuaScript Plugin or similar) or Columns++ Plugin or MultiReplace Plugin.
 
-It might not sound like a math-related plugin, but the [Columns++](https://github.com/Coises/ColumnsPlusPlus) is able to do calculations in its search-and-replace.  You can download the plugin from the [Columns++ repo](https://github.com/Coises/ColumnsPlusPlus) and manually install it.  (Eventually, @Coises might get it submitted to the Notepad++ Plugins Admin list, but it's not there yet.)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-## Columns++: Formula Replacement Quick Start
-
-All Formula Replacements go inside of a `(?=...)` wrapper: the math / formula goes in place of the  `...` .  Any of the expressions below can go inside a Formula Replacement wrapper, as well as any standard math using `+ - * /` for the addition, subtraction, multiplication, and division operators.
-
-- `match` ⇒ This variable is the number of times the regular expression has matched (essentially, a counter for matches).  So a replacement of `(?=match)` will replace with `1` on the first match, `2` on the second match, `3` on the third, etc.
-- `reg(ℕ)` ⇒ This grabs the numerical value of the ℕth capture group (similar to `$ℕ` or `${ℕ}` in a normal regex).  
-- `this` ⇒ This variable is the numeric value of the entire match — only useful if the entire match is, in fact, a number.
-
-For all the details, see the [Columns++ Documentation > Formulas](https://coises.github.io/ColumnsPlusPlus/help.htm#formulas) -- it includes other functions and operators for getting and manipulating data from your file, as well as other math functions and operators
-
-## Columns++: Examples
-
-The following example (derived from [this post](/post/89472)) will search for text that looks like `num_1=1, num_2=100` and replace so that num_1 will count from 1 and up with each match, and num_2 will count by twos, starting at 100.
-- **Plugins > Columns++ > Search...**
-- **Find What**: `num_1=\d+, num_2=\d+`
-  **Replace With**: `num_1=(?=match), num_2=(?=98+2*match)`
-  **Search Mode**: `☑ Regular Expression`
-
-### Simple Math
-
-When you want to do math, you need to select the numbers as capture groups in your search. For example, if you have text like:
-
-```
-time=3, distance=36
-time=7, distance=280
-time=4, distance=24
-```
-
-and you want to end up with:
-
-```
-speed=12, time=3, distance=36
-speed=40, time=7, distance=280
-speed=6, time=4, distance=24
-```
-
-you could use:
-
-**Find what : ```time=(\d+), distance=(\d+)```**
-
-with:
-
-**Replace with : ```speed=(?=reg(2)/reg(1)), $&```**
-
-Select the entire document, or the part of the document you want to search. (Rectangular selections are supported.) Select **Search...** from the **Columns++** plugin menu, enter the find and replace strings, and be sure **Regular expression** is checked. Then use **Replace** or **Replace All** as desired.
-
-### Add a value to each match (or subtract, or multiply, or divide, or other f(x))
-
-Use the [Simple Math](#simple-math) method, above; make sure the find string isolates the number you want to use as a capture group, replace the formula (```reg(2)/reg(1)```) with whatever computation you require, and adjust the rest of the replacement string as needed.
-
-*Beware of using a capture group like* **$1** *immediately followed by a* **(?=**...**)** *substitution; at present, this does not work as expected. Instead, write the capture group as* **${1}** *to avoid unintended results.*
-
-### Round off values to the nearest XXX
-
-For the most common cases, you can use the format string in a formula substitution to control this:
-
-**(?=1:reg(1))** — replaces with the numeric value of the first capture group rounded to an integer
-**(?=4:reg(1))** — ... rounded to an integer and padded: 0003, 0234, 5612, 98765
-**(?=1.2:reg(1)** — ... two decimal places: 4.37, 16.20, 0.07
-**(?=0.2:reg(1)** — ... two decimal places: 4.37, 16.20, .07
-**(?=1.-4:reg(1)** — ... up to four decimal places: 2, 3.7, 9.1423, 0.432
-**(?=1.0-4:reg(1)** — ... up to four decimal places: 2., 3.7, 9.1423, 0.432
-
-For more complex cases, use the **round** function with appropriate math:
-
-**(?=round(reg(1)/25)\*25)** — round to the nearest multiple of 25
-**(?=ceil(reg(1)/10)\*10)** — round up to a multiple of 10
-
-### Add hard line numbers to the current file
-
-**Find what : ```^```**
-**Replace with : ```(?=6:line) ```**
-
-to add line numbers at the left, zero-padded to six digits; use:
-
-**Find what : ```^```**
-**Replace with : ```L(?=3:line*5)-```**
-
-to add line numbers L005-, L010-, L015-, etc.
-
-### Replace with a simple counter (i.e., renumbering)
-
-To change:
-
-```
-zone_235 zone_249 zone_193 zone_151
-zone_207 zone_172 zone_5 zone_221
-zone_2 zone_270 zone_186 zone_228
-```
-
-to:
-
-```
-zone_1 zone_2 zone_3 zone_4
-zone_5 zone_6 zone_7 zone_8
-zone_9 zone_10 zone_11 zone_12
-```
-
-use:
-
-**Find what : ```zone_(\d+)```**
-**Replace with : ```zone_(?=match)```**
-
-To get:
-
-```
-zone_60 zone_65 zone_70 zone_75
-zone_80 zone_85 zone_90 zone_95
-zone_100 zone_105 zone_110 zone_115
-```
-
-use:
-
-**Replace with : ```zone_(?=55+5*match)```**
 
 # Scripting Plugins
 
@@ -438,3 +324,133 @@ The `stop` flag was used, instead of just using `editor.research()`'s `maxCount`
 The possibilities of this mechanism are limited only by your imagination, and your knowledge of Python (or some other scripting language) and regular expressions.
 
 You may be able to convince a Community member to customize one of these for your exact circumstances... but the chances will be much higher if you try it on your own first, and show us what you tried, before asking us to write it for you.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Plugin: Columns++
+
+It might not sound like a math-related plugin, but the [Columns++](https://github.com/Coises/ColumnsPlusPlus) is able to do calculations in its search-and-replace.  You can download the plugin from the [Columns++ repo](https://github.com/Coises/ColumnsPlusPlus) and manually install it.  (Eventually, @Coises might get it submitted to the Notepad++ Plugins Admin list, but it's not there yet.)
+
+## Columns++: Formula Replacement Quick Start
+
+All Formula Replacements go inside of a `(?=...)` wrapper: the math / formula goes in place of the  `...` .  Any of the expressions below can go inside a Formula Replacement wrapper, as well as any standard math using `+ - * /` for the addition, subtraction, multiplication, and division operators.
+
+- `match` ⇒ This variable is the number of times the regular expression has matched (essentially, a counter for matches).  So a replacement of `(?=match)` will replace with `1` on the first match, `2` on the second match, `3` on the third, etc.
+- `reg(ℕ)` ⇒ This grabs the numerical value of the ℕth capture group (similar to `$ℕ` or `${ℕ}` in a normal regex).  
+- `this` ⇒ This variable is the numeric value of the entire match — only useful if the entire match is, in fact, a number.
+
+For all the details, see the [Columns++ Documentation > Formulas](https://coises.github.io/ColumnsPlusPlus/help.htm#formulas) -- it includes other functions and operators for getting and manipulating data from your file, as well as other math functions and operators
+
+## Columns++: Examples
+
+The following example (derived from [this post](/post/89472)) will search for text that looks like `num_1=1, num_2=100` and replace so that num_1 will count from 1 and up with each match, and num_2 will count by twos, starting at 100.
+- **Plugins > Columns++ > Search...**
+- **Find What**: `num_1=\d+, num_2=\d+`
+  **Replace With**: `num_1=(?=match), num_2=(?=98+2*match)`
+  **Search Mode**: `☑ Regular Expression`
+
+### Simple Math
+
+When you want to do math, you need to select the numbers as capture groups in your search. For example, if you have text like:
+
+```
+time=3, distance=36
+time=7, distance=280
+time=4, distance=24
+```
+
+and you want to end up with:
+
+```
+speed=12, time=3, distance=36
+speed=40, time=7, distance=280
+speed=6, time=4, distance=24
+```
+
+you could use:
+
+**Find what : ```time=(\d+), distance=(\d+)```**
+
+with:
+
+**Replace with : ```speed=(?=reg(2)/reg(1)), $&```**
+
+Select the entire document, or the part of the document you want to search. (Rectangular selections are supported.) Select **Search...** from the **Columns++** plugin menu, enter the find and replace strings, and be sure **Regular expression** is checked. Then use **Replace** or **Replace All** as desired.
+
+### Add a value to each match (or subtract, or multiply, or divide, or other f(x))
+
+Use the [Simple Math](#simple-math) method, above; make sure the find string isolates the number you want to use as a capture group, replace the formula (```reg(2)/reg(1)```) with whatever computation you require, and adjust the rest of the replacement string as needed.
+
+### Round off values to the nearest XXX
+
+For the most common cases, you can use the format string in a formula substitution to control this:
+
+**`(?=1:reg(1))`** — replaces with the numeric value of the first capture group rounded to an integer
+**`(?=4:reg(1))`** — ... rounded to an integer and padded: 0003, 0234, 5612, 98765
+**`(?=1.2:reg(1)`** — ... two decimal places: 4.37, 16.20, 0.07
+**`(?=0.2:reg(1)`** — ... two decimal places: 4.37, 16.20, .07
+**`(?=1.-4:reg(1)`** — ... up to four decimal places: 2, 3.7, 9.1423, 0.432
+**`(?=1.0-4:reg(1)`** — ... up to four decimal places: 2., 3.7, 9.1423, 0.432
+
+For more complex cases, use the **round** function with appropriate math:
+
+**`(?=round(reg(1)/25)*25)`** — round to the nearest multiple of 25
+**`(?=ceil(reg(1)/10)*10)`** — round up to a multiple of 10
+
+### Add hard line numbers to the current file
+
+**Find what : ```^```**
+**Replace with : ```(?=6:line) ```**
+
+to add line numbers at the left, zero-padded to six digits; use:
+
+**Find what : ```^```**
+**Replace with : ```L(?=3:line*5)-```**
+
+to add line numbers L005-, L010-, L015-, etc.
+
+### Replace with a simple counter (i.e., renumbering)
+
+To change:
+
+```
+zone_235 zone_249 zone_193 zone_151
+zone_207 zone_172 zone_5 zone_221
+zone_2 zone_270 zone_186 zone_228
+```
+
+to:
+
+```
+zone_1 zone_2 zone_3 zone_4
+zone_5 zone_6 zone_7 zone_8
+zone_9 zone_10 zone_11 zone_12
+```
+
+use:
+
+**Find what : ```zone_(\d+)```**
+**Replace with : ```zone_(?=match)```**
+
+To get:
+
+```
+zone_60 zone_65 zone_70 zone_75
+zone_80 zone_85 zone_90 zone_95
+zone_100 zone_105 zone_110 zone_115
+```
+
+use:
+
+**Replace with : ```zone_(?=55+5*match)```**
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# MultiReplace Plugin
+
+The [MultiReplace Plugin](https://github.com/daddel80/notepadpp-multireplace#readme) is another plugin that will allow replacements to use mathematical forumula.
+
+Starting in Notepad++ v8.5.8, you can install the plugin through Plugins Admin.  For older versions of Notepad++, you may be able to install it manually.
+
+Examples similar to those for scripting Plugins and Columns++ will hopefully be coming soon.
