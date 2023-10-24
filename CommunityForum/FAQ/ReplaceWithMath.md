@@ -453,4 +453,64 @@ The [MultiReplace Plugin](https://github.com/daddel80/notepadpp-multireplace#rea
 
 Starting in Notepad++ v8.5.8, you can install the plugin through Plugins Admin.  For older versions of Notepad++, you may be able to install it manually.
 
-Examples similar to those for scripting Plugins and Columns++ will hopefully be coming soon.
+As explained in [this post](https://community.notepad-plus-plus.org/post/90056), this is in a nutshell how [MultiReplace](https://github.com/daddel80/notepadpp-multireplace/blob/main/README.md#multireplace-for-notepad) is working for Math.
+
+##Activating 'Use Variables':##
+This option facilitates math functions and dynamic string substitutions within a Replace String. It can work with all search settings combined and is not exclusively dependent on regex.
+
+##Commands Overview:##
+Either `set` or `cond` command is mandatory to set in 'Replace with' to wrap the math functions.
+
+- `set(strOrCalc)` - simple push of math results to Replace
+- `cond(condition, trueVal, [falseVal])` - if-then or if-then-else condition for push of results
+
+Examples of Commands Usage:
+- `set("replaceString"..CNT)` - results in "replaceString3" (assuming CNT = 3).
+- `set(LINE+5)` - results in "10" (assuming LINE = 5).
+- `cond(LINE<=5 or LINE>=9, "edge", "center")`  - results in "edge" (assuming LINE = 5).
+- `cond(LINE<3, "Modify this line")` - Keeps original text if condition is false (assuming LINE >= 3).
+
+##Variables Overview:##
+(will be enhanced in future by User requests):
+
+- `CNT`: Count of the detected string.
+- `LINE`: Line number where the string is found.
+- `APOS`: Absolute character position in the document.
+- `LPOS`: Relative line position.
+- `LCNT`: Count of the detected string within the line.
+- `COL`: Column number where the string was found (CSV-Scope option selected).
+- `MATCH`: Contains the text of the detected string.
+
+##Special Variables:##
+`CAP1, CAP2`, ...: Correspond to regex capture groups $1, $2. CAP variables are usable for calculations or as strings.
+
+*Format Handling:* If the CAP variable is a number it can interpret both dot and comma as decimal separators, making international usage more straightforward. Thousand separators are not supported.
+
+*Note*: `$1` and `$2` can be used in ReplaceString but content will only be resolved in CAP Variables for conditions and math functions
+
+Example of special Variables:
+***Find:*** `(\d+.\d+)`
+***Replace with:*** `set(CAP1 * 1.2)` - multiplies decimal number with 1.2
+
+##Basic rules:##
+- Strings have to be quoted by `'` or `"`
+- Concatenation is by `..`
+- Arithmetic: `+, -, *, /, ^, %`
+- Relational: `==, ~=, <, >, <=, >=`
+- Logical: `and, or, not`
+
+Example of combining:
+***Find***: `Price: (\d+(\.\d+)?)`
+***Replace with:*** `cond(CAP1~=0, "Price per unit: " ..(CAP1/10), "Price cannot be zero")` - Calculates Price per Unit if not Zero.
+
+##Further functionality:##
+As the engine is LUA driven all LUA math and string functions can be used in set or either cond
+
+Example with advanced math Function:
+***Find***: `Radius: (\d+)`
+***Replace with:*** `set("Circumference: "..(2 * math.pi * CAP1))` - Calculates the circumference of a circle given its radius.
+
+Example with a string function for alignment:
+***Find***: ;
+***Replace with:*** `cond(LCNT == 1, string.rep(" ", 20 - (LPOS))..";")` - aligns first occurrence of semicolon in Line to the 20th character position.
+
