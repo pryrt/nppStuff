@@ -16,14 +16,13 @@ To make post-creation easy, there is an editor toolbar over the post-entry box, 
 
 The screenshot below shows the buttons available.
 
-<!-- ![](https://community.notepad-plus-plus.org/assets/uploads/files/1687269718593-ce652379-4ede-4ac5-af76-ab3e2b322a42-image.png) -->
+|---|
+|![a7a932b5-4ba9-4be6-a070-7a10f3abd77e-image.png](/assets/uploads/files/1698413012959-a7a932b5-4ba9-4be6-a070-7a10f3abd77e-image.png) |
 
-![a7a932b5-4ba9-4be6-a070-7a10f3abd77e-image.png](/assets/uploads/files/1698413012959-a7a932b5-4ba9-4be6-a070-7a10f3abd77e-image.png) 
-
+- **_Topic Title Here_**: On a new Topic, this allows you to define the Topic's title.  On a reply, this shows you the active Topic's title (read-only).
 - **﹀ Hide**: Hides the posting window.
 - **🗑 Discard**: Cancels the post you are working on, and will not post the topic or reply.
 - **✓ Submit**: Publishes your post on the server.
-- **_Topic Title Here_**: On a new Topic, this allows you to define the Topic's title.  On a reply, this shows you the active Topic's title (read-only).
 - **B** (Bold): If you highlight text then click this button, it will make the text **Bold** (`**Bold**`)
 - **_I_** (Italic): If you highlight text then click this button, it will make the text _Italic_ (`_Italic_`)
 - **.---** (List) : If you highlight text then click this button, it will make an element of a bulleted list
