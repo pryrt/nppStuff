@@ -18,4 +18,4 @@ English is the primary language of this Forum. If you choose to post in another 
 
 To maintain a high quality of posts, accounts which post spam and accounts which post significant technical nonsense may be banned, at the moderators'/administrators' discretion.  (Being _wrong_ is not grounds for banning; but persisting in posting misleading or confusingly-wrong posts, or persisting in using Generative AI (like ChatGPT) or similar programs to create posts, _is_ grounds for banning.)
 
-Please be polite and treat other Community Forum members with respect. Ad hominem attacks, personal insults, hate speech, and other such violations of this policy are grounds for immediate and permanent banning from this Forum.
+Please be polite and treat other Community Forum members with respect. Unfortunately, some people will be rude: this is discouraged, and not beneficial to reasoned discussion, but will not warrant official censure.  But, to be clear: **Ad hominem attacks, personal insults, hate speech, and other such egregious violations of this policy are grounds for posts to be deleted and for immediate and permanent banning from this Forum.**

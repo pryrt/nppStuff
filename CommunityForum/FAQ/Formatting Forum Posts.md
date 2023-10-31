@@ -12,9 +12,28 @@ The results of the Markdown syntax can be seen in the **PREVIEW** pane next to t
 
 ## Forum Toolbar
 
-To make post-creation easy, there is an editor toolbar over the post-entry box, so you can just type your text in the entry, highlight a portion of text, and use the toolbar to apply formatting to that text.  If you click the button without selecting text first, it will put in some dummy text that will be formatted in that style, and you can just edit that text with whatever you're trying to say.  The screenshot below shows the buttons available, and tells what each of those buttons do.
+To make post-creation easy, there is an editor toolbar over the post-entry box, so you can just type your text in the entry, highlight a portion of text, and use the toolbar to apply formatting to that text.  If you click the button without selecting text first, it will put in some dummy text that will be formatted in that style, and you can just edit that text with whatever you're trying to say.  
 
-![](https://community.notepad-plus-plus.org/assets/uploads/files/1687269718593-ce652379-4ede-4ac5-af76-ab3e2b322a42-image.png)
+The screenshot below shows the buttons available.
+
+|---|
+|![a7a932b5-4ba9-4be6-a070-7a10f3abd77e-image.png](/assets/uploads/files/1698413012959-a7a932b5-4ba9-4be6-a070-7a10f3abd77e-image.png) |
+
+- **_Topic Title Here_**: On a new Topic, this allows you to define the Topic's title.  On a reply, this shows you the active Topic's title (read-only).
+- **﹀ Hide**: Hides the posting window.
+- **🗑 Discard**: Cancels the post you are working on, and will not post the topic or reply.
+- **✓ Submit**: Publishes your post on the server.
+- **B** (Bold): If you highlight text then click this button, it will make the text **Bold** (`**Bold**`)
+- **_I_** (Italic): If you highlight text then click this button, it will make the text _Italic_ (`_Italic_`)
+- **.---** (List) : If you highlight text then click this button, it will make an element of a bulleted list
+- **~~S~~** (Strikethrough): If you highlight text then click this button, it will make text ~~Strike Through~~ (`~~Strike Through~~`)
+- **</>** (Code): If you highlight text then click this button, it will make that text formatted as ```Code / Plain Text``` (```` ```Code / Plain Text``` ````)
+- **🔗** (Link): If you highlight text then click this button, it will make that text the "link text" of a hyperlink (`[link text](link url)`), and will then highlight the `link url`, which is where you can type the URL destination for the link
+- **[image]** (Image Link): The little portrait icon inserts an image link ```![alt text](image url)``` and highlights the `image url`, allowing you to enter the URL for an existing image (usually GIF, JPEG, or PNG).  (As described below, the easiest way to embed a new image is to just copy the image from an `Alt+PrintScreen` screenshot or similar, then paste it into your post.)
+- **⤧** (Zen Mode): Enlarges the post-editing pane to be nearly full-screen, to get rid of the "distraction" of the previous posts. Hitting `ESC` will take you back to the normal editing pane size.
+- **🖺** (Upload Image): Gives you an **Open** dialog where you can open an image from your computer to upload into your post.  (As described below, the easiest way to embed a new image is to just copy the image from an `Alt+PrintScreen` screenshot or similar, then paste it into your post.)
+- **👁 Hide Preview**: Hides the **Preview** half of the editing panel.  Don't click this, because you need to see your formatted post as you are editing.
+- **? Help**: Shows a popup window with some simple Markdown help, with a link to [commonmark's Markdown reference](https://commonmark.org/help/).
 
 ## Formatting
 
@@ -121,11 +140,17 @@ The easiest way to include a screenshot in your post is to use normal Windows me
 
 ### Other formatting
 
+#### Character Formatting
+
 `**bold**` or `__bold__` will make your text **bold**
 
 `*italic*` or `_italic_` will make your text _italic_
 
-you can get a list with the **list** button, or putting asterisk-space `* ` or hyphen-space `- ` as the first characters on the line
+`~~strikethrough~~` will ~~strikethrough~~ your text
+
+#### Lists
+
+You can get a list with the **list** button, or putting asterisk-space `* ` or hyphen-space `- ` as the first characters on the line
 ```
 * first bullet
 * second bullet
@@ -147,10 +172,9 @@ Numbered lists with a number, then period or close-parenthesis, then a space
 1) first
 2) second
 
-`~~strikethrough~~` will ~~strikethrough~~ your text
+#### Headers
 
-
-Headers: use one or more hashtags followed by a space and the text for the header.  The titles of posts are header one, so I generally stick with header two or lower inside a post:
+Use one or more hashtags followed by a space and the text for the header.  The titles of posts are header one, so I generally stick with header two or lower inside a post:
 
 ```
 ## header two
@@ -162,9 +186,29 @@ Headers: use one or more hashtags followed by a space and the text for the heade
 ### header three
 #### header four
 ##### header five
+
+#### Tables
+
+You can "draw" the table using `|` to represent column borders (including the left and right border, so two columns wide should use three `|` per row).  After the initial header row, you need a row of `|---|---|` (with the right number of cells, and at least 3 hyphens per cell [more hyphens is fine]) to tell the Markdown engine that it's a table.
+
+```
+| Header 1        | Header 2         |
+|-----------------|------------------|
+| Row 1, Column 1 | Row 1, Column 1  |
+| Row 2, Column 1 | Row 2, Column 1  |
+```
+
+| Header 1        | Header 2         |
+|-----------------|------------------|
+| Row 1, Column 1 | Row 1, Column 1  |
+| Row 2, Column 1 | Row 2, Column 1  |
+
+For more table options, check out the Markdown references, below, or search the internet for `markdown table`.
 
 \-----
+
 ## Other Markdown References
 
-* https://daringfireball.net/projects/markdown/syntax
-* https://community.notepad-plus-plus.org/topic/14262/how-to-markdown-code-on-this-forum/4
+- https://commonmark.org/help/
+- https://daringfireball.net/projects/markdown/syntax
+- https://community.notepad-plus-plus.org/topic/14262/how-to-markdown-code-on-this-forum/4
