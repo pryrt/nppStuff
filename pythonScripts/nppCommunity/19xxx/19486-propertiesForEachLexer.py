@@ -24,7 +24,7 @@ for t in LANGTYPE.values.values():
             v = str(editor.getPropertyInt(s,-65537))
         else:
             v = '"' + editor.getProperty(s) + '"'
-        console.write("\t{:<32.32s}:{: <9.9s}: {:<32.32s} \"{}\"\n".format(
+        console.write("\t{:<48.48s}:{: <9.9s}: {:<32.32s} \"{}\"\n".format(
             "'"+s+"'",
             "{:01d}={:<s}".format(editor.propertyType(s), str(TYPEPROPERTY.values[editor.propertyType(s)])),
             v,
