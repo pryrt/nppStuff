@@ -1,6 +1,8 @@
-# FAQ Desk: Where are my Find All results? (or other Panel)
+# FAQ: I Cannot Find My Panel!
 
-Hello, and welcome to the FAQ Desk.  You have likely been directed here because you have run one of the **Find All** searches, but you don't see your **Search Results** window -- or because one of your other Panels (Project Panels, Folder as Workspace Panel, Document List Panel, Function List Panel, ...) does not appear visible, even though you believe it should be.
+Hello, and welcome to the FAQ Desk.  
+
+You have likely been directed here because you have run one of the **Find All** searches, but you don't see your **Search Results** window -- or because one of your other Panels (Project Panels, Folder as Workspace Panel, Document List Panel, Function List Panel, or even a Panel belonging to a Plugin...) _should_ be visible, but is not.
 
 ## Find All results specifics
 
