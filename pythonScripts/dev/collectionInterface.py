@@ -10,13 +10,14 @@ I am going to have to start learning Eko's [WinDialog](https://github.com/Ekopal
 
 Next Steps:
     - .download_udl():
-        - use the basic interface in my experimental code
+        - used the basic interface in my experimental code (which is now deleted)
         - return object = {
                 'content': slurp+stringify,
                 'Content-Type': f.info.getheader('Content-Type'),
                 'status': f.getcode(),
                 'ERROR': str(e) # if it exists
             }
+        - TODO: need to do type checking: either text/xml or text/plain that resolves to valid XML
     - .download_theme(): similar to .download_udl()
     - Switch to PS3
     - Learn WinDialog
@@ -90,7 +91,7 @@ class CollectionInterface(object):
 
         return retval
 
-    def download_theme(theme_file_name):
+    def download_theme(self, theme_file_name):
         """grab the specified theme
 
         theme_file_name should include the .xml extension (eg: 'blah.xml')
@@ -98,63 +99,98 @@ class CollectionInterface(object):
         """
         pass
 
-    def download_udl(udl_id = None, udl_display_name = None):
+    def _dl_from_id_key(self,udl_id, key, chain = None):
+        o = self._udl_hoh[udl_id]
+
+        if chain is None:
+            chain = {
+                'content': None,                # slurp+stringify,
+                'Content-Type': None,           # f.info.getheader('Content-Type'),
+                'status': None,                 # f.getcode(),
+                'ERROR': None,                  # str(e) # if it exists
+            }
+
+        console.write(u'trying id={}, key={}\n'.format(udl_id, key))
+
+        if key in o and o[key]:
+            try:
+                f = urllib2.urlopen(o[key])
+                fi = f.info()
+                chain['URL'] = o[key]
+                chain['content'] = f.read()
+                chain['Content-Type'] = fi.getheader('Content-Type')
+                chain['status'] = f.getcode()
+            except urllib2.HTTPError as e:
+                if chain['ERROR']:
+                    prefix = str(chain['ERROR'])
+                else:
+                    prefix = u''
+                msg = u'{}{} => {}\n'.format(prefix, o[key], str(e))
+                chain['ERROR'] = Exception(msg) # but don't raise it yet...
+
+        return chain
+
+
+    def download_udl(self, udl_id = None, udl_display_name = None):
         """grab the specified UDL
 
         can be specified by udl_id (based on o['id-name'])
         or specified by udl_display_name (based on o['display-name'])
         """
-        pass
+        chain = {
+            'content': None,                # slurp+stringify,
+            'Content-Type': None,           # f.info.getheader('Content-Type'),
+            'status': None,                 # f.getcode(),
+            'ERROR': None,                  # str(e) # if it exists
+        }
+
+        if udl_id and udl_id in self._udl_hoh:
+
+            if chain['content'] is None:
+                chain = self._dl_from_id_key(udl_id, '_collection_url')
+
+            if chain['content'] is None:
+                chain = self._dl_from_id_key(udl_id, 'repository')
+
+            if chain['content'] is None:
+                if isinstance(chain['ERROR'], Exception):
+                    raise chain['ERROR']
+                elif isinstance(chain['ERROR'], str) or isinstance(chain['ERROR'], unicode):
+                    raise Exception(chain['ERROR'])
+                else:
+                    raise Exception("[ERROR] Cannot determine what went wrong when I tried {}".format(udl_id))
+
+        elif udl_display_name:
+
+            raise Exception("udl_display_name interface not implemented yet")
+
+        else:
+
+            raise Exception("provided with neither a valid udl_id nor a valid udl_display_name; don't know what to do")
+
+        # TODO: need to check the content type, and complain if it's not XML
+
+        return chain
 
 console.clear();
 collectionInterface = CollectionInterface()
 #console.write(json.dumps({ "UDLs": collectionInterface.list_udls() , "nppThemes": collectionInterface.list_themes()}, sort_keys=True, indent=2, separators=(',',':')))
 #console.write("\n")
 
-"""
-Current: 'id-name':'AgenaUDL' => the Collection doesn't have the file, and the repo link goes to the repo-parent, not the XML itself
-I want to play with urllib2 and seeing if I can get the meta-info
-    https://stackoverflow.com/questions/843392/python-get-http-headers-from-urllib2-urlopen-call?noredirect=1&lq=1
-"""
-if True:
-    o = collectionInterface._udl_hoh['AgenaUDL']
-    s = None
-    se = u''
+# AgenaUDL => the Collection doesn't have the file, and the repo link goes to the repo-parent, not the XML itself
+ro = collectionInterface.download_udl(udl_id = 'AgenaUDL')
+console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 
-    if s is None and '_collection_url' in o and o['_collection_url']:
-        try:
-            f = urllib2.urlopen(o['_collection_url'])
-            fi = f.info()   # do this separate in case I want to grab other metadata from the .info() struct
-            s = u'{} => {}'.format(
-                o['_collection_url'],
-                fi.getheader('Content-Type')
-            )
-            console.write(str(fi)+"\n")
-        except urllib2.HTTPError as e:
-            msg = u'[ERROR] {} => {}\n'.format(o['_collection_url'], e)
-            console.writeError(msg)
-            se += msg
+# 6502Assembly_byCarlMyerholtz => it exists in the collection repo, but comes out as text/plain, not text/xml.
+#       It appears that GitHub's "raw" interface sends things as text/plain, to keep it raw.
+#       So I will need to be able to accept either, and do additional checking if the text is reasonable XML.
+ro = collectionInterface.download_udl(udl_id = '6502Assembly_byCarlMyerholtz')
+console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 
-    if s is None and 'repository' in o and o['repository']:
-        try:
-            f = urllib2.urlopen(o['repository'])
-            fi = f.info()   # do this separate in case I want to grab other metadata from the .info() struct
-            s = u'{} => {}'.format(
-                o['repository'],
-                fi.getheader('Content-Type')
-            )
-            console.write(str(fi)+"\n")
-        except urllib2.HTTPError as e:
-            msg = u'[ERROR] {} => {}\n'.format(o['_collection_url'], e)
-            console.writeError(msg)
-            se += msg
-
-    if s is None:
-        s = se
-
-    console.write(json.dumps( {'AgenaUDL':o, 'result':s}, sort_keys=True, indent=2 ))
-"""
-Conclusion: I can check the Content-Type for the URL
-"""
+# 'RouterOS Script' => gives invalid URL
+#       At some point, I should probably add a "reverse checker", to make sure that every UDL filename
+#       is also in the JSON's 'id-name'
+# ro = collectionInterface.download_udl(udl_id = '6502Assembly_byCarlMyerholtz')
+# console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 
 del(collectionInterface)
