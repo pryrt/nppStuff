@@ -17,7 +17,12 @@ Next Steps:
                 'status': f.getcode(),
                 'ERROR': str(e) # if it exists
             }
-        - TODO: need to do type checking: either text/xml or text/plain that resolves to valid XML
+        ☐ TODO: need to continue type checking:
+            ✓ text/xml allowed
+            ✓ text/plain allowed
+                ☐ if it resolves to valid XML, it's okay
+                ☐ else, "406 Not Acceptable"
+            ✓ anything else not allowed => "406 Not Acceptable"
     - .download_theme(): similar to .download_udl()
     - Switch to PS3
     - Learn WinDialog
@@ -130,6 +135,27 @@ class CollectionInterface(object):
 
         return chain
 
+    def _check_for_xml(self, chain):
+        if chain['Content-Type'][0:8] == 'text/xml':
+            console.write("It's text/xml, so it's definitely okay\n")
+            return chain
+
+        if chain['Content-Type'][0:10] == 'text/plain':
+            console.write("It's text/plain, so it might be okay; TODO = do deeper checking\n")
+            return chain
+
+        msg = u'Not Acceptable => Content-Type should be text/xml or text/plain, but got {}'.format(chain['Content-Type'])
+        raise urllib2.HTTPError(chain['URL'], 406, msg, None, None)
+
+        """
+            urllib2.HTTPError(self, url, code, msg, hdrs, fp)
+                https://www.rfc-editor.org/rfc/rfc7231.html#section-6.5.6       406 Not Acceptable
+                    "indicates that the target resource does not have a current representation that would be acceptable to the user agent"
+                - that sounds like the right thing for
+            urllib2.URLError(self, reason)
+        """
+
+
 
     def download_udl(self, udl_id = None, udl_display_name = None):
         """grab the specified UDL
@@ -168,7 +194,8 @@ class CollectionInterface(object):
 
             raise Exception("provided with neither a valid udl_id nor a valid udl_display_name; don't know what to do")
 
-        # TODO: need to check the content type, and complain if it's not XML
+        # need to check the content type, and complain if it's not XML
+        chain = self._check_for_xml(chain)
 
         return chain
 
@@ -177,9 +204,16 @@ collectionInterface = CollectionInterface()
 #console.write(json.dumps({ "UDLs": collectionInterface.list_udls() , "nppThemes": collectionInterface.list_themes()}, sort_keys=True, indent=2, separators=(',',':')))
 #console.write("\n")
 
-# AgenaUDL => the Collection doesn't have the file, and the repo link goes to the repo-parent, not the XML itself
-ro = collectionInterface.download_udl(udl_id = 'AgenaUDL')
-console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+# AgenaUDL => the Collection doesn't have the file, and the repo link goes to the repo-parent, not the XML itself (text/html)
+try:
+    ro = collectionInterface.download_udl(udl_id = 'AgenaUDL')
+    console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+except urllib2.HTTPError as e:
+    console.writeError(u"{} => {}\n\n".format(str(e), json.dumps({
+        'e_info': e.info(),
+        'e_code': e.getcode(),
+        'e_url': e.filename
+    }, sort_keys=True, indent=2)))
 
 # 6502Assembly_byCarlMyerholtz => it exists in the collection repo, but comes out as text/plain, not text/xml.
 #       It appears that GitHub's "raw" interface sends things as text/plain, to keep it raw.
@@ -188,9 +222,10 @@ ro = collectionInterface.download_udl(udl_id = '6502Assembly_byCarlMyerholtz')
 console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 
 # 'RouterOS Script' => gives invalid URL
+#   >> httplib.InvalidURL: URL can't contain control characters. u'/notepad-plus-plus/userDefinedLanguages/master/UDLs/RouterOS Script.xml' (found at least u' ')
 #       At some point, I should probably add a "reverse checker", to make sure that every UDL filename
 #       is also in the JSON's 'id-name'
-# ro = collectionInterface.download_udl(udl_id = '6502Assembly_byCarlMyerholtz')
-# console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+#ro = collectionInterface.download_udl(udl_id = 'RouterOS Script')
+#console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 
 del(collectionInterface)
