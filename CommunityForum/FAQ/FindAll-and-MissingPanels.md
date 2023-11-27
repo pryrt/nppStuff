@@ -38,7 +38,7 @@ For those who are not able to position their mouse pointer along the appropriate
 
 1. Save all open files.
 2. Exit Notepad++ completely (**File > Exit**).
-3. Start a single Notepad++ window.
+3. Run Microsoft's `notepad.exe` (as per [the online User Manual](https://npp-user-manual.org/docs/config-files/#editing-configuration-files), you cannot use Notepad++ to edit `config.xml`, or it will be overwritten as you exit Notepad++, thus losing the changes you thought you made).
 4. Edit `%AppData%\Notepad++\config.xml` or the equivalent file if you have a non-standard installation (such as portable edition, or Cloud Settings enabled, or using `--settingsDir` command line argument).
 5. Search for `GUIConfig name="DockingManager"` in `config.xml`.
 6. Replace the section that look similar to this:
@@ -60,7 +60,7 @@ For those who are not able to position their mouse pointer along the appropriate
     </GUIConfig>
     ```
 7. Save `config.xml`.
-8. Exit Notepad++.
+8. Exit `notepad.exe`.
 9. When you run Notepad++ again and do a new **Find All**, the **Search Results** window will be back to its default size and location, docked to the bottom of the Notepad++ window.
 
 If this doesn't work for you, you can reply in your original discussion (or create a new [Help Wanted](/category/4/help-wanted) post) and explain that you read this FAQ, and followed all the advice (including checking for tiny docked windows, tried to use the keyboard to move it in case it was off-screen, and tried to manually edit `config.xml`, all to no avail); when you make this reply or new post, please include a copy of the `<GUIConfig name="DockingManager"` through `</GUIConfig>` from your `config.xml`, along with the **?**-menu's **Debug Info**, and a screenshot of your **Find** dialog.  Without this information, you will just be asked to read this FAQ.
