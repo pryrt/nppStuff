@@ -9,6 +9,15 @@ This script will [hopefully] load a functionList XML file, extract its regexes, 
 
 derived from my sessionChecker.py
 
+#### TODO:
+1. FEATURE: Needs to implement className/nameExpr inside a function-only parser
+    ie, class without classRange, example
+        sub PERLQUALIFIED::Method { 1; }
+2. BUG: if there is no classRange element, it complains
+3. BUG: it doesn't handle r'(?x)' free-spacing mode correctly
+    - possibly doesn't know free-spacing
+    - possibly xml parser got rid of EOL, so free-spacing comments never end
+
 """
 
 # reference: https://stackoverflow.com/questions/48746478/how-do-i-extract-value-of-xml-attribute-in-python
@@ -153,23 +162,23 @@ except KeyError:
     notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT2)
     notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT3)
 
-#   #### NORMAL FUNCTION NAMES are EXT4
-#
-#   try:
-#       functionRange = parser.find('./function')
-#       reFunctionMain = functionRange.attrib['mainExpr']
-#       nameExpressions = functionRange.findall('./functionName/nameExpr')
-#       console.write('<function MainExpr="{}"> => {:d}\n'.format(reFunctionMain, len(nameExpressions)))
-#       if len(nameExpressions) == 0:
-#           funcEditor.research(reFunctionMain, lambda m: markingFunction(m,MY_MENUCOMMAND.SEARCH_MARKONEEXT4), re.S|re.M)
-#       else:
-#           for nameElem in nameExpressions:
-#               reFunctionName = nameElem.attrib['expr']
-#               console.write("\t<nameExpr expr='{}'>\n".format(reFunctionName))
-#               funcEditor.research(reFunctionMain, lambda m: containerMarkingFunction(m,reFunctionName,MY_MENUCOMMAND.SEARCH_MARKONEEXT4), re.S|re.M)
-#       # TODO: implement className/nameExpr inside the normal function as well, using EXT2
-#   except KeyError:
-#       notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT5)
+#### NORMAL FUNCTION NAMES are EXT4
+
+try:
+    functionRange = parser.find('./function')
+    reFunctionMain = functionRange.attrib['mainExpr']
+    nameExpressions = functionRange.findall('./functionName/nameExpr')
+    console.write('<function MainExpr="{}"> => {:d}\n'.format(reFunctionMain, len(nameExpressions)))
+    if len(nameExpressions) == 0:
+        funcEditor.research(reFunctionMain, lambda m: markingFunction(m,MY_MENUCOMMAND.SEARCH_MARKONEEXT4), re.S|re.M)
+    else:
+        for nameElem in nameExpressions:
+            reFunctionName = nameElem.attrib['expr']
+            console.write("\t<nameExpr expr='{}'>\n".format(reFunctionName))
+            funcEditor.research(reFunctionMain, lambda m: containerMarkingFunction(m,reFunctionName,MY_MENUCOMMAND.SEARCH_MARKONEEXT4), re.S|re.M)
+    # TODO: implement className/nameExpr inside the normal function as well, using EXT2
+except KeyError:
+    notepad.menuCommand(MY_MENUCOMMAND.SEARCH_UNMARKALLEXT5)
 
 '''
 triple quotes
