@@ -1,4 +1,4 @@
-# FAQ: Automating Noteapd++
+# FAQ: Automating Notepad++
 
 Users often question whether Notepad++ has scripting or other automation capabilities available.
 
@@ -26,13 +26,13 @@ For many, Macros are sufficient for their automation needs, especially because i
 
 ## Plugins
 
-There are a variety of plugins which embed a full programming language in the Noteapd++ environment, which gives scripts in that plugin the ability to access Noteapd++ command and perform actions on the files open in Notepad++, with the full power of a programming language (with variables, looping, conditionals, user input, and libraries that are avaialable for that language).
+There are a variety of plugins which embed a full programming language in the Notepad++ environment, which gives scripts in that plugin the ability to access Notepad++ command and perform actions on the files open in Notepad++, with the full power of a programming language (with variables, looping, conditionals, user input, and libraries that are available for that language).
 
 The plugins linked below can all be installed through the Plugins Admin interface.  The first two get more mentions in the Community, because they are the ones that many of the regulars use, but all are reasonable choices for Notepad++ automation through scripting.
 
 - [NppExec](https://github.com/d0vgan/nppexec) - This was one of the earliest "scripting" languages, which provides capabilities similar to a Windows batch file, but more powerful.  This is great if you are wanting to automate saving, file-system operations, and the like; it is also frequently used for gluing together a process using linters, code-cleaners, compilers, and even running the code in a console in Notepad++.
 - [PythonScript](https://github.com/bruderstein/PythonScript) - Provides Python-based scripting (for now, Python 2.7 for the default PythonScript 2 installed via Plugins admin, though a Python 3.x interpreter is available by using one of the 3.0.X "alpha" pre-release versions that you can [download at GitHub](https://github.com/bruderstein/PythonScript/releases)).
-  - PythonScript solutions are so common in the Commuity that we have an entire FAQ entry devoted to [installing and using scripts in PythonScript](/topic/23039).
+  - PythonScript solutions are so common in the Community that we have an entire FAQ entry devoted to [installing and using scripts in PythonScript](/topic/23039).
 - [ActiveX Plugin](https://sourceforge.net/projects/nppactivexplugin/)
 - [Automation Scripts](https://github.com/oleg-shilo/scripts.npp) - This provides C#-based scripting.
 - [jN Notepad++ Plugin](https://github.com/sieukrem/jn-npp-plugin/wiki) - This provides JavaScript-based scripting.
@@ -40,7 +40,7 @@ The plugins linked below can all be installed through the Plugins Admin interfac
 
 There may be other scripting plugins that aren't available in the Plugins Admin (and possibly even ones that are listed there, but they haven't come up in the Community or aren't described in the Plugins Admin in a way that makes it obvious that they include Notepad++ automation capabilities).
 
-Some users may argue that "if it requires a plugin, then Notepad++ doesn't _really_ support scripting".  The FAQ author and many Community members disagree: the Notepad++ Developer seems to have chosen to "support" scripting by encouraging the creation of and use of scripting plugins that interally use the plugin API that Notepad++ provides.  The Developer seems content to not "compete" with plugins by adding functionality that one or more plugins already successfully implement (this also frees up his time to focus on the core of Notepad++, rather than spending his time on maintaing and supporting one or more scripting languages, which is not where his interests apparently lie).
+Some users may argue that "if it requires a plugin, then Notepad++ doesn't _really_ support scripting".  The FAQ author and many Community members disagree: the Notepad++ Developer seems to have chosen to "support" scripting by encouraging the creation of and use of scripting plugins that internally use the plugin API that Notepad++ provides.  The Developer seems content to not "compete" with plugins by adding functionality that one or more plugins already successfully implement (this also frees up his time to focus on the core of Notepad++, rather than spending his time on maintaining and supporting one or more scripting languages, which is not where his interests apparently lie).
 
 ## External Automation
 
