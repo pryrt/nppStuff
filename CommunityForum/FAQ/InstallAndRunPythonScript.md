@@ -2,12 +2,26 @@
 
 Hello, and welcome to the FAQ Desk.  You have likely been directed here because someone provided you with a script for PythonScript, and you need instructions on how to install and run the script.
 
+Please read this FAQ in its entirety before trying to follow the instructions.  You may miss some important concepts by trying to just quickly follow the instructions without having read this whole FAQ.  If you have problems at any stage in this process, go back and re-read this entire FAQ and make sure you haven't missed anything.
+
+This FAQ is in three sections:
+
+- **Installation** ⇒ Describes how to install and configure the PythonScript plugin, and how to create a new script to paste the contents of a script that you are copying from somewhere else
+- **Usage -- How to Run the Script** ⇒ Describes how to run the script, once you've installed the plugin and created the script with its contents.
+- **Footnotes** ⇒ Gives additional details.  The FAQ will link to the appropriate footnote with a link like [Footnote N](#footnotes "Footnote N"), or you can just scroll down to that section to see the footnote referenced.
+
 ## Installation
+
+These are the installation instructions.  If you want to know how to _run_ the script, that is described in the **Usage** section, farther down in this FAQ.
 
 0. Install PythonScript plugin, if you don't have it already
     - **Plugins > Plugins Admin**
     - checkmark `PythonScript`
     - click **Install**
+    - _Recommended_: After Notepad++ restarts
+        - go to **Plugins > Python Script > Configuration...**
+        - checkmark **☑ Automatically open console on error** -- this will make sure that if there's a syntax error or runtime error in the script you run later, the console will be shown so that you can see the error
+        - set **Initialisation:** to `ATSTARTUP` so that your startup script will be properly run right when Notepad++ is loaded.  (this is also recommended in the [startup script section (below)](#:~:text=putting%20some%20commands%20in%20your%20%E2%80%9Cstartup%20script%E2%80%9D "startup script")
 1. Create a new script 
     - **Plugins > Python Script > New script**
     - Give it the name that was suggested in the original post, or something that makes sense to you.  I will call it `ProvidedScript.py` for purposes of this FAQ entry.
