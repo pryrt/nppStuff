@@ -1,9 +1,12 @@
 # Note: requires PythonScript 3
-import requests
+#import requests    #### per @rdipardo's updates on Michael's other script
+import json
+import urllib.request as requests
+import urllib.parse
 
 from enum import Enum
 
-from Npp import editor
+from Npp import editor, console
 
 from WinDialog import Button, ComboBox, DefaultButton, Dialog, Label, TextBox
 from WinDialog.win_helper import WindowStyle as WS
@@ -79,7 +82,8 @@ class Translator(Dialog):
 
     def on_translate(self):
         """Translate the text."""
-        text_encoded = requests.utils.quote(self.text.getText())
+        ###text_encoded = requests.utils.quote(self.text.getText())
+        text_encoded = urllib.parse.quote(self.text.getText())
 
         srclang = Languages[self.srclang.getSelectedItemText()]
         dstlang = Languages[self.dstlang.getSelectedItemText()]
@@ -93,8 +97,13 @@ class Translator(Dialog):
         # EXAMPLE: LANGPAIR=EN|IT USING 2 LETTER ISO OR RFC3066 LIKE ZH-CN
         langpair = f"{srccode}|{dstcode}"
 
-        r = requests.get(f"http://mymemory.translated.net/api/get?q={text_encoded}&langpair={langpair}")
-        response = r.json()['responseData']['translatedText']
+        ###r = requests.get(f"http://mymemory.translated.net/api/get?q={text_encoded}&langpair={langpair}")
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"}
+        r = requests.urlopen(requests.Request(f"http://mymemory.translated.net/api/get?q={text_encoded}&langpair={langpair}", headers=headers))
+        ###response = r.json()['responseData']['translatedText']
+        console.writeError(f"r.status: {r.status}\nr.read: {r.read().decode('utf8')}");
+        return;
+        response = json.loads(r.read().decode('utf8'))['responseData']['translatedText']
 
         # Set return translation
         if response is not None:
