@@ -119,12 +119,18 @@ class NppOnSaveSyntaxCheck:
         kwargs['bufferID'] includes the correct ID
         """
         fname = notepad.getBufferFilename(kwargs['bufferID'])
-        if fname[-3:] == '.pl':
+        if fname[-3:] == '.plDISABLE':
             self.annotatePerlErrors(fname)
         elif fname[-3:] == '.py':
             self.annotatePythonScriptErrors(fname)
         else:
             pass
+
+    def withArgs(*args):
+        pass
+        
+    def withKwargs(**kwargs):
+        pass
 
     def register_OnSave_callback(self):
         """registers the OnSave callback"""
