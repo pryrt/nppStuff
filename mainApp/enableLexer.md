@@ -38,8 +38,10 @@ possible autoComplete & functionList: https://github.com/MAPJe71/Languages/tree/
 	- to add a new functionList, I would need to add Unit Tests per https://npp-user-manual.org/docs/function-list/#unit-tests
 
 
-~~~~
+-----
 From C:\Users\Peter\AppData\Roaming\Notepad++\plugins\Config\PythonScript\scripts\nppCommunity\24xxx\24228_cppEnableGlobalclassKeywords.py
+
+```
     The ScintillaEditView::setCppLexer [here](https://github.com/notepad-plus-plus/notepad-plus-plus/blob/c8e4e671dad405d60e95ba483991a4b3b77bf2c2/PowerEditor/src/ScintillaComponent/ScintillaEditView.cpp#L929)
     only maps
     - instre1=>0    which is keywords.  which goes to SCE_C_WORD  (StyleID=5) in LexCPP.cpp/SciLexer.h
@@ -55,42 +57,61 @@ From C:\Users\Peter\AppData\Roaming\Notepad++\plugins\Config\PythonScript\script
           to show up as highlighted
     For completeness,
     - undefined=>3  which is keywords4. which goes to SCE_C_GLOBALCLASS (StyleID=19)
+```
 
-So what are the full mapping for instre1 and similar? Search !*.xml for instre1, and find src\Parameters.cpp            |   src\Parameters.h
-	if (!lstrcmp(TEXT("instre1"), str)) return LANG_INDEX_INSTR;                                                        |   const int LANG_INDEX_INSTR = 0;
-	if (!lstrcmp(TEXT("instre2"), str)) return LANG_INDEX_INSTR2;                                                       |   const int LANG_INDEX_INSTR2 = 1;
-	if (!lstrcmp(TEXT("type1"), str)) return LANG_INDEX_TYPE;                                                           |   const int LANG_INDEX_TYPE = 2;
-	if (!lstrcmp(TEXT("type2"), str)) return LANG_INDEX_TYPE2;                                                          |   const int LANG_INDEX_TYPE2 = 3;
-	if (!lstrcmp(TEXT("type3"), str)) return LANG_INDEX_TYPE3;                                                          |   const int LANG_INDEX_TYPE3 = 4;
-	if (!lstrcmp(TEXT("type4"), str)) return LANG_INDEX_TYPE4;                                                          |   const int LANG_INDEX_TYPE4 = 5;
-	if (!lstrcmp(TEXT("type5"), str)) return LANG_INDEX_TYPE5;                                                          |   const int LANG_INDEX_TYPE5 = 6;
-	if (!lstrcmp(TEXT("type6"), str)) return LANG_INDEX_TYPE6;                                                          |   const int LANG_INDEX_TYPE6 = 7;
-	if (!lstrcmp(TEXT("type7"), str)) return LANG_INDEX_TYPE7;                                                          |   const int LANG_INDEX_TYPE7 = 8;
+So what are the full mapping for instre1 and similar? Search !*.xml for instre1, and find src\Parameters.cpp
+```
+                                                                            |   src\Parameters.h
+	if (!lstrcmp(TEXT("instre1"), str)) return LANG_INDEX_INSTR;            |   const int LANG_INDEX_INSTR = 0;
+	if (!lstrcmp(TEXT("instre2"), str)) return LANG_INDEX_INSTR2;           |   const int LANG_INDEX_INSTR2 = 1;
+	if (!lstrcmp(TEXT("type1"), str)) return LANG_INDEX_TYPE;               |   const int LANG_INDEX_TYPE = 2;
+	if (!lstrcmp(TEXT("type2"), str)) return LANG_INDEX_TYPE2;              |   const int LANG_INDEX_TYPE2 = 3;
+	if (!lstrcmp(TEXT("type3"), str)) return LANG_INDEX_TYPE3;              |   const int LANG_INDEX_TYPE3 = 4;
+	if (!lstrcmp(TEXT("type4"), str)) return LANG_INDEX_TYPE4;              |   const int LANG_INDEX_TYPE4 = 5;
+	if (!lstrcmp(TEXT("type5"), str)) return LANG_INDEX_TYPE5;              |   const int LANG_INDEX_TYPE5 = 6;
+	if (!lstrcmp(TEXT("type6"), str)) return LANG_INDEX_TYPE6;              |   const int LANG_INDEX_TYPE6 = 7;
+	if (!lstrcmp(TEXT("type7"), str)) return LANG_INDEX_TYPE7;              |   const int LANG_INDEX_TYPE7 = 8;
 
 	if ((str[1] == '\0') && (str[0] >= '0') && (str[0] <= '8')) // up to KEYWORDSET_MAX
 		return str[0] - '0';
+```
 
+And mapping that:
+|  type     |    index-of-8               | LexCPP.h order                                     | List#                        | Style definitions               |   and names                   | SciTE:cpp.properties desc
+|-----------|-----------------------------|----------------------------------------------------|------------------------------|---------------------------------|-------------------------------|------------------------
+|           |                             | const char *const cppWordLists[] = {               |                              |                                 |                               |
+|~~instre1~~|  ~~LANG_INDEX_INSTR = 0;~~  |        "Primary keywords and identifiers",         |	WordList keywords;          | => 05:SCE_C_WORD                | "INSTRUCTION WORD" inistre1   |   puts both syntax and types here
+|~~instre2~~|  ~~LANG_INDEX_INSTR2 = 1;~~ |        "Secondary keywords and identifiers",       |	WordList keywords2;         | => 16:SCE_C_WORD2               | "TYPE WORD"                   |   for highlighting user defined keywords or function calls or similar
+|~~type1~~  |  ~~LANG_INDEX_TYPE = 2;~~   |        "Documentation comment keywords",           |	WordList keywords3;         | => 17:SCE_C_COMMENTDOCKEYWORD   | "COMMENT DOC KEYWORD"         |   for doxygen
+|~~type2~~  |  ~~LANG_INDEX_TYPE2 = 3;~~  |        "Global classes and typedefs",              |	WordList keywords4;         | => 19:SCE_C_GLOBALCLASS         | TBD                           |   <n.a>
+|~~type3~~  |  ~~LANG_INDEX_TYPE3 = 4;~~  |        "Preprocessor definitions",                 |	WordList ppDefinitions;     |                                 |                               |   for preprocessor definitions, grays things out
+|~~type4~~  |  ~~LANG_INDEX_TYPE4 = 5;~~  |        "Task marker and error marker keywords",    |	WordList markerList;        | => 26:SCE_C_TASKMARKER          |                               |   only works in comments, for things like TODO
+|           |                             |         nullptr,                                   |                              |                                 |                               |
+|           |                             | };                                                 |                              |                                 |                               |
 
-And mapping that:                   | LexCPP.h                                           | List#                        | Style definitions                     and names                   | SciTE:cpp.properties desc
-                                    | const char *const cppWordLists[] = {               |                                                                                                  |
-instre1     LANG_INDEX_INSTR = 0;   |        "Primary keywords and identifiers",         |	WordList keywords;          | => 05:SCE_C_WORD                 <= "INSTRUCTION WORD" inistre1   |   puts both syntax and types here
-instre2     LANG_INDEX_INSTR2 = 1;  |        "Secondary keywords and identifiers",       |	WordList keywords2;         | => 16:SCE_C_WORD2                <= "TYPE WORD"                   |   for highlighting user defined keywords or function calls or similar
-type1       LANG_INDEX_TYPE = 2;    |        "Documentation comment keywords",           |	WordList keywords3;         | => 17:SCE_C_COMMENTDOCKEYWORD    <= "COMMENT DOC KEYWORD"         |   for doxygen
-type2       LANG_INDEX_TYPE2 = 3;   |        "Global classes and typedefs",              |	WordList keywords4;         | => 19:SCE_C_GLOBALCLASS          <= TBD                           |   <n.a>
-type3       LANG_INDEX_TYPE3 = 4;   |        "Preprocessor definitions",                 |	WordList ppDefinitions;     |                                                                   |   for preprocessor definitions, grays things out
-type4       LANG_INDEX_TYPE4 = 5;   |        "Task marker and error marker keywords",    |	WordList markerList;        | => 26:SCE_C_TASKMARKER                                            |   only works in comments, for things like TODO
-                                    |         nullptr,                                   |
-                                    | };                                                 |
 
 So even though Go has four lists that I'd _like_ to use, it might only accept instre1, instre2, and type2; with type1 being reserved for doxygen
 Weird, I've got mismatch: my notes from 24228 claim that type1 is going to keywords2, but the 0..8 mapping implies that type1 really goes to keywords3.
 I did verify that COMMENT_DOCK_KEYWORD really does use type2-list and the \param and similar comment-doc keywords from langs.model.xml.
 So apparently, Notepad++ isn't doing the mapping I thought.
 
+```
 ScintillaEditView::setCppLexer():
     SCI_SETKEYWORDS, 2, doxygenKeyWords_char        # populates that string from the getWordList(LANG_INDEX_TYPE2)
     SCI_SETKEYWORDS, 0, cppInstrs                   # populates that string from getCompleteKeywordList(LANG_INDEX_INSTR)
     SCI_SETKEYWORDS, 1, cppTypes                    # populates that string from getCompleteKeywordList(LANG_INDEX_TYPE)
+```
 
 So if I wanted keywords4 to be populated, I would have to add
+```
     SCI_SETKEYWORDS, 3, _____                       # where ____ needs to be populated from getCompleteKeywordList(LANG_INDEX_INSTR2)
+```
+Since it was wrong above, cross those out.
+
+So if I want to experiment with that, I'd need to add instre2 => SCE_C_GLOBALCLASS(19) => "SOMENAME" to the XML files, and add the overhead for `SCI_SETKEYWORDS,3`  
+
+Since the Go reference calls them "predeclared identifiers", it would make sense to put all the constants/zero-values/functions together (I'd prefer separate, but LexCPP doesn't give that option), and call "SOMENAME" as "PREDECLARED IDENTIFIERS".
+
+I'll give that a try sometime when my mind is more fresh.  
+
+For now, I'll just fix APIs/go.xml to use `&lt;-` instead of `<-` in the attribute, and add the XML for the re-categorization
