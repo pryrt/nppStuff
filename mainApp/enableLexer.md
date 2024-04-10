@@ -115,3 +115,13 @@ Since the Go reference calls them "predeclared identifiers", it would make sense
 I'll give that a try sometime when my mind is more fresh.  
 
 For now, I'll just fix APIs/go.xml to use `&lt;-` instead of `<-` in the attribute, and add the XML for the re-categorization
+
+~~~~~~
+
+Added the instre2 to `ScintillaEditView::setCppLexer()`.  Added "go" to all the themes, not just `stylers.model.xml`
+per https://stackoverflow.com/questions/10298291/cannot-push-to-github-keeps-saying-need-merge :
+```
+git reset --soft 1f4cbdb
+git commit -m "Add syntax highlighting for Go/Golang" -m "(as done in SciTE, Go/Golang can use cpp lexer)"
+git push -f origin
+```
