@@ -142,6 +142,8 @@ MAPJe71 doesn't have functionList for Raku, even as a starting point.  Tried a w
 
 - https://fossies.org/linux/gscite/raku.properties
 
+extensions: `*.p6;*.pm6;*.pod6;*.t6;*.raku;*.rakumod;*.rakudoc;*.rakutest`
+
 Lexer options (might need to set one or more of these): https://github.com/notepad-plus-plus/notepad-plus-plus/blob/master/lexilla/lexers/LexRaku.cxx#L134-L148
 
 | N++     | Description              | list        | LexRaku Var          | SCE               | Keywords
@@ -188,3 +190,9 @@ Oddly, while they have four different keyword lists for types, they only have on
 | 26 | SCE_RAKU_CALLABLE      | $(style.raku.21)                                      |
 | 27 | SCE_RAKU_GRAMMAR       | $(style.raku.15)                                      |
 | 28 | SCE_RAKU_CLASS         | $(style.raku.15)                                      |
+
+### 2024-Apr-13
+
+While preparing my environment, making sure I could build today's main branch, etc, I noticed a comment in `langs.model.xml` for `name="asm"` that says the `type5` and `type6` keywords must "also be in ....".  That got me curiuos, so I looked at `stylers.model.xml`, and saw that it only has style entries for `type1-4` .  So I wonder if the right thing is to have the `<Keywords>` entries separate for Raku's `type1-4`, but only have the single `type1` entry for the SCE_RAKU_TYPEDEF style.  I think that's my plan.
+
+Start with the `langs.model` with the 7 lists; then do `stylers.model` by copying perl's big list, and replicating over the ones that seem similar, assigning the keywordClass for ADVERB, WORD, FUNCTION, and TYPEDEF.  For the styles that don't have an equivalent, use `raku.properties` suggestions.  With that, I can see `raku` in the **Preferences > Language** and **Style Configurator** language list, but the Style Configurator complains about not being able to look up the keyword lists for the four styles, since I haven't done the code fixes yet.  Still, good starting point
