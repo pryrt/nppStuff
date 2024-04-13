@@ -15,7 +15,7 @@ Notes for adding GOLANG or another language
         - Studying the LexCPP, I see keywords (SCE_C_WORD=5), keywords2 (SCE_C_WORD2=16), keywords4 (SCE_C_GLOBALCLASS=19)
 - Use L_HOLLYWOOD addition as the template for the changes that I need:
 	- https://github.com/notepad-plus-plus/notepad-plus-plus/pull/13417/files
-	- Notepad_plus_msgs.h: add L_GOLANG to the end of the `enum LangType`
+	- /PowerEditor/src/MISC/PluginsManager/Notepad_plus_msgs.h: add L_GOLANG to the end of the `enum LangType`
 	- menuCmdID.h: add IDM_LANG_GOLANG before IDM_LANG_EXTERNAL
 	- ScintillaEditView.cpp:
 		- add to LanguageNameInfo ScintillaEditView::_langNameInfoArray[]
@@ -196,3 +196,31 @@ Oddly, while they have four different keyword lists for types, they only have on
 While preparing my environment, making sure I could build today's main branch, etc, I noticed a comment in `langs.model.xml` for `name="asm"` that says the `type5` and `type6` keywords must "also be in ....".  That got me curiuos, so I looked at `stylers.model.xml`, and saw that it only has style entries for `type1-4` .  So I wonder if the right thing is to have the `<Keywords>` entries separate for Raku's `type1-4`, but only have the single `type1` entry for the SCE_RAKU_TYPEDEF style.  I think that's my plan.
 
 Start with the `langs.model` with the 7 lists; then do `stylers.model` by copying perl's big list, and replicating over the ones that seem similar, assigning the keywordClass for ADVERB, WORD, FUNCTION, and TYPEDEF.  For the styles that don't have an equivalent, use `raku.properties` suggestions.  With that, I can see `raku` in the **Preferences > Language** and **Style Configurator** language list, but the Style Configurator complains about not being able to look up the keyword lists for the four styles, since I haven't done the code fixes yet.  Still, good starting point
+
+- /PowerEditor/src/MISC/PluginsManager/Notepad_plus_msgs.h: add L_RAKU to the end of the `enum LangType`
+- /PowerEditor/src/menuCmdID.h: add IDM_LANG_RAKU as +90, before IDM_LANG_EXTERNAL
+- /PowerEditor/src/ScintillaEditView.cpp and .h:
+	- add to LanguageNameInfo ScintillaEditView::_langNameInfoArray[]
+	- add to ScintillaEditView::defineDocType switch:
+		- simple vs complex:
+			- for "simple" language, call a new function (eg L_HOLLYWOOD) and define it just in .h, calling setLexer
+				- looking at the setLexer() that it calls, it defines 0 as instre1, 1 as instre2, and 2-8 as type1-7, for whichever you pass in
+				- it also does SCI_SETPROPERTY for fold, fold.compact, fold.comment
+			- for "mediumComplexity" languages, define the new function where it manually does the lists, where it does a separate SCI_SETKEYWORDS call for eac
+		- Based on the numbering, I can just use "simple", because LexRaku.cpp uses the same order as NPP does... but it depends if I need to change the other properties or not.  Oddly, even the ones like setSqlLexer(), which set a property, are defined in the .h, So calling this "simple".
+		- Create setRakuLexer() in .h, with the setLexer() call for lists 0-6
+		- setLexer() already does the fold/fold.compact/fold.comment to 1.    Set the raku-specific folding to 1 as well.
+		- in .cpp, add `L_RAKU:setRakuLexer();` to the switch
+- /PowerEditor/src/Notepad_plus.cpp: add case IDM_LANG_.../return L_...
+- /PowerEditor/src/Notepad_plus.rc: add to long "&Language" and "&Language"/"&<LETTER>" lists
+- /PowerEditor/src/NppCommands.cpp: add to long IDM_LANG group in switch()
+- /PowerEditor/src/Parameters.cpp: add case L_.../return IDM_LANG_...
+- /PowerEditor/installer/APIs/raku.xml: autoComplete file (simply alphabetize the keyword lists)
+- NO - /PowerEditor/installer/functionList/raku: not implemented, since I'm not confident in my ability to handle exceptions
+
+TODO:
+```
+git reset --soft 906f6e4
+git commit -m "Add syntax highlighting for Raku" -m "(based on SciTE, Go/Golang can use cpp lexer)"
+git push -f origin
+```
