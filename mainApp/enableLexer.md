@@ -218,9 +218,15 @@ Start with the `langs.model` with the 7 lists; then do `stylers.model` by copyin
 - /PowerEditor/installer/APIs/raku.xml: autoComplete file (simply alphabetize the keyword lists)
 - NO - /PowerEditor/installer/functionList/raku: not implemented, since I'm not confident in my ability to handle exceptions
 
-TODO:
+### 2024-Apr-14
+
+Finished the themes.
+
+Squash / force-push:
 ```
 git reset --soft 906f6e4
-git commit -m "Add syntax highlighting for Raku" -m "(based on SciTE, Go/Golang can use cpp lexer)"
+git commit -m "Add syntax highlighting for Raku" -m "Based on SciTE, Go/Golang can use cpp lexer." -m "use the Perl color scheme from each theme as the basis for the Raku color scheme"
 git push -f origin
 ```
+
+=> https://github.com/notepad-plus-plus/notepad-plus-plus/pull/15000
