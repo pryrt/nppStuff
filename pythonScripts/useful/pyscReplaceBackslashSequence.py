@@ -1,40 +1,40 @@
 # encoding=utf-8
-""" pyscReplaceBackslashSequence
+""" pyscReplaceBackslashSequence """
 
-When run, this script will search backwards from the current cursor position,
-looking for a backslash \ .  If it finds intervening whitespace (tab, space,
-newline, NUL), it will abort the search.  If it finds a sequence of \ to the
-current cursor without whitespace interruption, it will try to interpret that
-as a "shortcut sequence", and try to interpret that.  It will ignore any text
-after the current position, so careful placement of the cursor when running
-this script will allow inserting a character in between other text
+# When run, this script will search backwards from the current cursor position,
+# looking for a backslash.  If it finds intervening whitespace (tab, space,
+# newline, NUL), it will abort the search.  If it finds a sequence of backslash to the
+# current cursor without whitespace interruption, it will try to interpret that
+# as a "shortcut sequence", and try to interpret that.  It will ignore any text
+# after the current position, so careful placement of the cursor when running
+# this script will allow inserting a character in between other text
+#
+# For now, it recognizes shortcuts of the form
+# * \uXXXX or \u+XXXX or \0xXXXX, all three of which will be replaced by the
+#    unicode character at the hexadecimal codepoint XXXX.
+#    * EXAMPLE: \u+2611 => ☑
+#    * EXAMPLE: |\U+2611other| => |☑other| if the cursor is between 1 and o
+# * &#D+;? (where D+ is one or more decimal digit): convert HTML decimal entity (added 2023-Mar-08)
+# * &#xX+;? (where X+ is one or more hex digit): convert HTML hex entity (added 2023-Mar-08)
+# * FUTURE: I might do other snippets or shorcuts; however, after learning of the
+#     nppQuickText plugin, which VinsWorldcom/VincentMichael converted to 64-bit
+#     and did fixes for at https://github.com/vinsworldcom/nppQuickText, I am not
+#     sure anything more is needed
+# 
+# Assumes UTF8 encoding of the file (or, rather, that getText/getTextRange returns a series
+# of UTF-8 octets).
+# 
+# Work inspired by to https://notepad-plus-plus.org/community/topic/18873/ .
+# 
+# I know it had been asked previously, similar to https://community.notepad-plus-plus.org/post/37979 (keyboard map chords, like ^X^C, or eko's ^K^L)
+#     -- but that one seems to watch every keystroke, which is more than I want.
+# 
+# I actually wanted it to be more like MS Word's Alt+X functionality, where if you type the 4-digit hex for a unicode, then press Alt+X, it will replace those four digits with the unicode character.
+# 
+# 2023-Mar-08: add &# and &#x for up to &#xFFFF
+# 2024-Apr-13: added surrogate pair, so now it can handle U+0000 to U+10FFFF in _any_ of the notations, which is the whole unicode range; add \\x{123456} notation as well
+# 2024-May-27: make compatible with PythonScript 2.x or PythonScript 3.x
 
-For now, it recognizes shortcuts of the form
-* \uXXXX or \u+XXXX or \0xXXXX, all three of which will be replaced by the
-    unicode character at the hexadecimal codepoint XXXX.
-    * EXAMPLE: \u+2611 => ☑
-    * EXAMPLE: |\U+2611other| => |☑other| if the cursor is between 1 and o
-* &#D+;? (where D+ is one or more decimal digit): convert HTML decimal entity (added 2023-Mar-08)
-* &#xX+;? (where X+ is one or more hex digit): convert HTML hex entity (added 2023-Mar-08)
-* FUTURE: I might do other snippets or shorcuts; however, after learning of the
-    nppQuickText plugin, which VinsWorldcom/VincentMichael converted to 64-bit
-    and did fixes for at https://github.com/vinsworldcom/nppQuickText, I am not
-    sure anything more is needed
-
-Assumes UTF8 encoding of the file (or, rather, that getText/getTextRange returns a series
-of UTF-8 octets).
-
-Work inspired by to https://notepad-plus-plus.org/community/topic/18873/ .
-
-I know it had been asked previously, similar to https://community.notepad-plus-plus.org/post/37979 (keyboard map chords, like ^X^C, or eko's ^K^L)
-    -- but that one seems to watch every keystroke, which is more than I want.
-
-I actually wanted it to be more like MS Word's Alt+X functionality, where if you type the 4-digit hex for a unicode, then press Alt+X, it will replace those four digits with the unicode character.
-
-2023-Mar-08: add &# and &#x for up to &#xFFFF
-2023-Apr-13: added surrogate pair, so now it can handle U+0000 to U+10FFFF in _any_ of the notations, which is the whole unicode range; add \\x{123456} notation as well
-
-"""
 from Npp import *
 import re
 
@@ -78,10 +78,16 @@ def run_pyscReplaceBackslashSequence():
 
         elif c>255:
             console.writeError("unknown character {} while searching for \\".format(c))
-            s = unichr(c)   # should probably create an exception
+            try:
+                s = unichr(c)   # should probably create an exception
+            except NameError:
+                s = chr(c)
 
         else:
-            s = unichr(c)
+            try:
+                s = unichr(c)
+            except NameError:
+                s = chr(c)
 
         if DEBUG:
             info = "#{0:5}# '{2}' = HEX:0x{1:04X} = DEC:{1} ".format(searchpos, c, s.encode('utf-8') if c not in [13, 10, 0] else 'LINE-ENDING' if c != 0 else 'END-OF-FILE')
@@ -135,14 +141,24 @@ def run_pyscReplaceBackslashSequence():
     def _replc(CP, orig):
         if DEBUG: console.write( "#REPLC# '{:s}' => int:{:d}\n".format(orig, CP) )
         if CP < 0x10000:
-            return unichr(CP).encode('utf-8')
+            try:
+                return unichr(CP).encode('utf-8')
+            except NameError:
+                return chr(CP)
         elif CP < 0x110000:
             # convert to surrogates
             L = 0xDC00 + (CP & 0x3FF)
             H = 0xD800 + (((CP-0x10000)>>10)&0x3FF)
-            surrogate_pair = unichr(H) + unichr(L)
+            try:
+                surrogate_pair = unichr(H) + unichr(L)
+            except NameError:
+                surrogate_pair = chr(H) + chr(L)
             if DEBUG: console.write( "#REPLC# '{:s}' => H=0x{:04X} L=0x{:04X} => '{:s}'\n".format(orig, H, L, surrogate_pair.encode('utf-8')) )
-            return surrogate_pair.encode('utf-8')
+            try:
+                return surrogate_pair.encode('utf-8')
+            except UnicodeEncodeError:
+                # https://stackoverflow.com/a/38147966/5508606
+                return surrogate_pair.encode('utf-16', 'surrogatepass').decode('utf-16')
         else:
             console.writeError("escape sequence '{:s}' is not known: codepoint=0x{:x} should be from 0 to 0x{:x}\n".format( orig, CP, 0x10FFFF ))
             return orig
