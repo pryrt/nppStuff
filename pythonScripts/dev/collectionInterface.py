@@ -3,39 +3,44 @@
 
 This provides an interface to the official UserDefinedLanguage Collection and nppThemes Collection.
 
-The end goal is a GUI which allows selecting one or more UDL, autoCompletion, and/or theme files, which would then
+Requires PythonScript 3
+
+The end goal is a GUI which allows selecting one or more UDL, autoCompletion, functionList, and/or theme files, which would then
 be downloaded and installed in the correct location, and Notepad++ automatically restarted
 
 I am going to have to start learning Eko's [WinDialog](https://github.com/Ekopalypse/NppPythonScripts/tree/master/helper/WinDialog) library
 
 Next Steps:
     - .download_udl():
-        - used the basic interface in my experimental code (which is now deleted)
-        - return object = {
+        ✓ used the basic interface in my experimental code (which is now deleted)
+        ✓ return object = {
                 'content': slurp+stringify,
                 'Content-Type': f.info.getheader('Content-Type'),
                 'status': f.getcode(),
                 'ERROR': str(e) # if it exists
             }
-        ☐ TODO: need to continue type checking:
+        ✓ type checking:
             ✓ text/xml allowed
             ✓ text/plain allowed
-                ☐ if it resolves to valid XML, it's okay
-                ☐ else, "406 Not Acceptable"
+                ✓ if it resolves to valid XML, it's okay
+                ✓ else, "406 Not Acceptable"
             ✓ anything else not allowed => "406 Not Acceptable"
     - .download_theme(): similar to .download_udl()
-    - Switch to PS3
+    - will I need .download_autocompletion or .download_functionlist, or are those part of .download_udl() ?
+    - ✓ Switch to PS3
     - Learn WinDialog
     - Create Dialog(s) that
-        - list all the UDLs or AutoCompletions or Themes,
+        - list all the UDLs or AutoCompletions or FunctionLists or Themes,
         - allow selecting one (or more?)
         - downloads and installs the selected file(s)
         - silent on success, msgBox on error, ContinueOnFail
 
 """
 from Npp import *
-import urllib2  # .urlopen() returns stream
-import json     # .load(f) => load from stream; .loads(s) => load from string; .dump(o) => dump to stream; .dumps(o) => dump to string
+import urllib.request   # urllib2.urlopen() returns stream; py3 urllib.request.urlopen hopefully does same
+import urllib.error     # urllib2.HTTPError => urllib.error.HTTPError
+import urllib.response  # 
+import json             # .load(f) => load from stream; .loads(s) => load from string; .dump(o) => dump to stream; .dumps(o) => dump to string
 
 class CollectionInterface(object):
     """Provides an interface to the UserDefinedlanguage Collection and nppThemes Collection.
@@ -47,7 +52,7 @@ class CollectionInterface(object):
 
         # grab the udl-list.json -- as of the 2023-Nov-06 update to the repo,
         #   this now contains both UDL and autoCompletion info, to avoid
-        f = urllib2.urlopen("https://raw.githubusercontent.com/notepad-plus-plus/userDefinedLanguages/master/udl-list.json")
+        f = urllib.request.urlopen("https://raw.githubusercontent.com/notepad-plus-plus/userDefinedLanguages/master/udl-list.json")
         o = json.load(f)
         self._udls = o['UDLs']
 
@@ -55,7 +60,7 @@ class CollectionInterface(object):
         self._udls_aoh_to_hoh()
 
         # grab the nppThemes table-of-contents JSON (new as of 2023-Nov-06)
-        f = urllib2.urlopen("https://raw.githubusercontent.com/notepad-plus-plus/nppThemes/master/themes/.toc.json")
+        f = urllib.request.urlopen("https://raw.githubusercontent.com/notepad-plus-plus/nppThemes/master/themes/.toc.json")
         self._themes = json.load(f)
 
     def _udls_aoh_to_hoh(self):
@@ -119,13 +124,13 @@ class CollectionInterface(object):
 
         if key in o and o[key]:
             try:
-                f = urllib2.urlopen(o[key])
-                fi = f.info()
+                f = urllib.request.urlopen(o[key])
+                fi = f.headers # was f.info() in Py2
                 chain['URL'] = o[key]
-                chain['content'] = f.read()
-                chain['Content-Type'] = fi.getheader('Content-Type')
+                chain['content'] = f.read().decode('utf-8');    # py3 requires the .decode() otherwise it's interpreted as raw bytes
+                chain['Content-Type'] = fi.get('Content-Type'); # was fi.getheader('Content-Type')
                 chain['status'] = f.getcode()
-            except urllib2.HTTPError as e:
+            except urllib.error.HTTPError as e:
                 if chain['ERROR']:
                     prefix = str(chain['ERROR'])
                 else:
@@ -141,18 +146,24 @@ class CollectionInterface(object):
             return chain
 
         if chain['Content-Type'][0:10] == 'text/plain':
-            console.write("It's text/plain, so it might be okay; TODO = do deeper checking\n")
-            return chain
+            # deeper checking: look for prolog or element or comment at non-whitespace start of file
+            chk = chain['content'].strip()
+            if chk[0:5] == '<?xml' or chk[0:12] == '<NotepadPlus' or chk[0:4] == '<!--':
+                console.write("It was text/plain, but it actually contains reasonable XML content\n")
+                return chain
+
+            msg = u'Not Acceptable => got text/plain that doesnt seem like XML'.format(chain['content'])
+            raise urllib.error.HTTPError(chain['URL'], 406, msg, None, None)
 
         msg = u'Not Acceptable => Content-Type should be text/xml or text/plain, but got {}'.format(chain['Content-Type'])
-        raise urllib2.HTTPError(chain['URL'], 406, msg, None, None)
+        raise urllib.error.HTTPError(chain['URL'], 406, msg, None, None)
 
         """
-            urllib2.HTTPError(self, url, code, msg, hdrs, fp)
+            urllib.error.HTTPError(self, url, code, msg, hdrs, fp)
                 https://www.rfc-editor.org/rfc/rfc7231.html#section-6.5.6       406 Not Acceptable
                     "indicates that the target resource does not have a current representation that would be acceptable to the user agent"
                 - that sounds like the right thing for
-            urllib2.URLError(self, reason)
+            urllib.URLError(self, reason)
         """
 
 
@@ -208,7 +219,8 @@ collectionInterface = CollectionInterface()
 try:
     ro = collectionInterface.download_udl(udl_id = 'AgenaUDL')
     console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
-except urllib2.HTTPError as e:
+except urllib.error.HTTPError as e:
+    console.writeError('Inserting intentional error for HTML instead of XML or PLAIN:\n')
     console.writeError(u"{} => {}\n\n".format(str(e), json.dumps({
         'e_info': e.info(),
         'e_code': e.getcode(),
