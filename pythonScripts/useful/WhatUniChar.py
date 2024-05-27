@@ -12,10 +12,16 @@ def callback_sci_UPDATEUI(args):
     if c < 0 or c > 255:
         p = editor.getCurrentPos()
         q = editor.positionAfter(p)
-        s = editor.getTextRange(p,q).decode('utf-8')
+        try:
+            s = editor.getTextRange(p,q).decode('utf-8')
+        except AttributeError:
+            s = editor.getTextRange(p,q)
         c = get_wide_ordinal(s)
     else:
-        s = unichr(c)
+        try:
+            s = unichr(c)
+        except NameError:
+            s = chr(c)
 
     try:
         is_eof = (editor.getCurrentPos()==editor.getLength())
@@ -26,7 +32,11 @@ def callback_sci_UPDATEUI(args):
             #   inspired by https://community.notepad-plus-plus.org/topic/25784/
             L = 0xDC00 + (c & 0x3FF)
             H = 0xD800 + (((c-0x10000)>>10)&0x3FF)
-            info = "'{1}' = HEX:0x{0:04X} = DEC:{0} ⇒ SURROGATE(0x{2:04X} 0x{3:04X})".format(c, s.encode('utf-8'), H, L)
+            try:
+                se_utf8 = s.encode('utf-8')
+            except AttributeError:
+                se_utf8 = s
+            info = "'{1}' = HEX:0x{0:04X} = DEC:{0} ⇒ SURROGATE(0x{2:04X} 0x{3:04X})".format(c, se_utf8, H, L)
         else:
             raise ValueError("Invalid Unicode character")
     except ValueError:
