@@ -19,13 +19,13 @@ for (root, dirs, files) in os.walk(notepad.getPluginConfigDir() + r'\PythonScrip
 # https://community.notepad-plus-plus.org/topic/20340/perl-subroutine-calltips-with-pythonscript
 # look up the my ($args,$other) = @_ from the first line of a sub definition,
 # and use it for tooltips when calling ... = fn(|) with cursor at |
-##### from perl_ide_ps154 import PerlIDE
-##### __plide = PerlIDE()
-##### __plide.initialize()
+##USE LSP INSTEAD## from perl_ide_ps154 import PerlIDE
+##USE LSP INSTEAD## __plide = PerlIDE()
+##USE LSP INSTEAD## __plide.initialize()
 
 # see nppOnSaveSyntaxCheck.py for references
-from nppOnSaveSyntaxCheck import _SINGLETON_CHECKER
-_SINGLETON_CHECKER.toggle_OnSave_callback()
+##USE LSP INSTEAD##from nppOnSaveSyntaxCheck import _SINGLETON_CHECKER
+##USE LSP INSTEAD##_SINGLETON_CHECKER.toggle_OnSave_callback()
 # _SINGLETON_CHECKER.toggle_OnSave_callback(); del(_SINGLETON_CHECKER); del(nppOnSaveSyntaxCheck.nppOnSaveSyntaxCheck);
 
 # https://community.notepad-plus-plus.org/post/59148
