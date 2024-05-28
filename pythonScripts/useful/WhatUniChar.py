@@ -9,6 +9,7 @@ def get_wide_ordinal(char):
 def callback_sci_UPDATEUI(args):
     c = editor.getCharAt(editor.getCurrentPos())
     #console.write("c=0x{0:04X}={0}dec\n".format(c));
+    alreadyUTF8 = False
     if c < 0 or c > 255:
         p = editor.getCurrentPos()
         q = editor.positionAfter(p)
@@ -16,26 +17,32 @@ def callback_sci_UPDATEUI(args):
             s = editor.getTextRange(p,q).decode('utf-8')
         except AttributeError:
             s = editor.getTextRange(p,q)
+            alreadyUTF8 = True
         c = get_wide_ordinal(s)
     else:
         try:
             s = unichr(c)
         except NameError:
             s = chr(c)
+            alreadyUTF8 = True
 
     try:
         is_eof = (editor.getCurrentPos()==editor.getLength())
         if c < 0x10000:
-            info = "'{1}' = HEX:0x{0:04X} = DEC:{0} ".format(c, s.encode('utf-8') if c not in [13, 10, 0] else 'LINE-ENDING' if c != 0 else 'END-OF_FILE' if is_eof else 'NUL')
+            if alreadyUTF8:
+                se = s
+            else:
+                se = s.encode('utf-8')
+            info = "'{1}' = HEX:0x{0:04X} = DEC:{0} ".format(c, se if c not in [13, 10, 0] else 'LINE-ENDING' if c != 0 else 'END-OF_FILE' if is_eof else 'NUL')
         elif c < 0x110000:
             # added the surrogate-pair listing for non-BMP Unicode
             #   inspired by https://community.notepad-plus-plus.org/topic/25784/
             L = 0xDC00 + (c & 0x3FF)
             H = 0xD800 + (((c-0x10000)>>10)&0x3FF)
-            try:
-                se_utf8 = s.encode('utf-8')
-            except AttributeError:
+            if alreadyUTF8:
                 se_utf8 = s
+            else:
+                se_utf8 = s.encode('utf-8')
             info = "'{1}' = HEX:0x{0:04X} = DEC:{0} ⇒ SURROGATE(0x{2:04X} 0x{3:04X})".format(c, se_utf8, H, L)
         else:
             raise ValueError("Invalid Unicode character")
