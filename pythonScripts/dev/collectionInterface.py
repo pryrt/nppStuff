@@ -10,8 +10,16 @@ be downloaded and installed in the correct location, and Notepad++ automatically
 
 I am going to have to start learning Eko's [WinDialog](https://github.com/Ekopalypse/NppPythonScripts/tree/master/helper/WinDialog) library
 
-Next Steps:
-    - .download_udl():
+Implementation Steps:
+
+    ✓ init object from the UDL and JSON top-level table-of-contents:
+        ✓ populate aoh for UDL (_udls)
+        ✓ populate array for themes (_themes)
+        ✓ from _udls, populate hoh for UDL (_udl_hoh)
+        ✓ from _udls, populate hoh for UDL-autoCompletion (_ac_hoh)
+        ✓ from _udls, populate hoh for UDL-functionList (_fl_hoh)
+        - the hoh structures and _themes array will be passed into the GUI interface for selecting what to download
+    ✓ .download_udl():
         ✓ used the basic interface in my experimental code (which is now deleted)
         ✓ return object = {
                 'content': slurp+stringify,
@@ -26,7 +34,8 @@ Next Steps:
                 ✓ else, "406 Not Acceptable"
             ✓ anything else not allowed => "406 Not Acceptable"
     - .download_theme(): similar to .download_udl()
-    - will I need .download_autocompletion or .download_functionlist, or are those part of .download_udl() ?
+    - .download_autoCompletion(): similar to .download_udl()
+    - .download_functionList(): similar to .download_udl()
     - ✓ Switch to PS3
     - Learn WinDialog
     - Create Dialog(s) that
@@ -64,7 +73,13 @@ class CollectionInterface(object):
         self._themes = json.load(f)
 
     def _udls_aoh_to_hoh(self):
+        """
+        converts the array-of-hashes (aoh; or to use python terminology, "list of dictionaries") to a hash-of-hashes (hoh; "dictionary of dictionaries")
+        - also populates aoh for the autoCompletion and/or functionList definitions that are referenced by a given UDL
+        """
         self._udl_hoh = {}
+        self._ac_hoh = {}
+        self._fl_hoh = {}
         for o in sorted(self._udls, key=lambda d: d['display-name'].lower()):
             # console.write( json.dumps(o, sort_keys=True, separators=(',',':')) + "\n" )
             self._udl_hoh[ o['id-name'] ] = o
@@ -72,6 +87,37 @@ class CollectionInterface(object):
                 "https://raw.githubusercontent.com/notepad-plus-plus/userDefinedLanguages/master/UDLs/",
                 o['id-name']
             )
+
+            if 'autoCompletion' in o:
+                console.write("processing({}): found autoCompletion({})\n".format(o['description'], o['autoCompletion']))
+                self._ac_hoh[ o['id-name'] ] = {
+                    'id-name': o['id-name'],
+                    'display-name': o['display-name'],
+                    'description': o['description'],
+                    'autoCompletion': o['autoCompletion'],
+                    'autoCompletionAuthor': o['autoCompletionAuthor'] if 'autoCompletionAuthor' in o else o['author']
+                }
+                # TODO: define a '_collection_url' similar to the above, but maybe with more logic so it can handle
+                #   if true     => autoCompletions/{id-name}.xml
+                #   if value    => autoCompletions/{value}.xml
+                #   if url      => {url}
+                # ... though I think .download_udl handled that for UDL, so maybe .download_autoCompletion will handle that for ac
+
+            if 'functionList' in o:
+                console.write("processing({}): found functionList({})\n".format(o['description'], o['functionList']))
+                self._fl_hoh[ o['id-name'] ] = {
+                    'id-name': o['id-name'],
+                    'display-name': o['display-name'],
+                    'description': o['description'],
+                    'functionList': o['functionList'],
+                    'functionListAuthor': o['functionListAuthor'] if 'functionListAuthor' in o else o['author']
+                }
+                # TODO: define a '_collection_url' similar to the above, but maybe with more logic so it can handle
+                #   if true     => functionList/{id-name}.xml
+                #   if value    => functionList/{value}.xml
+                #   if url      => {url}
+                # ... though I think .download_udl handled that for UDL, so maybe .download_functionList will handle that for fl
+
         #console.write(json.dumps(self._udl_hoh, sort_keys=True, indent=2) + "\n-----\n")
 
     def list_themes(self):
@@ -240,4 +286,13 @@ console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 #ro = collectionInterface.download_udl(udl_id = 'RouterOS Script')
 #console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 
+## console.write(json.dumps({
+##         '_udls': collectionInterface._udls, 
+##         '_udl_hoh': collectionInterface._udl_hoh,
+##         '_themes': collectionInterface._themes,
+##     }, sort_keys=True, indent=2) + "\n\n")
+
+console.write(json.dumps({
+    '_ac_hoh': collectionInterface._ac_hoh
+}, sort_keys=True, indent=2) + "\n\n")
 del(collectionInterface)
