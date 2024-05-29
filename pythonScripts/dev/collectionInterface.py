@@ -146,6 +146,12 @@ class CollectionInterface(object):
                 retval.append(s)
 
         return retval
+        
+    def list_autocompletes(self):
+        return list(self._ac_hoh.keys())
+
+    def list_functionlists(self):
+        return list(self._fl_hoh.keys())
 
     def download_theme(self, theme_file_name):
         """grab the specified theme
@@ -256,10 +262,17 @@ class CollectionInterface(object):
 
         return chain
 
+console.show();
 console.clear();
 collectionInterface = CollectionInterface()
 #console.write(json.dumps({ "UDLs": collectionInterface.list_udls() , "nppThemes": collectionInterface.list_themes()}, sort_keys=True, indent=2, separators=(',',':')))
 #console.write("\n")
+console.write(json.dumps({
+    #'UDLs': collectionInterface.list_themes(),
+    #'nppThemes': collectionInterface.list_themes(),
+    'udlAutoComplete': collectionInterface.list_autocompletes(),
+    'udlFunctionList': collectionInterface.list_functionlists(),
+}, sort_keys=True, indent=2))
 
 # AgenaUDL => the Collection doesn't have the file, and the repo link goes to the repo-parent, not the XML itself (text/html)
 try:
