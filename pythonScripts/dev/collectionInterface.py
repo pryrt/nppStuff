@@ -33,9 +33,9 @@ Implementation Steps:
                 ✓ if it resolves to valid XML, it's okay
                 ✓ else, "406 Not Acceptable"
             ✓ anything else not allowed => "406 Not Acceptable"
-    - .download_theme(): similar to .download_udl()
     - .download_autoCompletion(): similar to .download_udl()
     - .download_functionList(): similar to .download_udl()
+    - .download_theme(): similar to .download_udl()
     - ✓ Switch to PS3
     - Learn WinDialog
     - Create Dialog(s) that
@@ -48,7 +48,7 @@ Implementation Steps:
 from Npp import *
 import urllib.request   # urllib2.urlopen() returns stream; py3 urllib.request.urlopen hopefully does same
 import urllib.error     # urllib2.HTTPError => urllib.error.HTTPError
-import urllib.response  # 
+import urllib.response  #
 import json             # .load(f) => load from stream; .loads(s) => load from string; .dump(o) => dump to stream; .dumps(o) => dump to string
 
 class CollectionInterface(object):
@@ -146,7 +146,7 @@ class CollectionInterface(object):
                 retval.append(s)
 
         return retval
-        
+
     def list_autocompletes(self):
         return list(self._ac_hoh.keys())
 
@@ -161,9 +161,22 @@ class CollectionInterface(object):
         """
         pass
 
-    def _dl_from_id_key(self,udl_id, key, chain = None):
+    def _dl_udl_from_id_key(self,udl_id, key, chain = None):
         o = self._udl_hoh[udl_id]
+        console.write(u'trying UDL id={}, key={}\n'.format(udl_id, key))
+        return self._dl_generic_from_id_key(udl_id, key, o, chain)
 
+    def _dl_ac_from_id_key(self,udl_id, key, chain = None):
+        o = self._ac_hoh[udl_id]
+        console.write(u'trying AutoCompletion id={}, key={}\n'.format(udl_id, key))
+        return self._dl_generic_from_id_key(udl_id, key, o, chain)
+
+    def _dl_fl_from_id_key(self,udl_id, key, chain = None):
+        o = self._fl_hoh[udl_id]
+        console.write(u'trying FunctionList id={}, key={}\n'.format(udl_id, key))
+        return self._dl_generic_from_id_key(udl_id, key, o, chain)
+
+    def _dl_generic_from_id_key(self,udl_id, key, o, chain = None):
         if chain is None:
             chain = {
                 'content': None,                # slurp+stringify,
@@ -171,8 +184,6 @@ class CollectionInterface(object):
                 'status': None,                 # f.getcode(),
                 'ERROR': None,                  # str(e) # if it exists
             }
-
-        console.write(u'trying id={}, key={}\n'.format(udl_id, key))
 
         if key in o and o[key]:
             try:
@@ -224,7 +235,7 @@ class CollectionInterface(object):
         """grab the specified UDL
 
         can be specified by udl_id (based on o['id-name'])
-        or specified by udl_display_name (based on o['display-name'])
+        [MAYBE TODO] or specified by udl_display_name (based on o['display-name'])
         """
         chain = {
             'content': None,                # slurp+stringify,
@@ -236,10 +247,10 @@ class CollectionInterface(object):
         if udl_id and udl_id in self._udl_hoh:
 
             if chain['content'] is None:
-                chain = self._dl_from_id_key(udl_id, '_collection_url')
+                chain = self._dl_udl_from_id_key(udl_id, '_collection_url')
 
             if chain['content'] is None:
-                chain = self._dl_from_id_key(udl_id, 'repository')
+                chain = self._dl_udl_from_id_key(udl_id, 'repository')
 
             if chain['content'] is None:
                 if isinstance(chain['ERROR'], Exception):
@@ -256,6 +267,58 @@ class CollectionInterface(object):
         else:
 
             raise Exception("provided with neither a valid udl_id nor a valid udl_display_name; don't know what to do")
+
+        # need to check the content type, and complain if it's not XML
+        chain = self._check_for_xml(chain)
+
+        return chain
+
+
+
+    def download_autoCompletion(self, udl_id = None, udl_display_name = None):
+        """grab the specified UDL
+
+        can be specified by udl_id (based on o['id-name'])
+        [MAYBE TODO] or specified by udl_display_name (based on o['display-name'])
+        """
+        chain = {
+            'content': None,                # slurp+stringify,
+            'Content-Type': None,           # f.info.getheader('Content-Type'),
+            'status': None,                 # f.getcode(),
+            'ERROR': None,                  # str(e) # if it exists
+        }
+
+        if udl_id and udl_id in self._ac_hoh:
+            pass
+
+        #   TestBeds:
+        #       Smartsheet_byKevinDickinson         autoCompletion:true
+        #       RenderMan-RSL_byStefanGustavson     autoCompletion:local_basename
+        #       SciLab_bySamuelGougeon              autoCompletion:URL
+
+        # TODO: start uncommenting these as I enable each mode
+
+        #####    if chain['content'] is None:
+        #####        chain = self._dl_from_id_key(udl_id, '_collection_url')
+        #####
+        #####    if chain['content'] is None:
+        #####        chain = self._dl_from_id_key(udl_id, 'repository')
+        #####
+        #####    if chain['content'] is None:
+        #####        if isinstance(chain['ERROR'], Exception):
+        #####            raise chain['ERROR']
+        #####        elif isinstance(chain['ERROR'], str) or isinstance(chain['ERROR'], unicode):
+        #####            raise Exception(chain['ERROR'])
+        #####        else:
+        #####            raise Exception("[ERROR] Cannot determine what went wrong when I tried {}".format(udl_id))
+        #####
+        #####elif udl_display_name:
+        #####
+        #####    raise Exception("udl_display_name interface not implemented yet")
+        #####
+        #####else:
+        #####
+        #####    raise Exception("provided with neither a valid udl_id nor a valid udl_display_name; don't know what to do")
 
         # need to check the content type, and complain if it's not XML
         chain = self._check_for_xml(chain)
@@ -300,7 +363,7 @@ console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 #console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 
 ## console.write(json.dumps({
-##         '_udls': collectionInterface._udls, 
+##         '_udls': collectionInterface._udls,
 ##         '_udl_hoh': collectionInterface._udl_hoh,
 ##         '_themes': collectionInterface._themes,
 ##     }, sort_keys=True, indent=2) + "\n\n")
