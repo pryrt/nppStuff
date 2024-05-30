@@ -208,17 +208,17 @@ class CollectionInterface(object):
             console.write("It's text/xml, so it's definitely okay\n")
             return chain
 
-        if chain['Content-Type'][0:10] == 'text/plain':
+        if chain['Content-Type'][0:10] == 'text/plain' or chain['Content-Type'][0:24] == 'application/octet-stream':
             # deeper checking: look for prolog or element or comment at non-whitespace start of file
             chk = chain['content'].strip()
             if chk[0:5] == '<?xml' or chk[0:12] == '<NotepadPlus' or chk[0:4] == '<!--':
-                console.write("It was text/plain, but it actually contains reasonable XML content\n")
+                console.write("Got {} from url {}, but it actually contains reasonable XML content\n".format(chain['Content-Type'], chain['URL']))
                 return chain
 
-            msg = u'Not Acceptable => got text/plain that doesnt seem like XML'.format(chain['content'])
+            msg = u'Not Acceptable => got {} from url {} that doesnt seem like XML'.format(chain['Content-Type'], chain['URL'])
             raise urllib.error.HTTPError(chain['URL'], 406, msg, None, None)
 
-        msg = u'Not Acceptable => Content-Type should be text/xml or text/plain, but got {}'.format(chain['Content-Type'])
+        msg = u'Not Acceptable => Content-Type should be text/xml or text/plain, but got {} from url {}'.format(chain['Content-Type'], chain['URL'])
         raise urllib.error.HTTPError(chain['URL'], 406, msg, None, None)
 
         """
@@ -289,39 +289,51 @@ class CollectionInterface(object):
         }
 
         if udl_id and udl_id in self._ac_hoh:
-            pass
+            o = self._ac_hoh[udl_id]
 
-        #   TestBeds:
-        #       Smartsheet_byKevinDickinson         autoCompletion:true
-        #       RenderMan-RSL_byStefanGustavson     autoCompletion:local_basename
-        #       SciLab_bySamuelGougeon              autoCompletion:URL
+            #   TestBeds:
+            #       Smartsheet_byKevinDickinson         autoCompletion:true
+            #       RenderMan-RSL_byStefanGustavson     autoCompletion:local_basename
+            #       SciLab_bySamuelGougeon              autoCompletion:URL
 
-        # TODO: start uncommenting these as I enable each mode
+            # TODO: start uncommenting these as I enable each mode
 
-        #####    if chain['content'] is None:
-        #####        chain = self._dl_from_id_key(udl_id, '_collection_url')
-        #####
-        #####    if chain['content'] is None:
-        #####        chain = self._dl_from_id_key(udl_id, 'repository')
-        #####
-        #####    if chain['content'] is None:
-        #####        if isinstance(chain['ERROR'], Exception):
-        #####            raise chain['ERROR']
-        #####        elif isinstance(chain['ERROR'], str) or isinstance(chain['ERROR'], unicode):
-        #####            raise Exception(chain['ERROR'])
-        #####        else:
-        #####            raise Exception("[ERROR] Cannot determine what went wrong when I tried {}".format(udl_id))
-        #####
-        #####elif udl_display_name:
-        #####
-        #####    raise Exception("udl_display_name interface not implemented yet")
-        #####
-        #####else:
-        #####
-        #####    raise Exception("provided with neither a valid udl_id nor a valid udl_display_name; don't know what to do")
+            if chain['content'] is None:
+                if o['autoCompletion']:
+                    key = '_collection_url'
+                    if str(True) == str(o['autoCompletion']):
+                        o['_collection_url'] = u'{}{}.xml'.format(
+                            "https://raw.githubusercontent.com/notepad-plus-plus/userDefinedLanguages/master/autoCompletions/",
+                            o['id-name']
+                        )
+                    elif o['autoCompletion'][0:4] != 'http':
+                        o['_collection_url'] = u'{}{}.xml'.format(
+                            "https://raw.githubusercontent.com/notepad-plus-plus/userDefinedLanguages/master/autoCompletions/",
+                            o['autoCompletion']
+                        )
+                    else:
+                        key = 'autoCompletion'
+
+                    if o[key]:
+                        chain = self._dl_ac_from_id_key(udl_id, key)
+
+            if chain['content'] is None:
+                if isinstance(chain['ERROR'], Exception):
+                    raise chain['ERROR']
+                elif isinstance(chain['ERROR'], str) or isinstance(chain['ERROR'], unicode):
+                    raise Exception(chain['ERROR'])
+                else:
+                    raise Exception("[ERROR] Cannot determine what went wrong when I tried {}".format(udl_id))
+
+        elif udl_display_name:
+            raise Exception("udl_display_name interface not implemented yet")
+
+        else:
+            raise Exception("provided with neither a valid udl_id nor a valid udl_display_name; don't know what to do")
 
         # need to check the content type, and complain if it's not XML
-        chain = self._check_for_xml(chain)
+        if not chain['ERROR']:
+            chain = self._check_for_xml(chain)
 
         return chain
 
@@ -371,4 +383,36 @@ console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 console.write(json.dumps({
     '_ac_hoh': collectionInterface._ac_hoh
 }, sort_keys=True, indent=2) + "\n\n")
+
+##### Testing .download_autoCompletion()
+#       Smartsheet_byKevinDickinson         autoCompletion:true
+ro = collectionInterface.download_autoCompletion(udl_id = 'Smartsheet_byKevinDickinson')
+if ro['ERROR']:
+    if isinstance(ro['ERROR'], Exception):
+        raise ro['ERROR']
+    elif isinstance(ro['ERROR'], str) or isinstance(ro['ERROR'], unicode):
+        raise Exception(ro['ERROR'])
+console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+
+##### Testing .download_autoCompletion()
+#       RenderMan-RSL_byStefanGustavson     autoCompletion:local_basename
+ro = collectionInterface.download_autoCompletion(udl_id = 'RenderMan-RSL_byStefanGustavson')
+if ro['ERROR']:
+    if isinstance(ro['ERROR'], Exception):
+        raise ro['ERROR']
+    elif isinstance(ro['ERROR'], str) or isinstance(ro['ERROR'], unicode):
+        raise Exception(ro['ERROR'])
+console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+
+##### Testing .download_autoCompletion()
+#       SciLab_bySamuelGougeon              autoCompletion:URL
+ro = collectionInterface.download_autoCompletion(udl_id = 'SciLab_bySamuelGougeon')
+if ro['ERROR']:
+    if isinstance(ro['ERROR'], Exception):
+        raise ro['ERROR']
+    elif isinstance(ro['ERROR'], str) or isinstance(ro['ERROR'], unicode):
+        raise Exception(ro['ERROR'])
+console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+
+##### END #####
 del(collectionInterface)
