@@ -33,10 +33,11 @@ Implementation Steps:
                 ✓ if it resolves to valid XML, it's okay
                 ✓ else, "406 Not Acceptable"
             ✓ anything else not allowed => "406 Not Acceptable"
-    - .download_autoCompletion(): similar to .download_udl()
+    ✓ .download_autoCompletion(): similar to .download_udl()
     - .download_functionList(): similar to .download_udl()
-    - .download_theme(): similar to .download_udl()
-    - ✓ Switch to PS3
+        - nothing to debug against...at some point, I might need to do a functionList for one of the existing UDLs, if no one else submits one
+    ✓ .download_theme(): similar to .download_udl()
+    ✓ Switch to PS3
     - Learn WinDialog
     - Create Dialog(s) that
         - list all the UDLs or AutoCompletions or FunctionLists or Themes,
@@ -152,14 +153,6 @@ class CollectionInterface(object):
 
     def list_functionlists(self):
         return list(self._fl_hoh.keys())
-
-    def download_theme(self, theme_file_name):
-        """grab the specified theme
-
-        theme_file_name should include the .xml extension (eg: 'blah.xml')
-        the tool will automatically create the URL, including the themes subdirectory ('.../themes/blah.xml')
-        """
-        pass
 
     def _dl_udl_from_id_key(self,udl_id, key, chain = None):
         o = self._udl_hoh[udl_id]
@@ -337,17 +330,39 @@ class CollectionInterface(object):
 
         return chain
 
+    def download_theme(self, theme_file_name, chain = None):
+        """grab the specified theme
+
+        theme_file_name should include the .xml extension (eg: 'blah.xml')
+        the tool will automatically create the URL, including the themes subdirectory ('.../themes/blah.xml')
+        """
+        chain = {
+            'content': None,                # slurp+stringify,
+            'Content-Type': None,           # f.info.getheader('Content-Type'),
+            'status': None,                 # f.getcode(),
+            'ERROR': None,                  # str(e) # if it exists
+        }
+        if theme_file_name in self._themes:
+            o = {
+                'name': theme_file_name,
+                'url': u"{}/{}".format('https://raw.githubusercontent.com/notepad-plus-plus/nppThemes/main/themes', theme_file_name)
+            }
+            return self._dl_generic_from_id_key(theme_file_name, 'url', o, chain)
+        else:
+            raise Exception("theme '{}' not in list of themes".format(theme_file_name))
+
+
 console.show();
 console.clear();
 collectionInterface = CollectionInterface()
 #console.write(json.dumps({ "UDLs": collectionInterface.list_udls() , "nppThemes": collectionInterface.list_themes()}, sort_keys=True, indent=2, separators=(',',':')))
 #console.write("\n")
 console.write(json.dumps({
-    #'UDLs': collectionInterface.list_themes(),
+    #'UDLs': collectionInterface.list_udls(),
     #'nppThemes': collectionInterface.list_themes(),
     'udlAutoComplete': collectionInterface.list_autocompletes(),
     'udlFunctionList': collectionInterface.list_functionlists(),
-}, sort_keys=True, indent=2))
+}, sort_keys=True, indent=2)+"\n\n")
 
 # AgenaUDL => the Collection doesn't have the file, and the repo link goes to the repo-parent, not the XML itself (text/html)
 try:
@@ -406,7 +421,22 @@ console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 
 ##### Testing .download_autoCompletion()
 #       SciLab_bySamuelGougeon              autoCompletion:URL
-ro = collectionInterface.download_autoCompletion(udl_id = 'SciLab_bySamuelGougeon')
+if False:
+    # disabled once I knew it worked, because it's pretty slow
+    ro = collectionInterface.download_autoCompletion(udl_id = 'SciLab_bySamuelGougeon')
+    if ro['ERROR']:
+        if isinstance(ro['ERROR'], Exception):
+            raise ro['ERROR']
+        elif isinstance(ro['ERROR'], str) or isinstance(ro['ERROR'], unicode):
+            raise Exception(ro['ERROR'])
+    console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+
+##### Testing .download_theme()
+console.write(json.dumps({
+    #'UDLs': collectionInterface.list_udls(),
+    'nppThemes': collectionInterface.list_themes()
+}, sort_keys=True, indent=2) + "\n\n")
+ro = collectionInterface.download_theme('99er.xml')
 if ro['ERROR']:
     if isinstance(ro['ERROR'], Exception):
         raise ro['ERROR']
