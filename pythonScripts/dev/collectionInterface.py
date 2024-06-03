@@ -51,6 +51,65 @@ import urllib.request   # urllib2.urlopen() returns stream; py3 urllib.request.u
 import urllib.error     # urllib2.HTTPError => urllib.error.HTTPError
 import urllib.response  #
 import json             # .load(f) => load from stream; .loads(s) => load from string; .dump(o) => dump to stream; .dumps(o) => dump to string
+from WinDialog import Dialog, Button, Label, ComboBox
+from WinDialog.controls.combobox import CBS
+from WinDialog.win_helper import WindowStyle as WS
+
+class CollectionInterfaceDialog(Dialog):
+    def __init__(self, dataSource, title='Classy Collection Interface'):
+        super().__init__(title)
+        self.size = (300, 75)
+        self.center = True
+        self.dataSource = dataSource
+
+        self.dl_btn         = Button(title='&Download',     size=( 80, 14), position=(10, 50))
+        self.dl_btn.onClick = self.on_download
+
+        self.cancel_btn     = Button(title='&Cancel',       size=( 75, 14), position=(95, 50))
+        self.cancel_btn.onClick = self.on_close
+
+        self.category_lbl   = Label('Category:',            size=( 30,  9), position=(10, 13))
+        self.category_cb    = ComboBox('' ,                 size=(240, 52), position=(50, 10))
+        self.category_cb.onSelChange = self.on_category_change
+        self.category_cb.style |= WS.TABSTOP
+
+        self.file_lbl       = Label('File:',                size=( 30,  9), position=(10, 31))
+        self.file_cb        = ComboBox('' ,                 size=(240, 11), position=(50, 30))
+        self.file_cb.onSelChange = self.on_file_change
+        self.file_cb.style |= WS.TABSTOP |  CBS.DISABLENOSCROLL | WS.VSCROLL
+
+        self.initialize = self.on_init
+        self.show()
+
+    def on_download(self):
+        notepad.messageBox(
+            'download {}/{}'.format(self.category_cb.getSelectedItemText(),self.file_cb.getSelectedItemText()),
+            "Downloading"
+        )
+
+    def on_close(self):
+        self.terminate()
+
+    def on_category_change(self):
+        choices = {
+            'UDL': self.dataSource.list_udls(),
+            'AutoCompletion': self.dataSource.list_autocompletes(),
+            'FunctionList': self.dataSource.list_functionlists(),
+            'Theme': self.dataSource.list_themes()
+        }
+        selected_text = self.category_cb.getSelectedItemText()
+        if selected_text in choices:
+            self.file_cb.set(choices[selected_text])
+        else:
+            self.file_cb.set([])
+
+    def on_file_change(self):
+        pass
+
+    def on_init(self):
+        self.category_cb.append(['UDL', 'AutoCompletion', 'FunctionList', 'Theme'])
+        self.on_category_change()
+
 
 class CollectionInterface(object):
     """Provides an interface to the UserDefinedlanguage Collection and nppThemes Collection.
@@ -72,6 +131,8 @@ class CollectionInterface(object):
         # grab the nppThemes table-of-contents JSON (new as of 2023-Nov-06)
         f = urllib.request.urlopen("https://raw.githubusercontent.com/notepad-plus-plus/nppThemes/master/themes/.toc.json")
         self._themes = json.load(f)
+
+        CollectionInterfaceDialog(self)
 
     def _udls_aoh_to_hoh(self):
         """
@@ -98,11 +159,6 @@ class CollectionInterface(object):
                     'autoCompletion': o['autoCompletion'],
                     'autoCompletionAuthor': o['autoCompletionAuthor'] if 'autoCompletionAuthor' in o else o['author']
                 }
-                # TODO: define a '_collection_url' similar to the above, but maybe with more logic so it can handle
-                #   if true     => autoCompletions/{id-name}.xml
-                #   if value    => autoCompletions/{value}.xml
-                #   if url      => {url}
-                # ... though I think .download_udl handled that for UDL, so maybe .download_autoCompletion will handle that for ac
 
             if 'functionList' in o:
                 console.write("processing({}): found functionList({})\n".format(o['description'], o['functionList']))
@@ -113,13 +169,6 @@ class CollectionInterface(object):
                     'functionList': o['functionList'],
                     'functionListAuthor': o['functionListAuthor'] if 'functionListAuthor' in o else o['author']
                 }
-                # TODO: define a '_collection_url' similar to the above, but maybe with more logic so it can handle
-                #   if true     => functionList/{id-name}.xml
-                #   if value    => functionList/{value}.xml
-                #   if url      => {url}
-                # ... though I think .download_udl handled that for UDL, so maybe .download_functionList will handle that for fl
-
-        #console.write(json.dumps(self._udl_hoh, sort_keys=True, indent=2) + "\n-----\n")
 
     def list_themes(self):
         """returns a list of theme names"""
@@ -128,31 +177,18 @@ class CollectionInterface(object):
     def list_udls(self):
         """returns a list of strings"""
         retval = []
+        self._udllist_to_id = {}
         for o in sorted(self._udls, key=lambda d: d['display-name'].lower()):
-            # console.write( json.dumps(o, sort_keys=True, indent=2, separators=(',',':')) + "\n" )
-            u = u'https://raw.githubusercontent.com/notepad-plus-plus/userDefinedLanguages/master/UDLs/{}.xml'.format(o['id-name'])
-            s = u'[{}]({}) => {}\n'.format(
-                o['display-name'],
-                u, # o['id-name'] + ".xml",
-                o['description']
-            )
-            # console.write(s)
-            retval.append(s)
-
-            if o['repository']:
-                s = u'\talternate: [{}]({})\n'.format(
-                    o['display-name'],
-                    o['repository']
-                )
-                retval.append(s)
+            self._udllist_to_id[o['display-name']] = o['id-name']
+            retval.append(o['display-name'])
 
         return retval
 
     def list_autocompletes(self):
-        return list(self._ac_hoh.keys())
+        return [self._udl_hoh[x]['display-name'] for x in self._ac_hoh.keys()]
 
     def list_functionlists(self):
-        return list(self._fl_hoh.keys())
+        return [self._udl_hoh[x]['display-name'] for x in self._fl_hoh.keys()]
 
     def _dl_udl_from_id_key(self,udl_id, key, chain = None):
         o = self._udl_hoh[udl_id]
@@ -222,9 +258,7 @@ class CollectionInterface(object):
             urllib.URLError(self, reason)
         """
 
-
-
-    def download_udl(self, udl_id = None, udl_display_name = None):
+    def download_udl(self, udl_id):
         """grab the specified UDL
 
         can be specified by udl_id (based on o['id-name'])
@@ -266,9 +300,7 @@ class CollectionInterface(object):
 
         return chain
 
-
-
-    def download_autoCompletion(self, udl_id = None, udl_display_name = None):
+    def download_autoCompletion(self, udl_id):
         """grab the specified UDL
 
         can be specified by udl_id (based on o['id-name'])
@@ -330,7 +362,7 @@ class CollectionInterface(object):
 
         return chain
 
-    def download_theme(self, theme_file_name, chain = None):
+    def download_theme(self, theme_file_name):
         """grab the specified theme
 
         theme_file_name should include the .xml extension (eg: 'blah.xml')
@@ -355,75 +387,56 @@ class CollectionInterface(object):
 console.show();
 console.clear();
 collectionInterface = CollectionInterface()
-#console.write(json.dumps({ "UDLs": collectionInterface.list_udls() , "nppThemes": collectionInterface.list_themes()}, sort_keys=True, indent=2, separators=(',',':')))
-#console.write("\n")
-console.write(json.dumps({
-    #'UDLs': collectionInterface.list_udls(),
-    #'nppThemes': collectionInterface.list_themes(),
-    'udlAutoComplete': collectionInterface.list_autocompletes(),
-    'udlFunctionList': collectionInterface.list_functionlists(),
-}, sort_keys=True, indent=2)+"\n\n")
+doTest = False
 
-# AgenaUDL => the Collection doesn't have the file, and the repo link goes to the repo-parent, not the XML itself (text/html)
-try:
-    ro = collectionInterface.download_udl(udl_id = 'AgenaUDL')
+if doTest:
+    #console.write(json.dumps({ "UDLs": collectionInterface.list_udls() , "nppThemes": collectionInterface.list_themes()}, sort_keys=True, indent=2, separators=(',',':')))
+    #console.write("\n")
+    console.write(json.dumps({
+        #'UDLs': collectionInterface.list_udls(),
+        #'nppThemes': collectionInterface.list_themes(),
+        'udlAutoComplete': collectionInterface.list_autocompletes(),
+        'udlFunctionList': collectionInterface.list_functionlists(),
+    }, sort_keys=True, indent=2)+"\n\n")
+
+    # AgenaUDL => the Collection doesn't have the file, and the repo link goes to the repo-parent, not the XML itself (text/html)
+    try:
+        ro = collectionInterface.download_udl(udl_id = 'AgenaUDL')
+        console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+    except urllib.error.HTTPError as e:
+        console.writeError('Inserting intentional error for HTML instead of XML or PLAIN:\n')
+        console.writeError(u"{} => {}\n\n".format(str(e), json.dumps({
+            'e_info': e.info(),
+            'e_code': e.getcode(),
+            'e_url': e.filename
+        }, sort_keys=True, indent=2)))
+
+    # 6502Assembly_byCarlMyerholtz => it exists in the collection repo, but comes out as text/plain, not text/xml.
+    #       It appears that GitHub's "raw" interface sends things as text/plain, to keep it raw.
+    #       So I will need to be able to accept either, and do additional checking if the text is reasonable XML.
+    ro = collectionInterface.download_udl(udl_id = '6502Assembly_byCarlMyerholtz')
     console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
-except urllib.error.HTTPError as e:
-    console.writeError('Inserting intentional error for HTML instead of XML or PLAIN:\n')
-    console.writeError(u"{} => {}\n\n".format(str(e), json.dumps({
-        'e_info': e.info(),
-        'e_code': e.getcode(),
-        'e_url': e.filename
-    }, sort_keys=True, indent=2)))
 
-# 6502Assembly_byCarlMyerholtz => it exists in the collection repo, but comes out as text/plain, not text/xml.
-#       It appears that GitHub's "raw" interface sends things as text/plain, to keep it raw.
-#       So I will need to be able to accept either, and do additional checking if the text is reasonable XML.
-ro = collectionInterface.download_udl(udl_id = '6502Assembly_byCarlMyerholtz')
-console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+    # 'RouterOS Script' => gives invalid URL
+    #   >> httplib.InvalidURL: URL can't contain control characters. u'/notepad-plus-plus/userDefinedLanguages/master/UDLs/RouterOS Script.xml' (found at least u' ')
+    #       At some point, I should probably add a "reverse checker", to make sure that every UDL filename
+    #       is also in the JSON's 'id-name'
+    #ro = collectionInterface.download_udl(udl_id = 'RouterOS Script')
+    #console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 
-# 'RouterOS Script' => gives invalid URL
-#   >> httplib.InvalidURL: URL can't contain control characters. u'/notepad-plus-plus/userDefinedLanguages/master/UDLs/RouterOS Script.xml' (found at least u' ')
-#       At some point, I should probably add a "reverse checker", to make sure that every UDL filename
-#       is also in the JSON's 'id-name'
-#ro = collectionInterface.download_udl(udl_id = 'RouterOS Script')
-#console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+    ## console.write(json.dumps({
+    ##         '_udls': collectionInterface._udls,
+    ##         '_udl_hoh': collectionInterface._udl_hoh,
+    ##         '_themes': collectionInterface._themes,
+    ##     }, sort_keys=True, indent=2) + "\n\n")
 
-## console.write(json.dumps({
-##         '_udls': collectionInterface._udls,
-##         '_udl_hoh': collectionInterface._udl_hoh,
-##         '_themes': collectionInterface._themes,
-##     }, sort_keys=True, indent=2) + "\n\n")
+    console.write(json.dumps({
+        '_ac_hoh': collectionInterface._ac_hoh
+    }, sort_keys=True, indent=2) + "\n\n")
 
-console.write(json.dumps({
-    '_ac_hoh': collectionInterface._ac_hoh
-}, sort_keys=True, indent=2) + "\n\n")
-
-##### Testing .download_autoCompletion()
-#       Smartsheet_byKevinDickinson         autoCompletion:true
-ro = collectionInterface.download_autoCompletion(udl_id = 'Smartsheet_byKevinDickinson')
-if ro['ERROR']:
-    if isinstance(ro['ERROR'], Exception):
-        raise ro['ERROR']
-    elif isinstance(ro['ERROR'], str) or isinstance(ro['ERROR'], unicode):
-        raise Exception(ro['ERROR'])
-console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
-
-##### Testing .download_autoCompletion()
-#       RenderMan-RSL_byStefanGustavson     autoCompletion:local_basename
-ro = collectionInterface.download_autoCompletion(udl_id = 'RenderMan-RSL_byStefanGustavson')
-if ro['ERROR']:
-    if isinstance(ro['ERROR'], Exception):
-        raise ro['ERROR']
-    elif isinstance(ro['ERROR'], str) or isinstance(ro['ERROR'], unicode):
-        raise Exception(ro['ERROR'])
-console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
-
-##### Testing .download_autoCompletion()
-#       SciLab_bySamuelGougeon              autoCompletion:URL
-if False:
-    # disabled once I knew it worked, because it's pretty slow
-    ro = collectionInterface.download_autoCompletion(udl_id = 'SciLab_bySamuelGougeon')
+    ##### Testing .download_autoCompletion()
+    #       Smartsheet_byKevinDickinson         autoCompletion:true
+    ro = collectionInterface.download_autoCompletion(udl_id = 'Smartsheet_byKevinDickinson')
     if ro['ERROR']:
         if isinstance(ro['ERROR'], Exception):
             raise ro['ERROR']
@@ -431,18 +444,41 @@ if False:
             raise Exception(ro['ERROR'])
     console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
 
-##### Testing .download_theme()
-console.write(json.dumps({
-    #'UDLs': collectionInterface.list_udls(),
-    'nppThemes': collectionInterface.list_themes()
-}, sort_keys=True, indent=2) + "\n\n")
-ro = collectionInterface.download_theme('99er.xml')
-if ro['ERROR']:
-    if isinstance(ro['ERROR'], Exception):
-        raise ro['ERROR']
-    elif isinstance(ro['ERROR'], str) or isinstance(ro['ERROR'], unicode):
-        raise Exception(ro['ERROR'])
-console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+    ##### Testing .download_autoCompletion()
+    #       RenderMan-RSL_byStefanGustavson     autoCompletion:local_basename
+    ro = collectionInterface.download_autoCompletion(udl_id = 'RenderMan-RSL_byStefanGustavson')
+    if ro['ERROR']:
+        if isinstance(ro['ERROR'], Exception):
+            raise ro['ERROR']
+        elif isinstance(ro['ERROR'], str) or isinstance(ro['ERROR'], unicode):
+            raise Exception(ro['ERROR'])
+    console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+
+    ##### Testing .download_autoCompletion()
+    #       SciLab_bySamuelGougeon              autoCompletion:URL
+    if False:
+        # disabled once I knew it worked, because it's pretty slow
+        ro = collectionInterface.download_autoCompletion(udl_id = 'SciLab_bySamuelGougeon')
+        if ro['ERROR']:
+            if isinstance(ro['ERROR'], Exception):
+                raise ro['ERROR']
+            elif isinstance(ro['ERROR'], str) or isinstance(ro['ERROR'], unicode):
+                raise Exception(ro['ERROR'])
+        console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+
+    ##### Testing .download_theme()
+    console.write(json.dumps({
+        #'UDLs': collectionInterface.list_udls(),
+        'nppThemes': collectionInterface.list_themes()
+    }, sort_keys=True, indent=2) + "\n\n")
+    ro = collectionInterface.download_theme('99er.xml')
+    if ro['ERROR']:
+        if isinstance(ro['ERROR'], Exception):
+            raise ro['ERROR']
+        elif isinstance(ro['ERROR'], str) or isinstance(ro['ERROR'], unicode):
+            raise Exception(ro['ERROR'])
+    console.write(json.dumps(ro, sort_keys=True, indent=2) + "\n\n")
+    ##### END `if doTest:`
 
 ##### END #####
 del(collectionInterface)
