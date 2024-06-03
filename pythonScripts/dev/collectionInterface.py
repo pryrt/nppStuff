@@ -51,9 +51,11 @@ import urllib.request   # urllib2.urlopen() returns stream; py3 urllib.request.u
 import urllib.error     # urllib2.HTTPError => urllib.error.HTTPError
 import urllib.response  #
 import json             # .load(f) => load from stream; .loads(s) => load from string; .dump(o) => dump to stream; .dumps(o) => dump to string
+import html             # html.unescape()
 from WinDialog import Dialog, Button, Label, ComboBox
 from WinDialog.controls.combobox import CBS
 from WinDialog.win_helper import WindowStyle as WS
+from w32GetOpenSaveFileName import getSaveFileName
 
 class CollectionInterfaceDialog(Dialog):
     def __init__(self, dataSource, title='Classy Collection Interface'):
@@ -82,10 +84,47 @@ class CollectionInterfaceDialog(Dialog):
         self.show()
 
     def on_download(self):
-        notepad.messageBox(
-            'download {}/{}'.format(self.category_cb.getSelectedItemText(),self.file_cb.getSelectedItemText()),
-            "Downloading"
-        )
+        category = self.category_cb.getSelectedItemText()
+        display_name = self.file_cb.getSelectedItemText()
+        id_name = self.dataSource._udllist_to_id[display_name] if category != "Theme" else display_name
+
+        # TODO: need to switch to actual downloads
+        match category:
+            case "UDL":
+                notepad.messageBox('download UDL displayed {}\n\n=> id:{}'.format(display_name, id_name), "Downloading UDL...")
+                ro = { 'content': 'dummy', 'Content-Type': 'text/plain;UDL', 'ERROR': None }
+            case "AutoCompletion":
+                notepad.messageBox('download autoCompletion displayed as {}\n\n=> id:{}'.format(display_name, id_name), "Downloading autoCompletion...")
+                ro = { 'content': 'dummy', 'Content-Type': 'text/plain;AC', 'ERROR': None }
+            case "FunctionList":
+                notepad.messageBox('download functionList displayed as {}\n\n=> id:{}'.format(display_name, id_name), "Downloading functionList...")
+                ro = { 'content': 'dummy', 'Content-Type': 'text/plain;FL', 'ERROR': None }
+            case "Theme":
+                notepad.messageBox('download Theme {}'.format(display_name), "Downloading Theme")
+                ro = { 'content': 'dummy', 'Content-Type': 'text/plain;Theme', 'ERROR': None }
+            case _:
+                raise Exception(f'unknown category {category}!')
+
+        if not(ro):
+            raise Exception('Nothing returned from attempted download')
+        elif ro['ERROR']:
+            if isinstance(ro['ERROR'], Exception):
+                raise ro['ERROR']
+            elif isinstance(ro['ERROR'], str) or isinstance(ro['ERROR'], unicode):
+                raise Exception(ro['ERROR'])
+            else:
+                raise Exception("[ERROR] Cannot determine what went wrong when I tried to download")
+
+        l = len(ro['content'])
+        f = id_name + ".xml" if category != 'Theme' else display_name
+        # TODO: need to pick a default directory
+        savename = getSaveFileName('Save As', 'xml', 'XML (*.xml)|*.xml|All (*.*)|*.*|', f)
+        if savename:
+            savename = savename.strip("\0")
+            console.write(f"Save As => {savename}")
+            with open(savename, 'w') as fo:
+                fo.write(ro['content'])
+
 
     def on_close(self):
         self.terminate()
@@ -149,6 +188,8 @@ class CollectionInterface(object):
                 "https://raw.githubusercontent.com/notepad-plus-plus/userDefinedLanguages/master/UDLs/",
                 o['id-name']
             )
+
+            o['display-name'] = html.unescape(o['display-name'])
 
             if 'autoCompletion' in o:
                 console.write("processing({}): found autoCompletion({})\n".format(o['description'], o['autoCompletion']))
