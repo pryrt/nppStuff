@@ -13,51 +13,6 @@ from Npp import console, notepad, editor
 from WinDialog import Dialog, Button, Label, ComboBox
 from WinDialog.controls.combobox import CBS
 from WinDialog.win_helper import WindowStyle as WS
-rc = '''
-1 DIALOGEX 0, 0, 180, 75
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Collection Interface"
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-FONT 9, "Segoe UI"
-{
-    CONTROL "Download"  , IDCDWN, BUTTON,            BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP      , 10 , 50 , 80 , 14
-    CONTROL "Cancel"    , IDCCAN, BUTTON,            BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP      , 95 , 50 , 75 , 14
-    CONTROL "Category:" , IDLCAT, STATIC,            SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP              , 10 , 13 , 30 , 9
-    CONTROL ""          , IDCCAT, COMBOBOX,          CBS_DROPDOWNLIST | WS_CHILD | WS_VISIBLE | WS_TABSTOP   , 50 , 10 , 120 , 52
-    CONTROL "File:"     , IDLFIL, STATIC,            SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP              , 10 , 31 , 30 , 9
-    CONTROL ""          , IDCFIL, COMBOBOX,          CBS_DROPDOWN | CBS_DISABLENOSCROLL | WS_VSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP       , 50 , 30 , 120 , 1
-}
-'''
-
-
-
-def on_selchange():
-    choices = {
-        'UDL': ([str(x) for x in range(101,110)]),
-        'AutoCompletion': ([str(x) for x in range(101,110)]),
-        'FunctionList': ([str(x) for x in range(201,210)]),
-        'Theme': ([str(x) for x in range(1,100)])
-    }
-    selected_text = dlg.combobox_IDCCAT.getSelectedItemText()
-    if selected_text in choices:
-        dlg.combobox_IDCFIL.set(choices[selected_text])
-    else:
-        dlg.combobox_IDCFIL.set([])
-
-def on_selchange2():
-    print(u"{:>7d} {:s}".format(dlg.combobox_IDCFIL.getSelectedItem(),dlg.combobox_IDCFIL.getSelectedItemText()))
-
-def on_init():
-    dlg.combobox_IDCCAT.append(['UDL', 'AutoCompletion', 'FunctionList', 'Theme'])
-    on_selchange()
-
-dlg = WinDialog.create_dialog_from_rc(rc_code=rc)
-dlg.center = True
-dlg.combobox_IDCCAT.onSelChange = on_selchange
-dlg.combobox_IDCFIL.onSelChange = on_selchange2
-dlg.button_IDCCAN.onClick = dlg.terminate
-dlg.initialize = on_init
-#dlg.show()
 
 class CollectionInterfaceDialog(Dialog):
     def __init__(self, title='Classy Collection Interface'):
