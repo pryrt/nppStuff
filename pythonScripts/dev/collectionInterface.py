@@ -102,20 +102,20 @@ class CollectionInterfaceDialog(Dialog):
         match category:
             case "UDL":
                 dl_dir = self._nppCfgUdlDirectory
-                notepad.messageBox('download UDL displayed {}\n\n=> id:{}\n\n=> {}'.format(display_name, id_name, dl_dir), "Downloading UDL...")
-                ro = { 'content': 'dummy', 'Content-Type': 'text/plain;UDL', 'ERROR': None }
+                ro = self.dataSource.download_udl(udl_id = id_name)
+
             case "AutoCompletion":
                 dl_dir = self._nppAppAutoCompletionDirectory
-                notepad.messageBox('download autoCompletion displayed as {}\n\n=> id:{}\n\n=> {}'.format(display_name, id_name, dl_dir), "Downloading autoCompletion...")
-                ro = { 'content': 'dummy', 'Content-Type': 'text/plain;AC', 'ERROR': None }
+                ro = self.dataSource.download_autoCompletion(udl_id = id_name)
+
             case "FunctionList":
                 dl_dir = self._nppCfgFunctionListDirectory
-                notepad.messageBox('download functionList displayed as {}\n\n=> id:{}\n\n=> {}'.format(display_name, id_name, dl_dir), "Downloading functionList...")
-                ro = { 'content': 'dummy', 'Content-Type': 'text/plain;FL', 'ERROR': None }
+                ro = self.dataSource.download_functionList(udl_id = id_name)
+
             case "Theme":
                 dl_dir = self._nppCfgThemesDirectory
-                notepad.messageBox('download Theme {}\n\n=> {}'.format(display_name, dl_dir), "Downloading Theme")
-                ro = { 'content': 'dummy', 'Content-Type': 'text/plain;Theme', 'ERROR': None }
+                ro = self.dataSource.download_theme(display_name)
+
             case _:
                 raise Exception(f'unknown category {category}!')
 
@@ -134,9 +134,8 @@ class CollectionInterfaceDialog(Dialog):
         savename = getSaveFileName('Save As', 'xml', 'XML (*.xml)|*.xml|All (*.*)|*.*|', default_fname)
         if savename:
             savename = savename.strip("\0")
-            console.write(f"SaveAs => '{savename}'\n")
             try:
-                with open(savename, 'w') as fo:
+                with open(savename, 'w', newline='') as fo:
                     fo.write(ro['content'])
             except PermissionError as e:
                 notepad.messageBox(str(e), "ERROR: Permission Error")
@@ -208,7 +207,7 @@ class CollectionInterface(object):
             o['display-name'] = html.unescape(o['display-name'])
 
             if 'autoCompletion' in o:
-                console.write("processing({}): found autoCompletion({})\n".format(o['description'], o['autoCompletion']))
+                #console.write("processing({}): found autoCompletion({})\n".format(o['description'], o['autoCompletion']))
                 self._ac_hoh[ o['id-name'] ] = {
                     'id-name': o['id-name'],
                     'display-name': o['display-name'],
@@ -218,7 +217,7 @@ class CollectionInterface(object):
                 }
 
             if 'functionList' in o:
-                console.write("processing({}): found functionList({})\n".format(o['description'], o['functionList']))
+                #console.write("processing({}): found functionList({})\n".format(o['description'], o['functionList']))
                 self._fl_hoh[ o['id-name'] ] = {
                     'id-name': o['id-name'],
                     'display-name': o['display-name'],
