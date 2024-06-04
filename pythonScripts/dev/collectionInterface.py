@@ -47,6 +47,7 @@ Implementation Steps:
 
 """
 from Npp import *
+import os
 import urllib.request   # urllib2.urlopen() returns stream; py3 urllib.request.urlopen hopefully does same
 import urllib.error     # urllib2.HTTPError => urllib.error.HTTPError
 import urllib.response  #
@@ -58,25 +59,33 @@ from WinDialog.win_helper import WindowStyle as WS
 from w32GetOpenSaveFileName import getSaveFileName
 
 class CollectionInterfaceDialog(Dialog):
-    def __init__(self, dataSource, title='Classy Collection Interface'):
+    _nppConfigDirectory = os.path.dirname(os.path.dirname(notepad.getPluginConfigDir()))
+    _nppCfgUdlDirectory = os.path.join(_nppConfigDirectory, 'userDefineLangs')
+    _nppCfgFunctionListDirectory = os.path.join(_nppConfigDirectory, 'functionList')
+    _nppCfgThemesDirectory = os.path.join(_nppConfigDirectory, 'themes')
+    _nppAppAutoCompletionDirectory = os.path.join(notepad.getNppDir(), 'autoCompletion')
+
+    def __init__(self, dataSource, title='Collection Interface'):
         super().__init__(title)
-        self.size = (300, 75)
+        self.size = (300, 80)
         self.center = True
         self.dataSource = dataSource
 
-        self.dl_btn         = Button(title='&Download',     size=( 80, 14), position=(10, 50))
+        self.desc_lbl       = Label('Download from UDL Collection or Themes Collection', size=(280, 9), position=(10,5))
+
+        self.dl_btn         = Button(title='&Download',     size=( 60, 14), position=(10, 60))
         self.dl_btn.onClick = self.on_download
 
-        self.cancel_btn     = Button(title='&Cancel',       size=( 75, 14), position=(95, 50))
-        self.cancel_btn.onClick = self.on_close
+        self.done_btn       = Button(title='&Done',         size=( 60, 14), position=(80, 60))
+        self.done_btn.onClick = self.on_close
 
-        self.category_lbl   = Label('Category:',            size=( 30,  9), position=(10, 13))
-        self.category_cb    = ComboBox('' ,                 size=(240, 52), position=(50, 10))
+        self.category_lbl   = Label('Category:',            size=( 30,  9), position=(10, 23))
+        self.category_cb    = ComboBox('' ,                 size=(240, 52), position=(50, 20))
         self.category_cb.onSelChange = self.on_category_change
         self.category_cb.style |= WS.TABSTOP
 
-        self.file_lbl       = Label('File:',                size=( 30,  9), position=(10, 31))
-        self.file_cb        = ComboBox('' ,                 size=(240, 11), position=(50, 30))
+        self.file_lbl       = Label('File:',                size=( 30,  9), position=(10, 41))
+        self.file_cb        = ComboBox('' ,                 size=(240, 11), position=(50, 40))
         self.file_cb.onSelChange = self.on_file_change
         self.file_cb.style |= WS.TABSTOP |  CBS.DISABLENOSCROLL | WS.VSCROLL
 
@@ -87,20 +96,25 @@ class CollectionInterfaceDialog(Dialog):
         category = self.category_cb.getSelectedItemText()
         display_name = self.file_cb.getSelectedItemText()
         id_name = self.dataSource._udllist_to_id[display_name] if category != "Theme" else display_name
+        dl_dir = None
 
         # TODO: need to switch to actual downloads
         match category:
             case "UDL":
-                notepad.messageBox('download UDL displayed {}\n\n=> id:{}'.format(display_name, id_name), "Downloading UDL...")
+                dl_dir = self._nppCfgUdlDirectory
+                notepad.messageBox('download UDL displayed {}\n\n=> id:{}\n\n=> {}'.format(display_name, id_name, dl_dir), "Downloading UDL...")
                 ro = { 'content': 'dummy', 'Content-Type': 'text/plain;UDL', 'ERROR': None }
             case "AutoCompletion":
-                notepad.messageBox('download autoCompletion displayed as {}\n\n=> id:{}'.format(display_name, id_name), "Downloading autoCompletion...")
+                dl_dir = self._nppAppAutoCompletionDirectory
+                notepad.messageBox('download autoCompletion displayed as {}\n\n=> id:{}\n\n=> {}'.format(display_name, id_name, dl_dir), "Downloading autoCompletion...")
                 ro = { 'content': 'dummy', 'Content-Type': 'text/plain;AC', 'ERROR': None }
             case "FunctionList":
-                notepad.messageBox('download functionList displayed as {}\n\n=> id:{}'.format(display_name, id_name), "Downloading functionList...")
+                dl_dir = self._nppCfgFunctionListDirectory
+                notepad.messageBox('download functionList displayed as {}\n\n=> id:{}\n\n=> {}'.format(display_name, id_name, dl_dir), "Downloading functionList...")
                 ro = { 'content': 'dummy', 'Content-Type': 'text/plain;FL', 'ERROR': None }
             case "Theme":
-                notepad.messageBox('download Theme {}'.format(display_name), "Downloading Theme")
+                dl_dir = self._nppCfgThemesDirectory
+                notepad.messageBox('download Theme {}\n\n=> {}'.format(display_name, dl_dir), "Downloading Theme")
                 ro = { 'content': 'dummy', 'Content-Type': 'text/plain;Theme', 'ERROR': None }
             case _:
                 raise Exception(f'unknown category {category}!')
@@ -115,15 +129,17 @@ class CollectionInterfaceDialog(Dialog):
             else:
                 raise Exception("[ERROR] Cannot determine what went wrong when I tried to download")
 
-        l = len(ro['content'])
         f = id_name + ".xml" if category != 'Theme' else display_name
-        # TODO: need to pick a default directory
-        savename = getSaveFileName('Save As', 'xml', 'XML (*.xml)|*.xml|All (*.*)|*.*|', f)
+        default_fname = os.path.join(dl_dir, f)
+        savename = getSaveFileName('Save As', 'xml', 'XML (*.xml)|*.xml|All (*.*)|*.*|', default_fname)
         if savename:
             savename = savename.strip("\0")
-            console.write(f"Save As => {savename}")
-            with open(savename, 'w') as fo:
-                fo.write(ro['content'])
+            console.write(f"SaveAs => '{savename}'\n")
+            try:
+                with open(savename, 'w') as fo:
+                    fo.write(ro['content'])
+            except PermissionError as e:
+                notepad.messageBox(str(e), "ERROR: Permission Error")
 
 
     def on_close(self):
