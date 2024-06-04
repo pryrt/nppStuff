@@ -56,7 +56,8 @@ import html             # html.unescape()
 from WinDialog import Dialog, Button, Label, ComboBox
 from WinDialog.controls.combobox import CBS
 from WinDialog.win_helper import WindowStyle as WS
-from w32GetOpenSaveFileName import getSaveFileName
+import ctypes
+from w32GetOpenSaveFileName import getSaveFileName, getOpenFileName
 
 class CollectionInterfaceDialog(Dialog):
     _nppConfigDirectory = os.path.dirname(os.path.dirname(notepad.getPluginConfigDir()))
@@ -97,6 +98,7 @@ class CollectionInterfaceDialog(Dialog):
         display_name = self.file_cb.getSelectedItemText()
         id_name = self.dataSource._udllist_to_id[display_name] if category != "Theme" else display_name
         dl_dir = None
+        unWriteable = False
 
         # TODO: need to switch to actual downloads
         match category:
@@ -107,6 +109,16 @@ class CollectionInterfaceDialog(Dialog):
             case "AutoCompletion":
                 dl_dir = self._nppAppAutoCompletionDirectory
                 ro = self.dataSource.download_autoCompletion(udl_id = id_name)
+
+                # determine whether user can already write to AutoCompletion directory
+                try:
+                    tf = os.path.join(dl_dir, '~$TMPFILE.PRYRT')
+                    fo = open(tf, 'w')
+                    fo.close()
+                    os.remove(tf)
+                    unWriteable = False
+                except:
+                    unWriteable = True
 
             case "FunctionList":
                 dl_dir = self._nppCfgFunctionListDirectory
@@ -131,7 +143,20 @@ class CollectionInterfaceDialog(Dialog):
 
         f = id_name + ".xml" if category != 'Theme' else display_name
         default_fname = os.path.join(dl_dir, f)
-        savename = getSaveFileName('Save As', 'xml', 'XML (*.xml)|*.xml|All (*.*)|*.*|', default_fname)
+        if not unWriteable:
+            savename = getSaveFileName('Save As', 'xml', 'XML (*.xml)|*.xml|All (*.*)|*.*|', default_fname)
+        else:
+            tmpdir = os.environ['TEMP']
+            if not os.path.exists(tmpdir):
+                tmpdir = os.environ['TMP']
+            if not os.path.exists(tmpdir):
+                tmpdir = 'c:\\temp'
+            if not os.path.exists(tmpdir):
+                tmpdir = 'c:\\tmp'
+            if not os.path.exists(tmpdir):
+                tmpdir = os.environ['USERPROFILE']
+            savename = os.path.join(tmpdir, f)
+
         if savename:
             savename = savename.strip("\0")
             try:
@@ -139,6 +164,13 @@ class CollectionInterfaceDialog(Dialog):
                     fo.write(ro['content'])
             except PermissionError as e:
                 notepad.messageBox(str(e), "ERROR: Permission Error")
+
+        if unWriteable:
+            # copy from savename to default_fname with UAC prompt
+            #       https://stackoverflow.com/a/41930586
+            cmd = 'cmd.exe'
+            args = f'/C COPY /Y "{savename}" "{default_fname}"'
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", cmd, args, None, 1)
 
 
     def on_close(self):
@@ -248,17 +280,17 @@ class CollectionInterface(object):
 
     def _dl_udl_from_id_key(self,udl_id, key, chain = None):
         o = self._udl_hoh[udl_id]
-        console.write(u'trying UDL id={}, key={}\n'.format(udl_id, key))
+        #console.write(u'trying UDL id={}, key={}\n'.format(udl_id, key))
         return self._dl_generic_from_id_key(udl_id, key, o, chain)
 
     def _dl_ac_from_id_key(self,udl_id, key, chain = None):
         o = self._ac_hoh[udl_id]
-        console.write(u'trying AutoCompletion id={}, key={}\n'.format(udl_id, key))
+        #console.write(u'trying AutoCompletion id={}, key={}\n'.format(udl_id, key))
         return self._dl_generic_from_id_key(udl_id, key, o, chain)
 
     def _dl_fl_from_id_key(self,udl_id, key, chain = None):
         o = self._fl_hoh[udl_id]
-        console.write(u'trying FunctionList id={}, key={}\n'.format(udl_id, key))
+        #console.write(u'trying FunctionList id={}, key={}\n'.format(udl_id, key))
         return self._dl_generic_from_id_key(udl_id, key, o, chain)
 
     def _dl_generic_from_id_key(self,udl_id, key, o, chain = None):
@@ -290,14 +322,14 @@ class CollectionInterface(object):
 
     def _check_for_xml(self, chain):
         if chain['Content-Type'][0:8] == 'text/xml':
-            console.write("It's text/xml, so it's definitely okay\n")
+            #console.write("It's text/xml, so it's definitely okay\n")
             return chain
 
         if chain['Content-Type'][0:10] == 'text/plain' or chain['Content-Type'][0:24] == 'application/octet-stream':
             # deeper checking: look for prolog or element or comment at non-whitespace start of file
             chk = chain['content'].strip()
             if chk[0:5] == '<?xml' or chk[0:12] == '<NotepadPlus' or chk[0:4] == '<!--':
-                console.write("Got {} from url {}, but it actually contains reasonable XML content\n".format(chain['Content-Type'], chain['URL']))
+                #console.write("Got {} from url {}, but it actually contains reasonable XML content\n".format(chain['Content-Type'], chain['URL']))
                 return chain
 
             msg = u'Not Acceptable => got {} from url {} that doesnt seem like XML'.format(chain['Content-Type'], chain['URL'])
@@ -441,7 +473,7 @@ class CollectionInterface(object):
 
 
 console.show();
-console.clear();
+#console.clear();
 collectionInterface = CollectionInterface()
 doTest = False
 
