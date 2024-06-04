@@ -13,6 +13,9 @@ for (root, dirs, files) in os.walk(notepad.getPluginConfigDir() + r'\PythonScrip
     if root not in sys.path:
         sys.path.append(root)
 
+# define new notepad-object method to return config directory relative to notepad.getPluginConfigDir()
+Notepad.getConfigDirectory = lambda self: os.path.dirname(os.path.dirname(notepad.getPluginConfigDir()))
+
 # import a python script from that folder to run it every time the program loads
 # import doubleclickExtra
 
