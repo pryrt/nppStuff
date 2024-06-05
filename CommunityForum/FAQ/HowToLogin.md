@@ -34,15 +34,17 @@ The list goes on and on.  Maybe you haven't _noticed_ them before, but they are 
 
 They are all free, so you could sign up for one.
 
-However, you can now manually create a username/password here, even without using the OAuth / SSO providers.  
-
-The safest option is to register using one of the OAuth providers, because they have teams of security experts to protect your password and private information.  If you still choose to register manually, you need to make sure that your password is unique to this site, and not the same password that you use on any other site.  It is up to you whether or not to share an email, even with a manual login.  In the event of a security breach, neither this Forum, nor its administrators and moderators, nor its hosting provider are responsible for anything done with your username or email address or password at any other site or host.  If you do not want to risk personal information being shared in the event of a breach, do not put that personal information on this site.  We are a public discussion forum, and there is no reason to store your private or secret information anywhere in this Forum.
-
 ### Why prefer not using email/password logins ###
 
 The simple answer is that it's more work for us and more dangerous.
 
 OAuth logins are much more secure than a system where your password and login information are stored on the Notepad++ Community server. Those OAuth providers have huge budgets and full-time-employed security teams working around the clock to keep your credentials secure; a mom-and-pop group like us have $0 and 0 employees to stay on top of such things, and _when_ the password-storage was hacked (notice I say _when_, not _if_), you and/or a multitude of other users here would be up-in-arms over the password breach. The safest for everybody is the current method – using OAuth through big-name organizations.
+
+### But you _did_ allow username/password login ###
+
+In the Spring of 2024, we briefly tried the experiment of signing up with just username/password here, bypassing the OAuth/SSO requirement.  Unfortunately, the amount of spam _drastically_ increased when we did.  Aside from the security described above, the OAuth/SSO providers provide an extra layer of technical barrier that prevents spammers from easily creating dummy accounts.  This extra protection turned out to be necessary to keep the Forum usable, so we have again disabled the username/password signup.  
+
+If you signed up during that period and can no longer log in, create a new account using an OAuth/SSO provider; if you had made posts with the old account, send a chat message to @PeterJones, asking that he change the owner of your old posts over to your new account (making sure you confirm your old account name); upon such a request, he will check the metadata of your old and new accounts, and if he confirms that you appear to be the same actual user, he will change the posts over to the new account so that you keep the credit for your posts.
 
 ## Multiple login accounts ##
 
