@@ -22,6 +22,8 @@ from WinDialog import Dialog, Button, Label, ComboBox
 from WinDialog.controls.combobox import CBS
 from WinDialog.win_helper import WindowStyle as WS
 import ctypes
+if os.path.dirname(os.path.abspath(__file__)) not in sys.path:
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from w32GetOpenSaveFileName import getSaveFileName, getOpenFileName
 
 class CollectionInterfaceDialog(Dialog):
