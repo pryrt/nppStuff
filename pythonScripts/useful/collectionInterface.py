@@ -3,49 +3,14 @@
 
 This provides an interface to the official UserDefinedLanguage Collection and nppThemes Collection.
 
-Requires PythonScript 3
+Requires PythonScript 3.0.18 or newer (might work on 3.0.17, but won't work before that)
 
-The end goal is a GUI which allows selecting one or more UDL, autoCompletion, functionList, and/or theme files, which would then
+Requires [WinDialog](https://github.com/Ekopalypse/NppPythonScripts/tree/master/helper/WinDialog) library
+
+A GUI which allows selecting one or more UDL, autoCompletion, functionList, and/or theme files, which would then
 be downloaded and installed in the correct location, and Notepad++ automatically restarted
-
-I am going to have to start learning Eko's [WinDialog](https://github.com/Ekopalypse/NppPythonScripts/tree/master/helper/WinDialog) library
-
-Implementation Steps:
-
-    ✓ init object from the UDL and JSON top-level table-of-contents:
-        ✓ populate aoh for UDL (_udls)
-        ✓ populate array for themes (_themes)
-        ✓ from _udls, populate hoh for UDL (_udl_hoh)
-        ✓ from _udls, populate hoh for UDL-autoCompletion (_ac_hoh)
-        ✓ from _udls, populate hoh for UDL-functionList (_fl_hoh)
-        - the hoh structures and _themes array will be passed into the GUI interface for selecting what to download
-    ✓ .download_udl():
-        ✓ used the basic interface in my experimental code (which is now deleted)
-        ✓ return object = {
-                'content': slurp+stringify,
-                'Content-Type': f.info.getheader('Content-Type'),
-                'status': f.getcode(),
-                'ERROR': str(e) # if it exists
-            }
-        ✓ type checking:
-            ✓ text/xml allowed
-            ✓ text/plain allowed
-                ✓ if it resolves to valid XML, it's okay
-                ✓ else, "406 Not Acceptable"
-            ✓ anything else not allowed => "406 Not Acceptable"
-    ✓ .download_autoCompletion(): similar to .download_udl()
-    - .download_functionList(): similar to .download_udl()
-        - nothing to debug against...at some point, I might need to do a functionList for one of the existing UDLs, if no one else submits one
-    ✓ .download_theme(): similar to .download_udl()
-    ✓ Switch to PS3
-    - Learn WinDialog
-    - Create Dialog(s) that
-        - list all the UDLs or AutoCompletions or FunctionLists or Themes,
-        - allow selecting one (or more?)
-        - downloads and installs the selected file(s)
-        - silent on success, msgBox on error, ContinueOnFail
-
 """
+
 from Npp import *
 import os
 import urllib.request   # urllib2.urlopen() returns stream; py3 urllib.request.urlopen hopefully does same
