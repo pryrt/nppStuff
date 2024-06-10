@@ -50,6 +50,10 @@ uiac = UriIndicatorAltClick.UIAC()
 #import gh12380_ChangeHistoryHacks
 #chh_instance = gh12380_ChangeHistoryHacks.CHH()
 
+# ZoomLevelKeepBothViewsSynched
+import ZoomLevelKeepBothViewsSynched
+zlkbvs = ZoomLevelKeepBothViewsSynched.ZLKBVS()
+
 
 ##
 #import ctypes
