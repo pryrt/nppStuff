@@ -54,7 +54,6 @@ uiac = UriIndicatorAltClick.UIAC()
 import ZoomLevelKeepBothViewsSynched
 zlkbvs = ZoomLevelKeepBothViewsSynched.ZLKBVS()
 
-
 ##
 #import ctypes
 #FindWindow = ctypes.windll.user32.FindWindowW
