@@ -110,6 +110,7 @@ class CollectionInterfaceDialog(Dialog):
 
         f = id_name + ".xml" if category != 'Theme' else display_name
         default_fname = os.path.join(dl_dir, f)
+        savename = ""
         if not unWriteable:
             savename = getSaveFileName('Save As', 'xml', 'XML (*.xml)|*.xml|All (*.*)|*.*|', default_fname)
         else:
@@ -125,7 +126,6 @@ class CollectionInterfaceDialog(Dialog):
             savename = os.path.join(tmpdir, f)
 
         if savename:
-            savename = savename.strip("\0")
             try:
                 with open(savename, 'w', newline='') as fo:
                     fo.write(ro['content'])
@@ -138,6 +138,8 @@ class CollectionInterfaceDialog(Dialog):
             cmd = 'cmd.exe'
             args = f'/C COPY /Y "{savename}" "{default_fname}"'
             ctypes.windll.shell32.ShellExecuteW(None, "runas", cmd, args, None, 1)
+
+        del(savename)
 
 
     def on_close(self):
