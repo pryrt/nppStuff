@@ -26,6 +26,13 @@ if os.path.dirname(os.path.abspath(__file__)) not in sys.path:
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from w32GetOpenSaveFileName import getSaveFileName, getOpenFileName
 
+import subprocess
+from ctypes import wintypes
+GetCommandLine = ctypes.windll.kernel32.GetCommandLineW
+GetCommandLine.restype = wintypes.LPWSTR
+GetCommandLine.argtypes = []
+
+
 class CollectionInterfaceDialog(Dialog):
     _nppConfigDirectory = os.path.dirname(os.path.dirname(notepad.getPluginConfigDir()))
     _nppCfgUdlDirectory = os.path.join(_nppConfigDirectory, 'userDefineLangs')
@@ -35,17 +42,20 @@ class CollectionInterfaceDialog(Dialog):
 
     def __init__(self, dataSource, title='Collection Interface'):
         super().__init__(title)
-        self.size = (300, 80)
+        self.size = (300, 85)
         self.center = True
         self.dataSource = dataSource
 
         self.desc_lbl       = Label('Download from UDL Collection or Themes Collection', size=(280, 9), position=(10,5))
 
-        self.dl_btn         = Button(title='&Download',     size=( 60, 14), position=(10, 60))
+        self.dl_btn         = Button(title='&Download',     size=( 60, 14), position=(10, 65))
         self.dl_btn.onClick = self.on_download
 
-        self.done_btn       = Button(title='&Done',         size=( 60, 14), position=(80, 60))
+        self.done_btn       = Button(title='&Done',         size=( 60, 14), position=(80, 65))
         self.done_btn.onClick = self.on_close
+
+        self.restart_btn    = Button(title='&Restart',      size=( 60, 14), position=(300 - 10 - 60, 65))
+        self.restart_btn.onClick = self.on_restart
 
         self.category_lbl   = Label('Category:',            size=( 30,  9), position=(10, 23))
         self.category_cb    = ComboBox('' ,                 size=(240, 52), position=(50, 20))
@@ -54,8 +64,9 @@ class CollectionInterfaceDialog(Dialog):
 
         self.file_lbl       = Label('File:',                size=( 30,  9), position=(10, 41))
         self.file_cb        = ComboBox('' ,                 size=(240, 11), position=(50, 40))
-        self.file_cb.onSelChange = self.on_file_change
         self.file_cb.style |= WS.TABSTOP |  CBS.DISABLENOSCROLL | WS.VSCROLL
+
+        self.end_lbl        = Label('Need RESTART for Notepad++ to see new UDL/AutoCompletion/FunctionList/Themes', size=(280,9), position=(10,55))
 
         self.initialize = self.on_init
         self.show()
@@ -67,7 +78,7 @@ class CollectionInterfaceDialog(Dialog):
         dl_dir = None
         unWriteable = False
 
-        # TODO: need to switch to actual downloads
+        # need to switch to actual downloads
         match category:
             case "UDL":
                 dl_dir = self._nppCfgUdlDirectory
@@ -145,6 +156,16 @@ class CollectionInterfaceDialog(Dialog):
     def on_close(self):
         self.terminate()
 
+    def on_restart(self):
+        #console.write(f"argv => {sys.argv}\n") # this would be useful for the ['cmd','o1',...'oN'] version of Popen => subprocess.Popen(sys.argv)
+        #   but since I want the TIMEOUT to give previous instance a chance to close, I need to use the string from GetCommandLine() anyway,
+        #   so don't need sys.argv
+
+        cmd = f"cmd /C TIMEOUT /T 2 && {GetCommandLine()}"
+        subprocess.Popen(cmd)
+        self.terminate()
+        notepad.menuCommand(MENUCOMMAND.FILE_EXIT)
+
     def on_category_change(self):
         choices = {
             'UDL': self.dataSource.list_udls(),
@@ -157,9 +178,6 @@ class CollectionInterfaceDialog(Dialog):
             self.file_cb.set(choices[selected_text])
         else:
             self.file_cb.set([])
-
-    def on_file_change(self):
-        pass
 
     def on_init(self):
         self.category_cb.append(['UDL', 'AutoCompletion', 'FunctionList', 'Theme'])
