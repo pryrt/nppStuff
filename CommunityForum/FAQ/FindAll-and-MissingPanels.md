@@ -70,4 +70,4 @@ Reference:
 - User Manual: [Configuration File Location](https://npp-user-manual.org/docs/config-files/#configuration-files-location)
 - User Manual: [Editing Configuration Files](https://npp-user-manual.org/docs/config-files/#editing-configuration-files)
 - [historic discussion](/topic/23344/not-able-to-see-the-search-results-windows-in-notepad)
-- [feature request](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/13084) - upvote this feature request if you'd like a way for Notepad++ to help you locate your missing **Search Results** window
+- **CLOSED AS FIXED** [feature request](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/13084) - v8.6.9 has fixed the zero-width docked-panels issue by not allowing panels to be that narrow, so they will always be visible.
