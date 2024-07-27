@@ -21,7 +21,7 @@ If you _have_ done one of the **Find All**, then it _is_ open... somewhere.  You
 ## Finding a Missing Panel
 
 * By default, a Panel is docked to one of the edges of your Notepad++ window (**Search Results** is docked at the bottom by default, but other Panels are usually docked to the right or left sides).  But any Panel may have been re-docked to another edge, or even "floated" as a separate window.
-* It may be docked, but shrunk down until you cannot see it.  If you see a small gap between the editor and the status bar or another edge of the editor, hover over it and see if you get the up-down arrow ↕ (for the top and bottom edges) or left-right arrow ↔ (for the left and right edges) that you can click+drag to resize the panel.
+* On older versions of Notepad++ (v8.6.8 or older) it may be docked, but shrunk down until you cannot see it -- **this was fixed in v8.6.9, so it _cannot_ get too small to see when docked**.  If you see a small gap between the editor and the status bar or another edge of the editor, hover over it and see if you get the up-down arrow ↕ (for the top and bottom edges) or left-right arrow ↔ (for the left and right edges) that you can click+drag to resize the panel.
     - screenshot: 
 ![9cef56b8-8298-4b82-b929-140b2d71f951-image.png](/assets/uploads/files/1659629486898-9cef56b8-8298-4b82-b929-140b2d71f951-image.png)
     - zoomed 4x: 
@@ -70,4 +70,4 @@ Reference:
 - User Manual: [Configuration File Location](https://npp-user-manual.org/docs/config-files/#configuration-files-location)
 - User Manual: [Editing Configuration Files](https://npp-user-manual.org/docs/config-files/#editing-configuration-files)
 - [historic discussion](/topic/23344/not-able-to-see-the-search-results-windows-in-notepad)
-- [feature request](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/13084) - upvote this feature request if you'd like a way for Notepad++ to help you locate your missing **Search Results** window
+- **CLOSED AS FIXED** [feature request](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/13084) - v8.6.9 has fixed the zero-width docked-panels issue by not allowing panels to be that narrow, so they will always be visible.
