@@ -20,6 +20,10 @@ https://github.com/ScintillaOrg/lexilla/issues/260
   - shows the styleID -- confirming `decrypt` gets styleID=198,
     which is either PHP_WORD(121) + 77, or PHP_DEFAULT(118) + 80
 
+Ah, finally found it: <source>/scite/src/SciTEProps.cxx::ReadProperties()
+  - finds all the `substyles.` in the SciTE.properties file,
+    and does the SetIdentifiers from there.
+
 """
 from Npp import *
 import os
@@ -57,6 +61,9 @@ def tryCPP():
     #   which is `firstSubStyle` in simpleTests::TestSubStyles::TestAllocate()
     firstSubStyle = 0x80    # SubStyles.h::SubStylesFirst
     console.write("GetStyleFromSubStyle = 0x{0:02x}({0:>3d})\n".format(editor.getStyleFromSubStyle(firstSubStyle)))
+    SCE_C_IDENTIFIER = 11   # 0x0b
+    console.write("getSubStylesStart =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesStart(SCE_C_IDENTIFIER)))
+    console.write("getSubStylesLength =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesLength(SCE_C_IDENTIFIER)))
 
     notepad.close()
 
@@ -106,6 +113,9 @@ def tryPHP():
     #   so I would want to use that here
     firstSubStyle = 0xC0    # LexHTML.cxx::SubStylesHTML
     console.write("GetStyleFromSubStyle = 0x{0:02x}({0:>3d})\n".format(editor.getStyleFromSubStyle(firstSubStyle)))
+    SCE_HPHP_WORD = 121 # 0x79
+    console.write("getSubStylesStart =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesStart(SCE_HPHP_WORD)))
+    console.write("getSubStylesLength =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesLength(SCE_HPHP_WORD)))
 
     notepad.close()
 
