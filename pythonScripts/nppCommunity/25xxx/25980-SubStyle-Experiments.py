@@ -11,10 +11,15 @@ https://github.com/ScintillaOrg/lexilla/issues/260
     Scintilla::Message enumeration.
   - but when I searched the source, was able to find their python-based testing framework
 
-<SciTE Source Directory>\scintilla\test\simpleTests.py :: TestSubStyles()
+<SciTE Source Directory>/scintilla/test/simpleTests.py :: TestSubStyles()
   - shows how they _test_ SubStyles, which gives a pretty good example of how to use
     at least some of the commands.  I will try it out, both on the CPP which they show in their
     example, then try to replicate with
+
+<SciTE Source>/lexilla/test/examples/hypertext/x.php.styled
+  - shows the styleID -- confirming `decrypt` gets styleID=198,
+    which is either PHP_WORD(121) + 77, or PHP_DEFAULT(118) + 80
+
 """
 from Npp import *
 import os
@@ -43,6 +48,8 @@ def tryCPP():
     bases = editor.getSubStyleBases()
     bases_hex = ":".join("0x{0:02x}({0:>3d})".format(c) for c in bases.encode())
     console.write(f"bases = \"{bases}\" = >>{bases_hex}<<\n")
+    # bases = "" = >>0x0b( 11):0x11( 17)<<
+    # ⇒ matches what the test say it should get: 11=C++ IDENTIFIER; 17=C++ COMMENT DOC KEYWORD
 
     #notepad.close()
 
@@ -83,6 +90,8 @@ def tryPHP():
     bases = editor.getSubStyleBases()
     bases_hex = ":".join("0x{0:02x}({0:>3d})".format(c) for c in bases.encode())
     console.write(f"bases = \"{bases}\" = >>{bases_hex}<<\n")
+    # bases = ".=J`y" = >>0x01(  1):0x03(  3):0x2e( 46):0x3d( 61):0x4a( 74):0x60( 96):0x79(121)<<
+    # ⇒ confirmed that styleID=121 (PHP KEYWORD) does allow substyles
 
     #notepad.close()
 
