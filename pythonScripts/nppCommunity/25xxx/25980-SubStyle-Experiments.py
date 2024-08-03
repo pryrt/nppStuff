@@ -30,7 +30,7 @@ import os
 import textwrap
 
 def tryCPP():
-    console.write("cpp lexer: \n")
+    console.write("\ncpp lexer: \n")
     tmpfile = os.path.join(os.environ["TEMP"], '25980_SubStyle.cpp')
     if os.path.exists(tmpfile):
         notepad.open(tmpfile)
@@ -65,10 +65,37 @@ def tryCPP():
     console.write("getSubStylesStart =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesStart(SCE_C_IDENTIFIER)))
     console.write("getSubStylesLength =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesLength(SCE_C_IDENTIFIER)))
 
+    numSubStyles = 5
+    subs = editor.allocateSubStyles(SCE_C_IDENTIFIER, numSubStyles)
+    console.write("allocateSubStyles(n={1}) =  0x{0:02x}({0:>3d})\n".format(subs, numSubStyles))
+
+    console.write("after allocation: getSubStylesStart =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesStart(SCE_C_IDENTIFIER)))
+    console.write("after allocation: getSubStylesLength =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesLength(SCE_C_IDENTIFIER)))
+
+    # the getStyleFromSubStyle is the reverse mapping, which will give the parent for anything from the list of substyles (and a main style will just return itself)
+    console.write("getStyleFromSubStyle(n={1}) =  0x{0:02x}({0:>3d})\n".format(editor.getStyleFromSubStyle(SCE_C_IDENTIFIER), subs))
+    console.write("getStyleFromSubStyle(n={1}) =  0x{0:02x}({0:>3d})\n".format(editor.getStyleFromSubStyle(SCE_C_IDENTIFIER), subs+numSubStyles-1))
+    console.write("getStyleFromSubStyle(n={1}) =  0x{0:02x}({0:>3d})\n".format(editor.getStyleFromSubStyle(SCE_C_IDENTIFIER), SCE_C_IDENTIFIER))
+
+    # now try freeing them
+    editor.freeSubStyles()
+    console.write("after free: getSubStylesStart =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesStart(SCE_C_IDENTIFIER)))
+    console.write("after free: getSubStylesLength =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesLength(SCE_C_IDENTIFIER)))
+    console.write("after free: getStyleFromSubStyle(n={1}) =  0x{0:02x}({0:>3d})\n".format(editor.getStyleFromSubStyle(SCE_C_IDENTIFIER), subs))
+    console.write("after free: getStyleFromSubStyle(n={1}) =  0x{0:02x}({0:>3d})\n".format(editor.getStyleFromSubStyle(SCE_C_IDENTIFIER), subs+numSubStyles-1))
+    console.write("after free: getStyleFromSubStyle(n={1}) =  0x{0:02x}({0:>3d})\n".format(editor.getStyleFromSubStyle(SCE_C_IDENTIFIER), SCE_C_IDENTIFIER))
+
+    # allocate 3 after freedom: verify it goes back to the start of the substyle region
+    numSubStyles = 3
+    subs = editor.allocateSubStyles(SCE_C_IDENTIFIER, numSubStyles)
+    console.write("allocate 3 after freedom: allocateSubStyles(n={1}) =  0x{0:02x}({0:>3d})\n".format(subs, numSubStyles))
+    console.write("allocate 3 after freedom: getSubStylesStart =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesStart(SCE_C_IDENTIFIER)))
+    console.write("allocate 3 after freedom: getSubStylesLength =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesLength(SCE_C_IDENTIFIER)))
+
     notepad.close()
 
 def tryPHP():
-    console.write("php lexer: \n")
+    console.write("\nphp lexer: \n")
     tmpfile = os.path.join(os.environ["TEMP"], '25980_SubStyle.php')
     if os.path.exists(tmpfile):
         notepad.open(tmpfile)
@@ -117,8 +144,51 @@ def tryPHP():
     console.write("getSubStylesStart =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesStart(SCE_HPHP_WORD)))
     console.write("getSubStylesLength =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesLength(SCE_HPHP_WORD)))
 
-    notepad.close()
+    # split the allocation into two groups
+    numSubStyles = 1
+    subs = editor.allocateSubStyles(SCE_HPHP_WORD, numSubStyles)
+    console.write("allocateSubStyles(n={1}) =  0x{0:02x}({0:>3d})\n".format(subs, numSubStyles))
 
+    numSubStyles = 4
+    subs = editor.allocateSubStyles(SCE_HPHP_WORD, numSubStyles)
+    console.write("allocateSubStyles(n={1}) =  0x{0:02x}({0:>3d})\n".format(subs, numSubStyles))
+
+    console.write("after allocation: getSubStylesStart =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesStart(SCE_HPHP_WORD)))
+    console.write("after allocation: getSubStylesLength =  0x{0:02x}({0:>3d})\n".format(editor.getSubStylesLength(SCE_HPHP_WORD)))
+    # so with the multi-alloc, able to see that the second allocation updates the START location for the particular parent style
+
+    # let's free them all, then allocate one substyle for each of the bases
+    editor.freeSubStyles()
+    subHash = dict()
+    for parent in bases.encode():
+        key = str(parent)
+        subHash[key] = dict()
+        subHash[key]['parent'] = parent
+        subHash[key]['count'] = editor.allocateSubStyles(parent, 1)
+        subHash[key]['start'] = editor.getSubStylesStart(parent)
+        subHash[key]['length'] = editor.getSubStylesLength(parent)
+        console.write("allocation base=#{:03}: ret={:03}, start={:03}, length={:03}\n".format(
+            subHash[key]['parent'],
+            subHash[key]['count'],
+            subHash[key]['start'],
+            subHash[key]['length']
+        ))
+
+    # let's try to define some coloration and keywords
+    subStyle = editor.getSubStylesStart(SCE_HPHP_WORD)
+    editor.styleSetFore(subStyle, (0x00,0xA0,0x00)) # same as scite example
+    editor.styleSetBack(subStyle, (255,255,0))      # yellow background
+    editor.setIdentifiers(subStyle, "decrypt")
+
+    # confirm (without closing) closing that if I check just after it's allocated,
+    #   it properly colors with green on yellow,
+    #   but if I change tabs and back, the getSubStylesStart resets to -1 and the color goes away
+    #   so like the enhance-any-lexer, it needs to be reset every time you open or activate a buffer
+
+    # notepad.close()
+
+console.clear()
+console.show()
 tryCPP()
 del(tryCPP)
 tryPHP()
