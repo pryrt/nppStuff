@@ -185,7 +185,20 @@ def tryPHP():
     #   but if I change tabs and back, the getSubStylesStart resets to -1 and the color goes away
     #   so like the enhance-any-lexer, it needs to be reset every time you open or activate a buffer
 
-    # notepad.close()
+    notepad.close()
+
+def listAllSubstylable():
+    notepad.new()
+    LANGUAGES = [eval('MENUCOMMAND.{}'.format(x)) for x in dir(MENUCOMMAND) if x.startswith('LANG_') and not x.startswith('LANG_USER')]
+    for L in LANGUAGES:
+        #console.write("{0:03d}) {0}\n".format(L))
+        notepad.menuCommand(L);
+        bases = editor.getSubStyleBases()
+        if len(bases):
+            bases_hex = ":".join("0x{0:02x}({0:>3d})".format(c) for c in bases.encode())
+            console.write("{0:03d} {0}:\t{1}\n".format(L, bases_hex))
+    editor.clearAll()
+    notepad.close()
 
 console.clear()
 console.show()
@@ -193,3 +206,4 @@ tryCPP()
 del(tryCPP)
 tryPHP()
 del(tryPHP)
+#listAllSubstylable()
