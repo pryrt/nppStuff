@@ -56,7 +56,7 @@ Based on Eko's original EnhanceAnyLexer and my HiddenLexers scripts, plus
     https://community.notepad-plus-plus.org/topic/25980/highlighting-with-self-created-words-in-langs-xml-does-not-work
 '''
 
-from Npp import notepad, editor, NOTIFICATION
+from Npp import notepad, editor, console, NOTIFICATION, MENUCOMMAND
 
 class SubstyleLexerInterface:
     def __str__(self):

@@ -57,6 +57,9 @@ zlkbvs = ZoomLevelKeepBothViewsSynched.ZLKBVS()
 # Alan's Tab Pin Manager (https://gist.github.com/alankilborn/4eb08e85315ae4bad6222a96db4201ed)
 # import TabPinManager; tpm = TabPinManager.TPM()
 
+# SubStylesForLexer
+import SubStylesForLexer
+
 ##
 #import ctypes
 #FindWindow = ctypes.windll.user32.FindWindowW
