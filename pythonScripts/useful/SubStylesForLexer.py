@@ -184,7 +184,17 @@ class Generic_SubstyleLexer:
         pass
 
     def do_the_work(self):
+        #console.write("do_the_work()\n\trawSubStyleBases:{}\n\tencodedSubStyleBases:{}\n".format(editor.getSubStyleBases(), editor.getSubStyleBases().encode()))
         for parentStyle in editor.getSubStyleBases().encode():
+            if notepad.getPluginVersion()[0] == '2':
+                parentStyle = ord(parentStyle)
+
+            #console.write(":: check for parentStyle='{}' in self._style keys=({}): {}\n".format(
+            #    parentStyle,
+            #    self._style.keys(),
+            #    parentStyle in self._style
+            #))
+            
             if parentStyle in self._style:
                 numSubStyles = len(self._style[parentStyle])
                 #console.write("Want to allocate {} substyle{} for parentStyle={}\n".format(numSubStyles, "s" if numSubStyles>1 else "", parentStyle))
