@@ -15,24 +15,25 @@ Notes for adding GOLANG or another language
         - Studying the LexCPP, I see keywords (SCE_C_WORD=5), keywords2 (SCE_C_WORD2=16), keywords4 (SCE_C_GLOBALCLASS=19)
 - Use L_HOLLYWOOD addition as the template for the changes that I need:
 	- https://github.com/notepad-plus-plus/notepad-plus-plus/pull/13417/files
-	- /PowerEditor/src/MISC/PluginsManager/Notepad_plus_msgs.h: add L_GOLANG to the end of the `enum LangType`
-	- menuCmdID.h: add IDM_LANG_GOLANG before IDM_LANG_EXTERNAL
-	- ScintillaEditView.cpp:
+	- .../src/MISC/PluginsManager/Notepad_plus_msgs.h: add L_GOLANG to the end of the `enum LangType`
+	- .../src/menuCmdID.h: add IDM_LANG_GOLANG before IDM_LANG_EXTERNAL
+	- .../src/ScintillaComponent/ScintillaEditView.cpp:
 		- add to LanguageNameInfo ScintillaEditView::_langNameInfoArray[]
+  			- this is the list of language/shortName/longName/L_XXXX/lexer that maps everything together
 		- add to ScintillaEditView::defineDocType switch:
 			- for GOLANG, add it to the group going to setLexerCpp(typeDoc)
 			- for "simple" languages, call a new function (eg L_HOLLYWOOD)
 		- for "mediumComplexity" languages, define the new function
-	- ScintillaEditView.h:
+	- .../src/ScintillaComponent/ScintillaEditView.h:
 		- declare the mediumComplexity
 		- declare/define the simpleComplexity (eg setHollywoodLexer)
-	- Notepad_plus.cpp: add case IDM_LANG_.../return L_...
-	- Notepad_plus.rc: add to long "&Language" and "&Language"/"&<LETTER>" lists
-	- NppCommands.cpp: add to long IDM_LANG group in switch()
-	- Parameters.cpp: add case L_.../return IDM_LANG_...
+	- .../src/Notepad_plus.cpp: add case IDM_LANG_.../return L_...
+	- .../src/Notepad_plus.rc: add to long "&Language" and "&Language"/"&<LETTER>" lists
+	- .../src/NppCommands.cpp: add to long IDM_LANG group in switch()
+	- .../src/Parameters.cpp: add case L_.../return IDM_LANG_...
 And config files:
-	- langs.model.xml: <Language>...</>
-	- stylers.model.xml & themes: <LexerType name="... </>
+	- .../src/langs.model.xml: <Language>...</>
+	- .../src/stylers.model.xml & .../installer/themes/*.xml: <LexerType name="... </>
 
 possible autoComplete & functionList: https://github.com/MAPJe71/Languages/tree/master/Go/Config
 	- I would have to compare autoComplet-Go vs autoComple-Go2 vs go.API, and compare them all to the default list
@@ -230,3 +231,11 @@ git push -f origin
 ```
 
 => https://github.com/notepad-plus-plus/notepad-plus-plus/pull/15000
+
+# Ideas for SubStyles
+
+After working with SubStyles in the handful of lexers using PythonScript ([main script](https://github.com/pryrt/nppStuff/blob/main/pythonScripts/useful/SubStylesForLexer.py) and [experiments](https://github.com/pryrt/nppStuff/blob/main/pythonScripts/nppCommunity/25xxx/25980-SubStyle-Experiments.py)), I have some ideas for how I'd do it if I were implementing SubStyles in the base app:
+- I would limit it to probably 8 substyles per language
+- I might want something like `ScintillaEditView::SetLexer(langType, LIST|OF|LISTS)` and `ScintillaEditView::SetKeywords(langType, *keywords, index)` to help wrap them and make them consistent
+	- bash uses simple
+ 	- cpp family of course uses complex
