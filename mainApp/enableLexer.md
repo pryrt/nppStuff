@@ -249,25 +249,23 @@ After working with SubStyles in the handful of lexers using PythonScript ([main 
 Over the years, I have seen multiple requests in the forum for adding new keyword lists with their own colors to Notepad++.
 
 Here are a selection I found from the last 3 years:
-```
-- PHP       https://community.notepad-plus-plus.org/topic/25980/highlighting-with-self-created-words-in-langs-xml-does-not-work
-- any       https://community.notepad-plus-plus.org/topic/25678/syntax-keywords
-- HTML      https://community.notepad-plus-plus.org/topic/25047/how-to-add-keywords-for-the-html-syntax-highlighter
-- CPP       https://community.notepad-plus-plus.org/topic/24228/can-t-make-default-c-style-to-highlight-custom-macros
-- PHP       https://community.notepad-plus-plus.org/topic/24054/can-t-define-php-color-for-functions
-- CPP       https://community.notepad-plus-plus.org/topic/22324/modify-the-c-xml-language-file-to-include-math-functions
-- JSON      https://community.notepad-plus-plus.org/topic/22250/how-to-add-custom-color-to-a-tag-in-json-language
-- HTML      https://community.notepad-plus-plus.org/topic/21646/modifying-existing-language-settings
-```
 
-[TODO: look for ISSUES as well]
+- [PHP](https://community.notepad-plus-plus.org/topic/25980/highlighting-with-self-created-words-in-langs-xml-does-not-work)
+- [PHP](https://community.notepad-plus-plus.org/topic/24054/can-t-define-php-color-for-functions)
+- [HTML](https://community.notepad-plus-plus.org/topic/25047/how-to-add-keywords-for-the-html-syntax-highlighter)
+- [HTML](https://community.notepad-plus-plus.org/topic/21646/modifying-existing-language-settings)
+- [CPP](https://community.notepad-plus-plus.org/topic/24228/can-t-make-default-c-style-to-highlight-custom-macros)
+- [CPP](https://community.notepad-plus-plus.org/topic/22324/modify-the-c-xml-language-file-to-include-math-functions)
+- [JSON](https://community.notepad-plus-plus.org/topic/22250/how-to-add-custom-color-to-a-tag-in-json-language)
+- [any](https://community.notepad-plus-plus.org/topic/25678/syntax-keywords)
 
-Up until now, we've been suggesting that they use the "EnhanceAnyLexer plugin" to add a regex for their list of keywords -- but it's slow, and isn't optimized for keywords (it's better for pattern matches).
+There have also historically been some ISSUES requesting the enabling of additional keyword lists from , some of which were rejected because Scintilla/Lexilla didn't have them allocated, and others that were eventually implmented.  And I found `#3063` requesting it for Verilog and other languages (that was closed for "age" in the 2019 issue cleanup) -- so there has definitely been historical interest in having more keyword lists available on various languages.
+
+Up until now, we've been suggesting that requestors use the EnhanceAnyLexer plugin to add a regex for their list of keywords -- but the regex post-processing slow, and isn't optimized for keywords (it's better for pattern matches), and doesn't have the benefit of being in the Style Configurator (which makes it more difficult for users to find and update).
 
 I recently learned about the Scintilla/Lexilla "SubStyles" feature, which allows additional keywords lists (beyond the default keywords-keywords7) for any lexer that has substyles enabled, which includes C/C++ and HTML/PHP. The "substyles" are essentially on-request allocated styles (with their own color/bold/italic/underline style settings) that come with multiple keyword lists (all of the lexilla lexers with substyles enabled allow for up to 64 substyles for a given document).
 
-
-In [this post](https://community.notepad-plus-plus.org/post/96064), I share a script for the PythonScript plugin that enables the substyles.  But from a user perspective, it's not nearly as nice as just being able to use the Style Configurator to add more keywords into some user-defined keyword lists that are available in the GUI next to all the other keyword lists for a given language. 
+In [this post](https://community.notepad-plus-plus.org/post/96064), I share a script for the PythonScript plugin that enables the substyles.  But from a user perspective, it's not nearly as nice as just being able to use the Style Configurator to add more keywords into some user-defined keyword lists that are available in the GUI next to all the other keyword lists for a given language.  (Actually, my script's interface for changing the colors or keyword lists is horrible right now.  But I didn't want to put effort into making it prettier or easier if we could add the feature to Notepad++'s core code, instead.)
 
 ### Solution
 
@@ -296,7 +294,7 @@ The following lexers (and their associated languages) have SubStyles available
     - styles: <none>
     - comment: no, I don't know why the LexVerilog enables the substyles feature, but doesn't have them for any styles
 
-Of those 8 requests, 6 could be solved completely by having the SubStyle feature enabled in Notepad++. Unfortunately, most lexers don't have the feature, so JSON and "any" will not be feasible without Lexilla updates (which isn't going to happen quickly, if at all).  But it would still give a feature to a bunch of people who have been asking for it (and those are normally representative of many other users who don't both logging into the forum or putting in a github issue.
+Of the 8 requests I listed above, 6 could be solved completely by having the SubStyle feature enabled in Notepad++. Unfortunately, most lexers don't have the feature, so JSON and "any" will not be feasible without Lexilla updates (which isn't going to happen quickly, if at all).  But it would still give a feature to a bunch of people who have been asking for it (and those are normally representative of many other users who don't both logging into the forum or putting in a github issue.
 
 Based on my experiments in PythonScript, and my recent experience with how to enable lexilla lexers, I have some ideas on how I would implement it in the codebase, that would essentially make it look to the user like it's just another keyword list in the Style Configurator.  My thought was to add just 8 substyles to each of the lexer languages that allows them, which should be plenty for most users (64 would be overkill, and would clutter the StyleConfigurator too much, IMO).  (For HTML, I would propose doing 4 custom tag substyles and 4 custom attribute substyles)  But I wouldn't want to spend any time working on a PR to implement this if you were completely against it.
 
