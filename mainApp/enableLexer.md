@@ -239,3 +239,6 @@ After working with SubStyles in the handful of lexers using PythonScript ([main 
 - I might want something like `ScintillaEditView::SetLexer(langType, LIST|OF|LISTS)` and `ScintillaEditView::SetKeywords(langType, *keywords, index)` to help wrap them and make them consistent
 	- bash uses simple
  	- cpp family of course uses complex
+
+### 2024-Aug-08
+- PR `https://github.com/notepad-plus-plus/notepad-plus-plus/issues/15520`
