@@ -9,6 +9,9 @@ To run every time Notepad++ launches, in Plugins > PythonScript > scripts, CTRL+
 and put the next lines (unindented) in that file:
     import SubStylesForLexer
 
+!!! IF YOU PUT IN THE import LINE IN startup.py,            !!!
+!!! YOU NEED TO SET PLUGINS>PYTHONSCRIPT>CONFIGURATION      !!!
+!!! INITIALISATION = ATSTARTUP                              !!!
 
 As far as I can tell, as of Scintilla 5.5.1 / Notepad++ v8.6.9, there are only a handful
 of languages in the Lexilla bundle that allow substyling, and those have specific styles
@@ -175,6 +178,7 @@ class SubstyleLexerInterface:
 
 class Generic_SubstyleLexer:
     _lexer_name = "Generic"
+    _needs_lower_case = False
 
     def __init__(self):
         pass
@@ -194,7 +198,7 @@ class Generic_SubstyleLexer:
             #    self._style.keys(),
             #    parentStyle in self._style
             #))
-            
+
             if parentStyle in self._style:
                 numSubStyles = len(self._style[parentStyle])
                 #console.write("Want to allocate {} substyle{} for parentStyle={}\n".format(numSubStyles, "s" if numSubStyles>1 else "", parentStyle))
@@ -205,7 +209,10 @@ class Generic_SubstyleLexer:
                     #console.write("... coloring idx={} subStyle={}\n".format(idx, subStyle))
                     editor.styleSetFore(subStyle, self._style[parentStyle][idx]['fg'])
                     editor.styleSetBack(subStyle, self._style[parentStyle][idx]['bg'])
-                    editor.setIdentifiers(subStyle, self._style[parentStyle][idx]['keywords'])
+                    if self._needs_lower_case:
+                        editor.setIdentifiers(subStyle, self._style[parentStyle][idx]['keywords'].lower())
+                    else:
+                        editor.setIdentifiers(subStyle, self._style[parentStyle][idx]['keywords'])
 
     def colorize(self):
         raise NotImplementedError("You should be calling colorize() on a specific lexer, not on the {} parent class".format(__class__))
@@ -495,6 +502,7 @@ class GDSCRIPT_SubstyleLexer(Generic_SubstyleLexer):
 
 class HTML_SubstyleLexer(Generic_SubstyleLexer):
     _lexer_name = "HTML"
+    _needs_lower_case = True
     _style = dict()
 
     def colorize(self):
@@ -536,6 +544,7 @@ class HTML_SubstyleLexer(Generic_SubstyleLexer):
 
 class XML_SubstyleLexer(Generic_SubstyleLexer):
     _lexer_name = "XML"
+    _needs_lower_case = True
     _style = dict()
 
     def colorize(self):
@@ -577,6 +586,7 @@ class XML_SubstyleLexer(Generic_SubstyleLexer):
 
 class PHP_SubstyleLexer(Generic_SubstyleLexer):
     _lexer_name = "PHP"
+    _needs_lower_case = True
     _style = dict()
 
     def colorize(self):
@@ -610,14 +620,14 @@ class PHP_SubstyleLexer(Generic_SubstyleLexer):
         self._style[SCE_HJA_WORD].append(dict(fg=(0,0,255), bg=(255,255,0), keywords="pryrt4"))
         self._style[SCE_HB_WORD].append(dict(fg=(0,0,255), bg=(255,255,0), keywords="pryrt5"))
         self._style[SCE_HP_WORD].append(dict(fg=(0,0,255), bg=(255,255,0), keywords="pryrt6"))
-        self._style[SCE_HPHP_WORD].append(dict(fg=(0,0,255), bg=(255,255,0), keywords="pryrt"))
-
+        self._style[SCE_HPHP_WORD].append(dict(fg=(0,135,135), bg=(0,255,255), keywords="pryrt"))
         # this does the work
         self.announce(self._lexer_name)
         self.do_the_work()
 
 class ASP_SubstyleLexer(Generic_SubstyleLexer):
     _lexer_name = "ASP"
+    _needs_lower_case = True
     _style = dict()
 
     def colorize(self):
@@ -659,6 +669,7 @@ class ASP_SubstyleLexer(Generic_SubstyleLexer):
 
 class JSP_SubstyleLexer(Generic_SubstyleLexer):
     _lexer_name = "JSP"
+    _needs_lower_case = True
     _style = dict()
 
     def colorize(self):
