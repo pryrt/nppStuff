@@ -232,7 +232,7 @@ git push -f origin
 
 => https://github.com/notepad-plus-plus/notepad-plus-plus/pull/15000
 
-# Ideas for SubStyles
+# Enabling SubStyles in Main App
 
 After working with SubStyles in the handful of lexers using PythonScript ([main script](https://github.com/pryrt/nppStuff/blob/main/pythonScripts/useful/SubStylesForLexer.py) and [experiments](https://github.com/pryrt/nppStuff/blob/main/pythonScripts/nppCommunity/25xxx/25980-SubStyle-Experiments.py)), I have some ideas for how I'd do it if I were implementing SubStyles in the base app:
 - I would limit it to probably 8 substyles per language
@@ -241,4 +241,30 @@ After working with SubStyles in the handful of lexers using PythonScript ([main 
  	- cpp family of course uses complex
 
 ### 2024-Aug-08
+
 - PR `https://github.com/notepad-plus-plus/notepad-plus-plus/issues/15520`
+- Trying to get the screenshot for Don with the extra keyword lists, I learned that Notepad++ will only show the builtin+user boxes in the GUI for known keywordClass, so I will need to figure out how to get that enabled for my new keywords -- that's probably the first thing to do.
+    - src\Parameters.cpp::StyleArray::addStyler() calls the getKwClassFromName() and populates the _keywordClass element of the Style structure instance
+        - I will probably want to expand this variable to handle the keyword class integer for substyle# as well as the already-defined ones
+    - src\Parameters.cpp::getKwClassFromName() returns the appropriate LANG_INDEX_xxx
+    - src\Parameters.h defines the LANG_INDEX_xxx as constants -- so this is where I'd add the LANG_INDEX_SUBSTYLEn definitions as well
+    - src\Parameters.cpp::NppParameters::feedKeyWordsParameters() is where those are populated, and that compares against KEYWORDSET_MAX
+    - scintilla\include\Scinitlla.h defines KEYWORDSET_MAX to be 30.  (But a derived constant is limited to SCE_USER_KWLIST_TOTAL=28, so I wouldn't want to go above that; wait, no, I think those SCE_USER_xxx constants ar for UDL, based on the folder-in-code, etc)
+    - src\ScintillaComponent\ScintillaEditView.cpp::ScintillaEditView::SetExternalLexer also uses KEYWORDSET_MAX ... but I believe it's only used for lexer plugins, not normal lexers
+    - src\WinControls\ColourPicker\WordStyleDlg.cpp::WordStyleDlg::setVisualFromStyle()'s `shouldBeDisplayed` Boolean appears to be what determines whether the boxes get displayed or not
+    - Originally, I had been thinking I'd do mine alongside the existing keywords, but the more I read here (as may be obvious from the tone of my notes), the more my mind has shifted to just adding mine into the same feature
+        - Based on what I've read so far, LANG_INDEX_SUBSTYLE1-8 could be set to 11-18, which would leave room for Don to expand the normal keywords from 0-8 to 0-10 and 19-29
+    - src\ScintillaComponent\ScintillaEditView.cpp::SctinillaEditView::makeStyle() -- this is used by some of the lexers (like HTML) for easily setting lists 0-9 based on which language
+        - so I think I would want a parallel `makeSubStyle()` which used its own *pSsKwArray for those lexers that need it
+- At this point, I need to start making code changes, to see if I've understood things correctly.
+    - I've already added substyles1-8 to the CPP lexer, so now I want to see if I can get it to show the lists.
+    - src\Parameters.h = add the LANG_INDEX_SUBSTYLE# values
+    - src\Parameters.cpp::getKwClassFromName() = add the returns for those.
+    - since the _keywordClass integer is set from that function, I _think_ that's all I need to do to make it visible
+    - build and try: at first, I thought it was working -- I was able to add it, and I saw them in the Style Configurator.  But then something happened, and it's started crashing.
+    - revert and build: it doesn't crash
+    - put it back, but using 9-16 instead of 11-18 and build: it still crashes
+    - I wonder whether it's the user keywords -- yes, as soon as I don't have any user keywords in stylers.xml, it stops crashing.  So there's obviously some array out-of-bounds, but I have no idea where.
+    - Bring them back one at a time: they are all working now.  What?! I guess I'll have to watch carefully; my guess is that somehwhere, there's an array out-of-bounds, but it doesn't always trigger, depending on active memory map.  Still, untill I've got more framework in place (and maybe I'll figure out the list as I start dealing with the actual keywords lists), I should probably restrict it to having user keywords for just substyle1
+    - src\Parameters.cpp::NppParameters::feedKeyWordsParameters() = debugPrint the default-keyword-list, and see that it's reading the default lists okay (also saw that there's a limit of `NB_LIST = 20` for the actual number of keyword lists can be added to the data structure)
+    - trying to find where the user-added keywords go, because they must be grabbed when stylers.xml is loaded -- okay, it's in the Parameters.cpp::StyleArray::addStyler() (though it's hard to get the context, because that's restricted to the caller)
