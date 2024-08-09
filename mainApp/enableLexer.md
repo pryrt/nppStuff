@@ -268,3 +268,37 @@ After working with SubStyles in the handful of lexers using PythonScript ([main 
     - Bring them back one at a time: they are all working now.  What?! I guess I'll have to watch carefully; my guess is that somehwhere, there's an array out-of-bounds, but it doesn't always trigger, depending on active memory map.  Still, untill I've got more framework in place (and maybe I'll figure out the list as I start dealing with the actual keywords lists), I should probably restrict it to having user keywords for just substyle1
     - src\Parameters.cpp::NppParameters::feedKeyWordsParameters() = debugPrint the default-keyword-list, and see that it's reading the default lists okay (also saw that there's a limit of `NB_LIST = 20` for the actual number of keyword lists can be added to the data structure)
     - trying to find where the user-added keywords go, because they must be grabbed when stylers.xml is loaded -- okay, it's in the Parameters.cpp::StyleArray::addStyler() (though it's hard to get the context, because that's restricted to the caller)
+
+### 2024-Aug-09
+
+- Since I have confirmed I have the langs.xml keyword lists and the user-defined stylers.xml keywords list for the C++ substyles, next step is to make sure i know how to access them from the ScintillaEditView
+	- ScintillaEditView::setCppLexer
+	- With some OutputDebugString, able to confirm that the pKwArray[i] contains the list of user keywords for a given style, and the getCompleteKeywordList() combines the user keywords with the default keywords, with the user keywords coming first.
+	- confirm that the simple .h-only and the .cpp-defined both use the ::makeStyle() to generate the array of keywords
+		- it grabs the LexerStyler object
+		- then iterate through the styles in the LexerStyler object, and if there's a keyword list to populate, then it tries to populate that string
+			- that's probably where my memory issue was: there were only slots 0..10, but I was populating 11..18 or 9..16, both of which overrun the **keywordArray
+			- I need to do some debug printing here, to make sure I understand how it's being populated
+			- So yes, it would definitely try to set keywordArray[SLOT] = style._keywords.c_str(), which would overflow for SLOT>9.  
+	- So I'm thinking that the *pKwArray[10] that's hardcoded throughout really needs to be *pKwArray[NB_LIST] instead, assuming NB_LIST from Parameters.h propagates to ScintillaEditView.  But before I implement that, need to check some logic:
+		- NB_LIST is currently only used for the struct "Lang"'s _langKeyWordList[NB_LIST], a specific entry of which is returned from Lang::getWords(), which is called by NppParameters::getWordList(), which is called by setCppLexer() and a few other custom and generically thru ScintillaEditView::getCompleteKeywordList().
+		- so yes, it definitely affects all the lexers
+		- for now, change just the CPP's *pKwArray[NB_LIST] -- without any changes, it does seem to work.
+		- add `pryrt8` to substyle8's user list, and rerun
+		- took me a while to get it properly printing the lists -- but now I can see the lists whether there was one in stylers (shows list) or not (shows null)
+		- so yes, propagate the [NB_LIST] to all those instances, it still works
+	- Curious: since the makeStyle() only needed an output array big enough in order to work, and since I think makeStyle() also calls the SCI_STYLESETFORE/BACK/etc, I _think_ that the colors should already be set for the new styles, so try SCI_STYLEGETFORE/..., and print them: yes, it's printing the unique colors I gave it.
+		- Does that mean if I go over to code that has the `pryrt` or `substyle` keywords, I will see highlighting?  Yes!  It works!
+
+SAFETY COMMIT!
+```
+   SubStyles are working for LexCPP
+   - updated to `*pKwArray[NB_LIST]` for all arguments to makeStyle()
+   - the makeStyle() already sets the colors
+   - doing a loop in the setCppLexer() to call the SubStyle allocate
+       and setIdentifiers()
+   - my example code will show the new colors on the defined keywords!
+
+   TODO = need to clean it up into a function, and start applying it to the other lexers!
+```
+
