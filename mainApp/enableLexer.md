@@ -302,3 +302,27 @@ SAFETY COMMIT!
    TODO = need to clean it up into a function, and start applying it to the other lexers!
 ```
 
+- Create a new ScintillaEditView::populateSubStyleKeywords() as a wrapper over my allocate-and-loop
+	- try calling that instead of my local copy from setCppLexer ⇒ that works
+- Now it's time to start adding them to the other languages
+	- C/C#/CPP all work, as does Go and Java.  Javascript and Typescript aren't working... but I think those don't use setCppLexer... I'll have to double-check that.  RC works; ActionScript (Flash) ok; Swift ok.
+	- JS/Javascript use setJsLexer(), so let's go populate that one -- that makes Languages>JavaScript work, but not embedded JS (because that uses the HTML lexer, which isn't enabled yet)
+	- setXmlLexer is called by L_PHP, L_ASP, L_JSP, L_HTML, L_XML
+		- if it's L_XML, it then does the makeStyle directly
+		- for the other ones, it then calls _all_ of setHTMLLexer, setEmbedded(JS|Php|Asp)Lexer()
+			- setHTMLLexer,JS,Php,Asp each calls their own makeStyle
+		- I think that means that for XML, I just call my SubStyles wrapper once, but for the other four, I will call them 4x, so they'll each get their own 8 
+		- where do each of the SCE_H* map?
+			- HTML uses H_TAG=1 and H_ATTRIBUTE=3 
+				- needs to be set in setHTMLLexer()
+			- HJ_WORD=46 appears to be the JavaScript Embedded WORD
+				- needs to be set in setEmbeddedJSLexer()
+			- HJA_WORD=61 is server-side javascript, which Notepad++ isn't using
+			- HB_WORD=74 is embedded vbscript, which Notepad++ isn't using
+			- HP_WORD=96 is embedded python, which Notepad++ isn't using
+			- HPHP_WORD=121 is the PHP, which _is_ being used
+				- needs to be set in setEmbeddedPhpLexer()
+			- where is ASP?  
+				- Digging in, it's 81-86, which LexHTML claims as "server basic", and that range doesn't have any substyles defined.
+		- based on what I see here, I think each are going to get their own set of 8 substyles -- so HTML gets 8, embedded JS gets 8, and PHP get 8 -- which is going to be nice.  But I'll have to watch my debug prints to see what StyleID each gets assigned to.
+		- TODO: next steps will be starting those allocations, and looking at the StyleID allocated for each
