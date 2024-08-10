@@ -344,4 +344,19 @@ SAFETY COMMIT!
 		- Enable the embedded JS ⇒ starts at 200.  update the styles to match
 		- Enable the embedded PHP ⇒ 208.  update the styles to match
 		- Enable the embedded ASP (I think based on HB_WORD=74) ⇒ it does allocate them, starting at 216, and it styles with the empty style; so add styles starting at 216 with user keywords for the asp.  That works.  So even though NPP is using the 81-86, it's allowing me to base its keyword list off of 74 from the 71-76 range, so that's good
-
+- Bash has two groups -- identifier and scalar -- so I should probably split between them.
+	- identifier is like a function name.  scalar is `$namehere`
+	- however, it's currently defined as a "simple" lexer, so everything's inside setLexer()
+		- I think I'll have to grab the relevant parts of setLexer() 
+		- yep, that worked, and it identified my four identifiers and four scalars
+- I was reminded when bash compiled that it requires changing the .h, which recompiles much more.  
+	- I don't want to have to do that too many more times, so let's do some planning
+	- I want to update setLexer() to have an optional argument, and I'll want to use it once in GDScript.  Once I get that working, I should be able to propagate to the other simple-languages
+		- I will need an optional argument that triggers SubStyles, and gives it the base substyle.  
+		- hmm, which was the constant for keyword-list-not-used?  Right, makeClass() checks if _keywordClass isnt STYLE_NOT_USED (-1), so that's the one I was thinking of as my default value.  That's different from all the 
+		- Yes, it worked.  
+		- Oh, realized I might need a second argument, for the firstSubStyle, in case the lexer uses something other than 128.  No, wait, the populateSubStyleKeywords doesn't need to know where it goes... just my debug print does, and it gets that information.  So I don't need another parameter.
+	- Lua and Python are the only ones left to do, since Verilog doesn't really have it. Do those together for one build.
+		- Oh, Lua already had 4 keyword categories from normal keywords.  Does it really need 8 more?  I think I'll just enable 4... which means I _do_ need a second optional parameter.
+		- Yep, Lua works with the additional 4.  Python with the additional 8.
+	- Time to commmit
