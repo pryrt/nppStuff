@@ -360,3 +360,13 @@ SAFETY COMMIT!
 		- Oh, Lua already had 4 keyword categories from normal keywords.  Does it really need 8 more?  I think I'll just enable 4... which means I _do_ need a second optional parameter.
 		- Yep, Lua works with the additional 4.  Python with the additional 8.
 	- Time to commmit
+- Get rid of my debug printing
+- Clean up the .model.xml to not have my dummy keywords
+
+#### TODO:
+
+- _ Update all the themes
+- _ Update PHP keywords, if I get feedback from the forum
+
+
+
