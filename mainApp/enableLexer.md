@@ -326,3 +326,22 @@ SAFETY COMMIT!
 				- Digging in, it's 81-86, which LexHTML claims as "server basic", and that range doesn't have any substyles defined.
 		- based on what I see here, I think each are going to get their own set of 8 substyles -- so HTML gets 8, embedded JS gets 8, and PHP get 8 -- which is going to be nice.  But I'll have to watch my debug prints to see what StyleID each gets assigned to.
 		- TODO: next steps will be starting those allocations, and looking at the StyleID allocated for each
+
+### 2024-Aug-10
+
+- Start by setting up my development here... Since I hadn't edited the src\*.model.xml, but only the local bin directory stylers/langs.xml, I needed to recreate that.
+	- hmm, C/C#/CPP all work; Go and Java work; Javascript.js works, but Typescript is not (it doesn't even do the debug print).  I thought I had tested that earlier, but maybe not.
+	- no, the L_TYPESCRIPT is elsewhere, so I'll have to do that.  But first:
+	- I forgot today to setup and verify RC, FLASH(ACTIONSCRIPT) and SWIFT.  At this point, modify the src\*.model, because I don't want to forget this again ⇒ those work, too
+	- Now implement typescript ⇒ good
+- Time to move on to the LexHTML family
+	- First update the langs*.xml.  
+	- Since I don't know which substyle numbers will be assigned, let's call the wrappers next, so I can see the debug prints as I choose each language.
+		- XML, split into two, originally did 192 and 200 -- but why 8, rather than 4?  Because i forgot to propagate the parameter to the message, which hardcoded 8.  Fix that.  Now 192 and 196. 
+		- Add styles for the XML and HTML, both in those ranges.  Right now, I can see the XML attributes, but not XML tags: it appears in XML mode that all tags are "recognized" and none "unrecognized", and thus it never checks for specific words.  
+		- Change XML to allocate all 8 to attributes, instead.
+		- Enable the four+four in HTML, and verify it works as expected, with 192 and 196 as the starting points; update the styles to match
+		- Enable the embedded JS ⇒ starts at 200.  update the styles to match
+		- Enable the embedded PHP ⇒ 208.  update the styles to match
+		- Enable the embedded ASP (I think based on HB_WORD=74) ⇒ it does allocate them, starting at 216, and it styles with the empty style; so add styles starting at 216 with user keywords for the asp.  That works.  So even though NPP is using the 81-86, it's allowing me to base its keyword list off of 74 from the 71-76 range, so that's good
+
