@@ -242,7 +242,7 @@ After working with SubStyles in the handful of lexers using PythonScript ([main 
 
 ### 2024-Aug-08
 
-- PR `https://github.com/notepad-plus-plus/notepad-plus-plus/issues/15520`
+- ISSUE `https://github.com/notepad-plus-plus/notepad-plus-plus/issues/15520`
 - Trying to get the screenshot for Don with the extra keyword lists, I learned that Notepad++ will only show the builtin+user boxes in the GUI for known keywordClass, so I will need to figure out how to get that enabled for my new keywords -- that's probably the first thing to do.
     - src\Parameters.cpp::StyleArray::addStyler() calls the getKwClassFromName() and populates the _keywordClass element of the Style structure instance
         - I will probably want to expand this variable to handle the keyword class integer for substyle# as well as the already-defined ones
@@ -363,10 +363,47 @@ SAFETY COMMIT!
 - Get rid of my debug printing
 - Clean up the .model.xml to not have my dummy keywords
 
-#### TODO:
+### 2024-Aug-11
 
-- _ Update all the themes
-- _ Update PHP keywords, if I get feedback from the forum
+- Work on updating all the themes.  
+	- Yesterday, I did one language, but it was tedious.
+	- Record a macro for doing actionscript.  Run it on all the remaining themes.  Save and reload.
+	- The other LexCPP languages should all have the same sequence, just changing the intitial search.
+	- Change the macro to look for `name="c"` and reload.  It worked.
+	- continue through the other lexCPP: cpp, cs, go, java, javascript.js (only three themes have this; add it to TODO), rc, swift (only two have it)
+	- The LexHTML are all similar, but not identical.  Do the HTML and XML separately.  PHP.  ASP.  JSP wasn't in there -- oh, right, JSP just uses embedded JS, so update that one
+	- Now do the rest, one at a time (custom macro each time): bash, gdscript (only in one), lua, and python.
+	- Try each theme (ie, just pick it, don't look too deeply): bespin has error, as does HotFudgeSundae.  Use my main N++ instance with XML Tools to syntax check the HTML, and found a missing `</LexerType>` and a problem on a couple of the `keywordClass="substyle#" />`
+- Haven't heard anything from Forum user about PHP.  I think maybe I'll just use the classifications found in the [PHP Reserved Words](https://www.php.net/manual/en/reserved.php) docs:
+	- [keywords](https://www.php.net/manual/en/reserved.keywords.php)
+	- [constants](https://www.php.net/manual/en/string.constants.php) (include the constants from the keywords page)
+	- ["other" reserved](https://www.php.net/manual/en/reserved.other-reserved-words.php)
+	- [predefined classes](https://www.php.net/manual/en/reserved.other-reserved-words.php)
+	- [functions and methods](https://www.php.net/manual/en/indexes.functions.php) -- this is the huge list
+	- Surprised to see that when I take out the any of the ones listed in those 5 pages from the N++ list, there are still about 6000 in the N++ list, along with 6000 from the big list.  
+	- I think it makes sense to combine keywords+other into the official list, constants and classes into substyle1, functions and methods into substyle2, and the N++ leftovers into substyle3.  That still leaves 5 substyles that are completely separate, and people who want the official big-list and the N++ leftovers to look the same can just apply the same coloring to both styles.
+
+Before doing my rebase and PR, check against the ScintillaEditView _langNameInfoArray:
+- Good thing I did: I forgot typescript in the themes (it was only in two themes, so not a big deal to fix -- oh, and I only forgot it in one of them, even easier)
+
+Now it's ready for the rebase and re-commit.  new message will be:
+```
+Add new user-accessible keyword lists to specific languages (using Substyles)
+- Enable up to 8 Scintilla's SubStyles (each), which allow for new keyword lists and styles for the languages with substyles available: ActionScript, ASP, Bash, C, C++, C#, GDScript, Go, HTML, Java, JavaScript (standalone and embedded), JSP, Lua, PHP, Python, Resource (RC), Swift, TypeScript, and XML.
+- The new SubStyles have been added to `langs.model.xml`, `stylers.model.xml`, and the themes.
+- PHP, which had thousands of keywords, has had the keywords split into a few groups, using three of the new SubStyles (still leaving five SubStyles completely up to the user to populate)
+
+Fixes #15520
+```
+
+Rebased and force-push.  Wait for Actions to run and pass.  Submit PR `https://github.com/notepad-plus-plus/notepad-plus-plus/pull/15537`
 
 
+#### MISC NOTES:
 
+I thought about:
+
+- _ Propagate javascript.js to all themes
+- _ Propagate swift to all themes
+
+Those don't really belong in this PR, however, so don't include it.
