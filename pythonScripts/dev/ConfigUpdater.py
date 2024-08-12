@@ -28,6 +28,10 @@ class ConfigUpdater(object):
             fTheme = os.path.join(self.dirNppConfig, 'themes', themeName)
         console.write("stylers.model = '{}'\ntheme = '{}'\n".format(fModel, fTheme))
 
+        # TODO: try to preserve comments by using
+        #   <https://stackoverflow.com/a/34324359/5508606>
+        #   see the comment about <?xml ... ?>, so I will need to use the options to turn those on, as well
+
         treeModel = ET.parse(fModel)
         treeTheme = ET.parse(fTheme)
 
@@ -74,8 +78,6 @@ class ConfigUpdater(object):
         #       ``` sortchildrenby(root, 'NAME')
         #   use trick <https://stackoverflow.com/a/18411610/5508606> to get 'searchResult' sorted last
         #elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=lambda child: (child.get('name') == 'searchResult', child.get('name')))
-
-        # TODO: why is it changing order of GlobalStyles section, and how do I prevent that?
 
         # fix the indentation for the whole tree
         ET.indent(treeTheme, space = "    ", level=0)
