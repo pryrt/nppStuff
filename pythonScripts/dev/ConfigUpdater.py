@@ -23,25 +23,41 @@ class ConfigUpdater(object):
         self.dirNppConfig    = os.path.dirname(os.path.dirname(self.dirPluginConfig))
 
     def go(self):
-        self.update_stylers('stylers.xml')
-        # TODO: loop over all themes (*) and call .update_stylers()
-        #   *: <dirNppConfig>\Themes\*
-        #   *: <dirNpp>\Themes\* -- but only if <dirNpp> != <dirNppConfig>
+        self.update_stylers(dirNppConfig, 'stylers.xml')
+
+        # loop over all CFG-directory themes and call .update_stylers()
+        dirCfgThemes = os.path.join(self.dirNppConfig, 'themes')
+        if os.path.exists(dirCfgThemes):
+            for f in os.listdir(dirCfgThemes):
+                if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirCfgThemes,f)):
+                    self.update_stylers(dirCfgThemes, f)
+
+        # loop over all NPP-directory themes and call .update_stylers() [skip if this is same directory as CFG]
+        dirNppThemes = os.path.join(self.dirNpp, 'themes')
+        if os.path.exists(dirNppThemes) and dirCfgThemes != dirNppThemes:
+            for f in os.listdir(dirNppThemes):
+                if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirNppThemes,f)):
+                    self.update_stylers(dirNppThemes, f)
+
         self.update_langs()
 
-    def update_stylers(self, themeName):
+    def update_stylers(self, themeDir, themeName):
         fModel = os.path.join(self.dirNpp, 'stylers.model.xml')
-        if themeName=='stylers.xml':
-            fTheme = os.path.join(self.dirNppConfig, themeName)
-        else:
-            fTheme = os.path.join(self.dirNppConfig, 'themes', themeName)
-        #console.write("stylers.model = '{}'\ntheme = '{}'\n".format(fModel, fTheme))
+        fTheme = os.path.join(themeDir, themeName)
+        console.write("\n\nstylers.model = '{}'\ntheme = '{}'\n".format(fModel, fTheme))
 
         # preserve comments by using
         #   <https://stackoverflow.com/a/34324359/5508606>
 
         treeModel = ET.parse(fModel, parser=ET.XMLParser(target=CommentedTreeBuilder()))
         treeTheme = ET.parse(fTheme, parser=ET.XMLParser(target=CommentedTreeBuilder()))
+
+        ### CRASH ###
+        # If the structure is <?xml?><!--comment--><NotepadPlus/>, then it crashes for multiple "root nodes"
+        #   The suggestions I found were either
+        #   1. wrap file in <DummyTag> to begin with, process, then remove the <DummyTag> from output
+        #   2. Edit the file to remove comment, process, then edit file to re-insert comment <https://stackoverflow.com/a/69653155/5508606
+        # I dislike both of those, but will probably have to go with the first, because the second will confuse all indentation.
 
         #https://github.com/pryrt/nppStuff/blob/cdd094148bd54f4b1c8e24cc328cc0afd558cf26/pythonScripts/nppCommunity/sessionChecker.py#L122
         # ... gives example of iterating through specific elements
