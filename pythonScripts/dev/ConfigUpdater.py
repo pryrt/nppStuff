@@ -8,6 +8,7 @@ missing new styles, new languages, and updated keyword lists.
 from Npp import editor,notepad,console
 import xml.etree.ElementTree as ET  # https://docs.python.org/3/library/xml.etree.elementtree.html
 import os
+import re
 
 class CommentedTreeBuilder(ET.TreeBuilder):
     # https://stackoverflow.com/a/34324359/5508606
@@ -23,10 +24,13 @@ class ConfigUpdater(object):
         self.dirNppConfig    = os.path.dirname(os.path.dirname(self.dirPluginConfig))
 
     def go(self):
-        self.update_stylers(dirNppConfig, 'stylers.xml')
+        #TMP#self.update_stylers(dirNppConfig, 'stylers.xml')
 
         # loop over all CFG-directory themes and call .update_stylers()
         dirCfgThemes = os.path.join(self.dirNppConfig, 'themes')
+        self.update_stylers(dirCfgThemes, 'ExtraTheme.xml') #TMP#
+        return
+
         if os.path.exists(dirCfgThemes):
             for f in os.listdir(dirCfgThemes):
                 if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirCfgThemes,f)):
@@ -50,14 +54,22 @@ class ConfigUpdater(object):
         #   <https://stackoverflow.com/a/34324359/5508606>
 
         treeModel = ET.parse(fModel, parser=ET.XMLParser(target=CommentedTreeBuilder()))
-        treeTheme = ET.parse(fTheme, parser=ET.XMLParser(target=CommentedTreeBuilder()))
+        try:
+            treeTheme = ET.parse(fTheme, parser=ET.XMLParser(target=CommentedTreeBuilder()))
+        except ET.ParseError as e:
+            treeTheme = self.parse_with_start_comment(fTheme)
+            if treeTheme is None:
+                console.writeError(e)
+                return
+                raise e # re-raise original exception
+            return #TMP#
 
-        ### CRASH ###
+        ### TODO: FIX CRASH ###
         # If the structure is <?xml?><!--comment--><NotepadPlus/>, then it crashes for multiple "root nodes"
         #   The suggestions I found were either
         #   1. wrap file in <DummyTag> to begin with, process, then remove the <DummyTag> from output
         #   2. Edit the file to remove comment, process, then edit file to re-insert comment <https://stackoverflow.com/a/69653155/5508606
-        # I dislike both of those, but will probably have to go with the first, because the second will confuse all indentation.
+        # I dislike both of those, but will probably have to go with the second, because the first will confuse all indentation.
 
         #https://github.com/pryrt/nppStuff/blob/cdd094148bd54f4b1c8e24cc328cc0afd558cf26/pythonScripts/nppCommunity/sessionChecker.py#L122
         # ... gives example of iterating through specific elements
@@ -90,7 +102,7 @@ class ConfigUpdater(object):
             elStylersMatchLT = treeTheme.find(strToFind)
             if elStylersMatchLT is None:
                 #console.write("NOT FOUND[{}] => {}\n".format(strToFind, elStylersMatchLT))
-                self.addMissingLexer(elModelLexer, elThemeLexerStyles)
+                self.add_missing_lexer(elModelLexer, elThemeLexerStyles)
             else:
                 pass # console.write("YES FOUND[{}] => {}\n".format(strToFind, elStylersMatchLT.attrib))
 
@@ -115,8 +127,8 @@ class ConfigUpdater(object):
         #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
         console.write("{}\n".format(ET.tostring(treeTheme.getroot(), encoding="unicode", xml_declaration=True)))
 
-    def addMissingLexer(self, elModelLexer, elLexerStyles):
-        #console.write("addMissingLexer({})\n".format(elModelLexer.attrib['name']))
+    def add_missing_lexer(self, elModelLexer, elLexerStyles):
+        #console.write("add_missing_lexer({})\n".format(elModelLexer.attrib['name']))
         elNewLexer = ET.SubElement(elLexerStyles, 'LexerType', attrib=elModelLexer.attrib)
         for elWordsStyle in elModelLexer.iter("WordsStyle"):
             #console.write("- need WordsStyle => {}\n".format(elWordsStyle.attrib))
@@ -134,6 +146,27 @@ class ConfigUpdater(object):
             ET.SubElement(elNewLexer, 'WordsStyle', attrib=attr)
 
         #ET.indent(elNewLexer, space = "    ", level=2)
+
+    def parse_with_start_comment(self, fTheme):
+        with open(fTheme, 'r') as f:
+            lines = f.readlines()
+        slurp = "".join(lines)
+        if lines[1].strip()[0:4] != "<!--":
+            return None
+
+        console.write("slurp[:100] = {}...\n".format(slurp[:100]))
+
+        # need to do it once to get the match's text to be able to store it
+        m = re.search(r'<!--.*?-->\r?\n', slurp, flags=re.DOTALL)
+        console.write("matched comment: {} at ({},{})\n".format(m.group(0),m.start(0),m.end(0)))
+
+        # and now do the substitution
+        edited = re.sub(r'<!--.*?-->\r?\n', r'', slurp, count=1, flags=re.DOTALL)
+        console.write("edited:\n{}\n".format(edited))
+
+        # TODO: need to parse the `edited` string instead of parsing the raw file,
+        #   and return the parsed tree, not `True`
+        return True
 
     def update_langs(self):
         pass
