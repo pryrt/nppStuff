@@ -22,6 +22,8 @@ class ConfigUpdater(object):
         self.dirNpp          = notepad.getNppDir()
         self.dirPluginConfig = notepad.getPluginConfigDir()
         self.dirNppConfig    = os.path.dirname(os.path.dirname(self.dirPluginConfig))
+        self.saved_comment   = None
+        self.has_top_level_comment = False
 
     def go(self):
         #TMP#self.update_stylers(dirNppConfig, 'stylers.xml')
@@ -45,6 +47,9 @@ class ConfigUpdater(object):
 
         self.update_langs()
 
+        return
+
+
     def update_stylers(self, themeDir, themeName):
         fModel = os.path.join(self.dirNpp, 'stylers.model.xml')
         fTheme = os.path.join(themeDir, themeName)
@@ -53,23 +58,19 @@ class ConfigUpdater(object):
         # preserve comments by using
         #   <https://stackoverflow.com/a/34324359/5508606>
 
+        # can always get the model file's tree
         treeModel = ET.parse(fModel, parser=ET.XMLParser(target=CommentedTreeBuilder()))
+
+        # but the styler/theme file might have a top-level comment, which xml.etree.ElementTree doesn't like,
+        #   so if there's a top-level comment, grab the string, remove (and save) the comment, and process the edited text instead
         try:
             treeTheme = ET.parse(fTheme, parser=ET.XMLParser(target=CommentedTreeBuilder()))
         except ET.ParseError as e:
-            treeTheme = self.parse_with_start_comment(fTheme)
-            if treeTheme is None:
+            strXML = self.get_text_without_toplevel_comment(fTheme)
+            if strXML is None:
                 console.writeError(e)
-                return
                 raise e # re-raise original exception
-            return #TMP#
-
-        ### TODO: FIX CRASH ###
-        # If the structure is <?xml?><!--comment--><NotepadPlus/>, then it crashes for multiple "root nodes"
-        #   The suggestions I found were either
-        #   1. wrap file in <DummyTag> to begin with, process, then remove the <DummyTag> from output
-        #   2. Edit the file to remove comment, process, then edit file to re-insert comment <https://stackoverflow.com/a/69653155/5508606
-        # I dislike both of those, but will probably have to go with the second, because the first will confuse all indentation.
+            treeTheme = ET.ElementTree(ET.fromstring(strXML, parser=ET.XMLParser(target=CommentedTreeBuilder())))
 
         #https://github.com/pryrt/nppStuff/blob/cdd094148bd54f4b1c8e24cc328cc0afd558cf26/pythonScripts/nppCommunity/sessionChecker.py#L122
         # ... gives example of iterating through specific elements
@@ -114,18 +115,18 @@ class ConfigUpdater(object):
         #   use trick <https://stackoverflow.com/a/18411610/5508606> to get 'searchResult' sorted last
         elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=lambda child: (child.get('name') == 'searchResult', child.get('name')))
 
-        # TODO: need to look for missing GlobalStyles elements as well
+        # NEXT TODO: need to look for missing GlobalStyles elements as well
         #   most important would be getting the right names and styleID,
         #   but it would be nice to propagate the comments before "Global override" and before "Selected text colour" as well
 
         # fix the indentation for the whole tree
         ET.indent(treeTheme, space = "    ", level=0)
 
-        # for now, show the result; TODO = write to file
-        #   use xml_declaration=True in order to get <?xml...?>
-        #   set encoding="unicode" in .tostring() to get printable string,
-        #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
-        console.write("{}\n".format(ET.tostring(treeTheme.getroot(), encoding="unicode", xml_declaration=True)))
+        # write the tree to an XML file (reinserting the comment if needed)
+        self.write_xml_with_optional_comment(treeTheme, fTheme)
+
+        return
+
 
     def add_missing_lexer(self, elModelLexer, elLexerStyles):
         #console.write("add_missing_lexer({})\n".format(elModelLexer.attrib['name']))
@@ -147,26 +148,40 @@ class ConfigUpdater(object):
 
         #ET.indent(elNewLexer, space = "    ", level=2)
 
-    def parse_with_start_comment(self, fTheme):
+    def get_text_without_toplevel_comment(self, fTheme):
         with open(fTheme, 'r') as f:
             lines = f.readlines()
         slurp = "".join(lines)
         if lines[1].strip()[0:4] != "<!--":
             return None
 
-        console.write("slurp[:100] = {}...\n".format(slurp[:100]))
+        #console.write("slurp[:100] = {}...\n".format(slurp[:100]))
 
         # need to do it once to get the match's text to be able to store it
         m = re.search(r'<!--.*?-->\r?\n', slurp, flags=re.DOTALL)
-        console.write("matched comment: {} at ({},{})\n".format(m.group(0),m.start(0),m.end(0)))
+        #console.write("matched comment: {} at ({},{})\n".format(m.group(0),m.start(0),m.end(0)))
+        self.saved_comment = m.group(0)
+        self.has_top_level_comment = True
 
         # and now do the substitution
         edited = re.sub(r'<!--.*?-->\r?\n', r'', slurp, count=1, flags=re.DOTALL)
-        console.write("edited:\n{}\n".format(edited))
+        #console.write("edited:\n{}\n".format(edited))
 
-        # TODO: need to parse the `edited` string instead of parsing the raw file,
-        #   and return the parsed tree, not `True`
-        return True
+        return edited
+
+    def write_xml_with_optional_comment(self, treeTheme, fTheme):
+        #   use xml_declaration=True in order to get <?xml...?>
+        #   set encoding="unicode" in .tostring() to get printable string,
+        #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
+        strOutputXml = ET.tostring(treeTheme.getroot(), encoding="unicode", xml_declaration=True)
+
+        if self.has_top_level_comment:
+            m = re.search(r'<\?xml.*?\?>\r?\n', strOutputXml, flags=re.DOTALL)
+            e = m.end(0)
+            strOutputXml = strOutputXml[:e] + self.saved_comment + strOutputXml[e:]
+
+        # for now, show the result; TODO = write to file fTheme
+        #console.write("{}\n".format(strOutputXml))
 
     def update_langs(self):
         pass
