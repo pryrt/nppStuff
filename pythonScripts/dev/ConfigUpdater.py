@@ -119,6 +119,27 @@ class ConfigUpdater(object):
         #   most important would be getting the right names and styleID,
         #   but it would be nice to propagate the comments before "Global override" and before "Selected text colour" as well
 
+        # grab the source and destination GlobalStyles
+        elModelGlobalStyles = treeModel.find('GlobalStyles')
+        elThemeGlobalStyles = treeTheme.find('GlobalStyles')
+        elThemeNewGlobals = ET.Element('GlobalStyles')
+        t = ET.Element('First', attrib={})
+        t.text = '1'
+        t.tail = 'after'
+        elThemeNewGlobals.append(t)
+        console.write("elThemeNewGlobals = {}\n".format(
+            ET.tostring(elThemeNewGlobals, encoding="unicode", xml_declaration=False)
+        ))
+        return
+
+        # iterate through the model GlobalStyles elements
+        for elWidgetStyle in elModelGlobalStyles:
+            if "function Comment" in str(elWidgetStyle):
+                console.write("MODEL: <!--{}-->\n".format(elWidgetStyle.text))
+            else:
+                console.write("MODEL: {} => {}\n".format(elWidgetStyle.tag, elWidgetStyle.attrib))
+
+
         # fix the indentation for the whole tree
         ET.indent(treeTheme, space = "    ", level=0)
 
