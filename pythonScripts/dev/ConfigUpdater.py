@@ -123,14 +123,16 @@ class ConfigUpdater(object):
         elModelGlobalStyles = treeModel.find('GlobalStyles')
         elThemeGlobalStyles = treeTheme.find('GlobalStyles')
         elThemeNewGlobals = ET.Element('GlobalStyles')
-        t = ET.Element('First', attrib={})
-        t.text = '1'
-        t.tail = 'after'
-        elThemeNewGlobals.append(t)
-        console.write("elThemeNewGlobals = {}\n".format(
-            ET.tostring(elThemeNewGlobals, encoding="unicode", xml_declaration=False)
-        ))
-        return
+        # experiment: if I have an element, I can insert a comment with specific text before it:
+        #t = ET.Element('First', attrib={})
+        #t.text = '1'
+        #t.tail = 'after'
+        #elThemeNewGlobals.append(t)
+        #elThemeNewGlobals.insert(0,ET.Comment(" New Comment Here "))
+        #console.write("elThemeNewGlobals = {}\n".format(
+        #    ET.tostring(elThemeNewGlobals, encoding="unicode", xml_declaration=False)
+        #))
+        #return
 
         # iterate through the model GlobalStyles elements
         for elWidgetStyle in elModelGlobalStyles:
