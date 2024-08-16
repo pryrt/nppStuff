@@ -19,13 +19,17 @@ class CommentedTreeBuilder(ET.TreeBuilder):
 
 class ConfigUpdater(object):
     def __init__(self):
-        self.dirNpp          = notepad.getNppDir()
-        self.dirPluginConfig = notepad.getPluginConfigDir()
-        self.dirNppConfig    = os.path.dirname(os.path.dirname(self.dirPluginConfig))
-        self.saved_comment   = None
-        self.has_top_level_comment = False
+        self.dirNpp                 = notepad.getNppDir()
+        self.dirPluginConfig        = notepad.getPluginConfigDir()
+        self.dirNppConfig           = os.path.dirname(os.path.dirname(self.dirPluginConfig))
+        self.saved_comment          = None
+        self.has_top_level_comment  = False
+        self.tree_model             = None
+        self.model_default_colors   = { 'fgColor': None, 'bgColor': None }
 
     def go(self):
+        self.get_model_styler()
+
         #TMP#self.update_stylers(dirNppConfig, 'stylers.xml')
 
         # loop over all CFG-directory themes and call .update_stylers()
@@ -49,17 +53,21 @@ class ConfigUpdater(object):
 
         return
 
+    def get_model_styler(self):
+        fModel = os.path.join(self.dirNpp, 'stylers.model.xml')
+        self.tree_model = ET.parse(fModel, parser=ET.XMLParser(target=CommentedTreeBuilder()))
+        elDefaultWidget = self.tree_model.find(".//GlobalStyles/WidgetStyle[@styleID='32']")
+        self.model_default_colors['fgColor'] = elDefaultWidget.attrib['fgColor']
+        self.model_default_colors['bgColor'] = elDefaultWidget.attrib['bgColor']
+        console.write("get_model_styler({}) => default:{}\n".format(fModel, self.model_default_colors))
+        return
 
     def update_stylers(self, themeDir, themeName):
-        fModel = os.path.join(self.dirNpp, 'stylers.model.xml')
         fTheme = os.path.join(themeDir, themeName)
-        console.write("\n\nstylers.model = '{}'\ntheme = '{}'\n".format(fModel, fTheme))
+        console.write("update_stylers('{}')\n".format(fTheme))
 
         # preserve comments by using
         #   <https://stackoverflow.com/a/34324359/5508606>
-
-        # can always get the model file's tree
-        treeModel = ET.parse(fModel, parser=ET.XMLParser(target=CommentedTreeBuilder()))
 
         # but the styler/theme file might have a top-level comment, which xml.etree.ElementTree doesn't like,
         #   so if there's a top-level comment, grab the string, remove (and save) the comment, and process the edited text instead
@@ -97,7 +105,7 @@ class ConfigUpdater(object):
         #console.write("Theme's LexerStyles: {} with {} sub-nodes\n".format(elThemeLexerStyles, len(elThemeLexerStyles)))
 
         # iterate through all the treeModel, and see if there are any LexerTypes that cannot also be found in treeTheme
-        for elModelLexer in treeModel.iter("LexerType"):
+        for elModelLexer in self.tree_model.iter("LexerType"):
             #console.write("LexerType {}\n".format(elModelLexer.attrib))
             strToFind = ".//LexerType[@name='{}']".format(elModelLexer.attrib['name'])
             elStylersMatchLT = treeTheme.find(strToFind)
@@ -105,6 +113,8 @@ class ConfigUpdater(object):
                 #console.write("NOT FOUND[{}] => {}\n".format(strToFind, elStylersMatchLT))
                 self.add_missing_lexer(elModelLexer, elThemeLexerStyles)
             else:
+                # TODO: need to iterate through each WordsStyle in the elModelLexer and see if it can
+                #   be found in the elStylersMatchLT (similar to GlobalStyles, below)
                 pass # console.write("YES FOUND[{}] => {}\n".format(strToFind, elStylersMatchLT.attrib))
 
         # sort the lexers by name
@@ -115,12 +125,12 @@ class ConfigUpdater(object):
         #   use trick <https://stackoverflow.com/a/18411610/5508606> to get 'searchResult' sorted last
         elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=lambda child: (child.get('name') == 'searchResult', child.get('name')))
 
-        # NEXT TODO: need to look for missing GlobalStyles elements as well
+        # CURRENT TODO: look for missing GlobalStyles elements as well
         #   most important would be getting the right names and styleID,
         #   but it would be nice to propagate the comments before "Global override" and before "Selected text colour" as well
 
         # grab the source and destination GlobalStyles
-        elModelGlobalStyles = treeModel.find('GlobalStyles')
+        elModelGlobalStyles = self.tree_model.find('GlobalStyles')
         elThemeGlobalStyles = treeTheme.find('GlobalStyles')
         elThemeNewGlobals = ET.Element('GlobalStyles')
         # experiment: if I have an element, I can insert a comment with specific text before it:
@@ -134,12 +144,48 @@ class ConfigUpdater(object):
         #))
         #return
 
+        # See if the "Default Style" already exists
+        #   if so, use the colors from there for new GlobalStyles elements,
+        #   otherwise use the model default colors
+        this_default_colors = {
+            'fgColor': self.model_default_colors['fgColor'],
+            'bgColor': self.model_default_colors['bgColor'],
+        }
+        elThemeGlobalDefaults = elThemeGlobalStyles.find("WidgetStyle[@styleID='32']")
+        if elThemeGlobalDefaults is not None:
+            this_default_colors['fgColor'] = elThemeGlobalDefaults.attrib['fgColor']
+            this_default_colors['bgColor'] = elThemeGlobalDefaults.attrib['bgColor']
+            console.write("Found Theme Globals: {}\n".format(this_default_colors))
+        else:
+            console.write("Missing Theme Globals\n")
+
         # iterate through the model GlobalStyles elements
+        elPreviousThemeWidget = None
         for elWidgetStyle in elModelGlobalStyles:
             if "function Comment" in str(elWidgetStyle):
                 console.write("MODEL: <!--{}-->\n".format(elWidgetStyle.text))
-            else:
-                console.write("MODEL: {} => {}\n".format(elWidgetStyle.tag, elWidgetStyle.attrib))
+                # TODO: need to see if that comment exists in this theme; not sure how to search for a given comment, yet
+            else:   # normal element
+                #console.write("MODEL: {} => {}\n".format(elWidgetStyle.tag, elWidgetStyle.attrib))
+                strSearch = "WidgetStyle[@name='{}']".format(elWidgetStyle.attrib['name'])
+                elFoundThemeWidget = elThemeGlobalStyles.find(strSearch)
+                if elFoundThemeWidget is None:
+                    # need to add the new widget with the correct default colors
+                    elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', {
+                        'name': elWidgetStyle.attrib['name'],
+                        'styleID': elWidgetStyle.attrib['styleID'],
+                        'fgColor': this_default_colors['fgColor'],
+                        'bgColor': this_default_colors['bgColor'],
+                        'fontName': '',
+                        'fontStyle': '0',
+                        'fontSize': '',
+                    })
+                    elPreviousThemeWidget = elNewWidget
+                    console.write("ADDED {}\n".format(elPreviousThemeWidget.attrib))
+                else:
+                    # don't need to add this one, so just move forward
+                    elPreviousThemeWidget = elFoundThemeWidget
+                    console.write("FOUND {}\n".format(elPreviousThemeWidget.attrib))
 
 
         # fix the indentation for the whole tree
@@ -159,10 +205,10 @@ class ConfigUpdater(object):
             attr = {
                 'name': elWordsStyle.attrib['name'],
                 'styleID': elWordsStyle.attrib['styleID'],
-                'fgColor': elWordsStyle.attrib['fgColor'],
-                'bgColor': elWordsStyle.attrib['bgColor'],
+                'fgColor': self.model_default_colors['fgColor'],
+                'bgColor': self.model_default_colors['bgColor'],
                 'fontName': "",
-                'fontStyle': elWordsStyle.attrib['fontStyle'],
+                'fontStyle': "",
                 'fontSize': "",
             }
             if 'keywordClass' in elWordsStyle.attrib:
