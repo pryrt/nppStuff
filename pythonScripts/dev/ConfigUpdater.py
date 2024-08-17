@@ -126,7 +126,38 @@ class ConfigUpdater(object):
         elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=lambda child: (child.get('name') == 'searchResult', child.get('name')))
 
         # look for missing GlobalStyles elements as well
+        self.add_missing_globals(treeTheme)
 
+        # fix the indentation for the whole tree
+        ET.indent(treeTheme, space = "    ", level=0)
+
+        # write the tree to an XML file (reinserting the comment if needed)
+        self.write_xml_with_optional_comment(treeTheme, fTheme)
+
+        return
+
+
+    def add_missing_lexer(self, elModelLexer, elLexerStyles):
+        #console.write("add_missing_lexer({})\n".format(elModelLexer.attrib['name']))
+        elNewLexer = ET.SubElement(elLexerStyles, 'LexerType', attrib=elModelLexer.attrib)
+        for elWordsStyle in elModelLexer.iter("WordsStyle"):
+            #console.write("- need WordsStyle => {}\n".format(elWordsStyle.attrib))
+            attr = {
+                'name': elWordsStyle.attrib['name'],
+                'styleID': elWordsStyle.attrib['styleID'],
+                'fgColor': self.model_default_colors['fgColor'],
+                'bgColor': self.model_default_colors['bgColor'],
+                'fontName': "",
+                'fontStyle': "",
+                'fontSize': "",
+            }
+            if 'keywordClass' in elWordsStyle.attrib:
+                attr['keywordClass'] = elWordsStyle.attrib['keywordClass']
+            ET.SubElement(elNewLexer, 'WordsStyle', attrib=attr)
+
+        #ET.indent(elNewLexer, space = "    ", level=2)
+
+    def add_missing_globals(self, treeTheme):
         # grab the source and destination GlobalStyles
         elModelGlobalStyles = self.tree_model.find('GlobalStyles')
         elThemeGlobalStyles = treeTheme.find('GlobalStyles')
@@ -190,34 +221,6 @@ class ConfigUpdater(object):
         # populate the actual with the new
         elThemeGlobalStyles[:] = elThemeNewGlobals[:]
 
-        # fix the indentation for the whole tree
-        ET.indent(treeTheme, space = "    ", level=0)
-
-        # write the tree to an XML file (reinserting the comment if needed)
-        self.write_xml_with_optional_comment(treeTheme, fTheme)
-
-        return
-
-
-    def add_missing_lexer(self, elModelLexer, elLexerStyles):
-        #console.write("add_missing_lexer({})\n".format(elModelLexer.attrib['name']))
-        elNewLexer = ET.SubElement(elLexerStyles, 'LexerType', attrib=elModelLexer.attrib)
-        for elWordsStyle in elModelLexer.iter("WordsStyle"):
-            #console.write("- need WordsStyle => {}\n".format(elWordsStyle.attrib))
-            attr = {
-                'name': elWordsStyle.attrib['name'],
-                'styleID': elWordsStyle.attrib['styleID'],
-                'fgColor': self.model_default_colors['fgColor'],
-                'bgColor': self.model_default_colors['bgColor'],
-                'fontName': "",
-                'fontStyle': "",
-                'fontSize': "",
-            }
-            if 'keywordClass' in elWordsStyle.attrib:
-                attr['keywordClass'] = elWordsStyle.attrib['keywordClass']
-            ET.SubElement(elNewLexer, 'WordsStyle', attrib=attr)
-
-        #ET.indent(elNewLexer, space = "    ", level=2)
 
     def get_text_without_toplevel_comment(self, fTheme):
         with open(fTheme, 'r') as f:
@@ -240,6 +243,7 @@ class ConfigUpdater(object):
 
         return edited
 
+
     def write_xml_with_optional_comment(self, treeTheme, fTheme):
         #   use xml_declaration=True in order to get <?xml...?>
         #   set encoding="unicode" in .tostring() to get printable string,
@@ -252,7 +256,7 @@ class ConfigUpdater(object):
             strOutputXml = strOutputXml[:e] + self.saved_comment + strOutputXml[e:]
 
         # for now, show the result; TODO = write to file fTheme
-        #console.write("{}\n".format(strOutputXml))
+        console.write("{}\n".format(strOutputXml))
 
     def update_langs(self):
         pass
