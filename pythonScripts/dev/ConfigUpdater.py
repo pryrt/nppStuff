@@ -125,24 +125,12 @@ class ConfigUpdater(object):
         #   use trick <https://stackoverflow.com/a/18411610/5508606> to get 'searchResult' sorted last
         elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=lambda child: (child.get('name') == 'searchResult', child.get('name')))
 
-        # CURRENT TODO: look for missing GlobalStyles elements as well
-        #   most important would be getting the right names and styleID,
-        #   but it would be nice to propagate the comments before "Global override" and before "Selected text colour" as well
+        # look for missing GlobalStyles elements as well
 
         # grab the source and destination GlobalStyles
         elModelGlobalStyles = self.tree_model.find('GlobalStyles')
         elThemeGlobalStyles = treeTheme.find('GlobalStyles')
         elThemeNewGlobals = ET.Element('GlobalStyles')
-        # experiment: if I have an element, I can insert a comment with specific text before it:
-        #t = ET.Element('First', attrib={})
-        #t.text = '1'
-        #t.tail = 'after'
-        #elThemeNewGlobals.append(t)
-        #elThemeNewGlobals.insert(0,ET.Comment(" New Comment Here "))
-        #console.write("elThemeNewGlobals = {}\n".format(
-        #    ET.tostring(elThemeNewGlobals, encoding="unicode", xml_declaration=False)
-        #))
-        #return
 
         # See if the "Default Style" already exists
         #   if so, use the colors from there for new GlobalStyles elements,
@@ -163,12 +151,13 @@ class ConfigUpdater(object):
         elPreviousThemeWidget = None
         for elWidgetStyle in elModelGlobalStyles:
             if "function Comment" in str(elWidgetStyle):
-                console.write("MODEL: <!--{}-->\n".format(elWidgetStyle.text))
-                # TODO: need to see if that comment exists in this theme; not sure how to search for a given comment, yet
+                #console.write("MODEL <!--{}-->\n".format(elWidgetStyle.text))
+                elThemeNewGlobals.append(ET.Comment(elWidgetStyle.text))
             else:   # normal element
                 #console.write("MODEL: {} => {}\n".format(elWidgetStyle.tag, elWidgetStyle.attrib))
                 strSearch = "WidgetStyle[@name='{}']".format(elWidgetStyle.attrib['name'])
                 elFoundThemeWidget = elThemeGlobalStyles.find(strSearch)
+                msg = None
                 if elFoundThemeWidget is None:
                     # need to add the new widget with the correct default colors
                     elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', {
@@ -180,13 +169,26 @@ class ConfigUpdater(object):
                         'fontStyle': '0',
                         'fontSize': '',
                     })
-                    elPreviousThemeWidget = elNewWidget
-                    console.write("ADDED {}\n".format(elPreviousThemeWidget.attrib))
+                    msg = 'ADDED'
                 else:
-                    # don't need to add this one, so just move forward
-                    elPreviousThemeWidget = elFoundThemeWidget
-                    console.write("FOUND {}\n".format(elPreviousThemeWidget.attrib))
+                    # copy this from the theme to the new
+                    #console.write("Widget attrib = {}\n".format(elFoundThemeWidget.attrib))
+                    elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', {
+                        'name': elWidgetStyle.attrib['name'],
+                        'styleID': elWidgetStyle.attrib['styleID'],
+                        'fgColor': elFoundThemeWidget.attrib['fgColor'] if 'fgColor' in elFoundThemeWidget.attrib else this_default_colors['fgColor'],
+                        'bgColor': elFoundThemeWidget.attrib['bgColor'] if 'bgColor' in elFoundThemeWidget.attrib else this_default_colors['bgColor'],
+                        'fontName': elFoundThemeWidget.attrib['fontName'] if 'fontName' in elFoundThemeWidget.attrib else '',
+                        'fontStyle': elFoundThemeWidget.attrib['fontStyle'] if 'fontStyle' in elFoundThemeWidget.attrib else '0',
+                        'fontSize': elFoundThemeWidget.attrib['fontSize'] if 'fontSize' in elFoundThemeWidget.attrib else '',
+                    })
+                    msg = 'FOUND'
 
+                elPreviousThemeWidget = elNewWidget
+                #console.write("{} {}\n".format(msg, elPreviousThemeWidget.attrib))
+
+        # populate the actual with the new
+        elThemeGlobalStyles[:] = elThemeNewGlobals[:]
 
         # fix the indentation for the whole tree
         ET.indent(treeTheme, space = "    ", level=0)
