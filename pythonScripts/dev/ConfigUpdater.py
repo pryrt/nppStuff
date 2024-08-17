@@ -100,6 +100,9 @@ class ConfigUpdater(object):
         self.globalStyle = treeTheme.find('.//GlobalStyles/WidgetStyle[@styleID="0"]')
         #console.write("Global Attributes Saved: {}\n".format(self.globalStyle.attrib))
 
+        # and get the active theme's default colors, too
+        self.get_theme_globals(treeTheme)
+
         # Need to grab the Theme's <LexerStyles> node for future insertions
         elThemeLexerStyles = treeTheme.find('LexerStyles')
         #console.write("Theme's LexerStyles: {} with {} sub-nodes\n".format(elThemeLexerStyles, len(elThemeLexerStyles)))
@@ -114,8 +117,8 @@ class ConfigUpdater(object):
                 self.add_missing_lexer(elModelLexer, elThemeLexerStyles)
             else:
                 # TODO: need to iterate through each WordsStyle in the elModelLexer and see if it can
-                #   be found in the elStylersMatchLT (similar to GlobalStyles, below)
-                pass # console.write("YES FOUND[{}] => {}\n".format(strToFind, elStylersMatchLT.attrib))
+                #   be found in the elStylersMatchLT (similar to GlobalStyles's add_missing_globals(), below)
+                self.add_missing_lexer_styles(elModelLexer, elStylersMatchLT)
 
         # sort the lexers by name
         #       cf: https://stackoverflow.com/questions/25338817/sorting-xml-in-python-etree
@@ -136,6 +139,23 @@ class ConfigUpdater(object):
 
         return
 
+    def get_theme_globals(self, treeTheme):
+        elThemeGlobalStyles = treeTheme.find('GlobalStyles')
+
+        # See if the "Default Style" already exists
+        #   if so, use the colors from there for new GlobalStyles elements,
+        #   otherwise use the model default colors
+        self.active_theme_default_colors = {
+            'fgColor': self.model_default_colors['fgColor'],
+            'bgColor': self.model_default_colors['bgColor'],
+        }
+        elThemeGlobalDefaults = elThemeGlobalStyles.find("WidgetStyle[@styleID='32']")
+        if elThemeGlobalDefaults is not None:
+            self.active_theme_default_colors['fgColor'] = elThemeGlobalDefaults.attrib['fgColor']
+            self.active_theme_default_colors['bgColor'] = elThemeGlobalDefaults.attrib['bgColor']
+            console.write("Found Theme Globals: {}\n".format(self.active_theme_default_colors))
+        else:
+            console.write("Missing Theme Globals\n")
 
     def add_missing_lexer(self, elModelLexer, elLexerStyles):
         #console.write("add_missing_lexer({})\n".format(elModelLexer.attrib['name']))
@@ -163,21 +183,6 @@ class ConfigUpdater(object):
         elThemeGlobalStyles = treeTheme.find('GlobalStyles')
         elThemeNewGlobals = ET.Element('GlobalStyles')
 
-        # See if the "Default Style" already exists
-        #   if so, use the colors from there for new GlobalStyles elements,
-        #   otherwise use the model default colors
-        this_default_colors = {
-            'fgColor': self.model_default_colors['fgColor'],
-            'bgColor': self.model_default_colors['bgColor'],
-        }
-        elThemeGlobalDefaults = elThemeGlobalStyles.find("WidgetStyle[@styleID='32']")
-        if elThemeGlobalDefaults is not None:
-            this_default_colors['fgColor'] = elThemeGlobalDefaults.attrib['fgColor']
-            this_default_colors['bgColor'] = elThemeGlobalDefaults.attrib['bgColor']
-            console.write("Found Theme Globals: {}\n".format(this_default_colors))
-        else:
-            console.write("Missing Theme Globals\n")
-
         # iterate through the model GlobalStyles elements
         elPreviousThemeWidget = None
         for elWidgetStyle in elModelGlobalStyles:
@@ -194,8 +199,8 @@ class ConfigUpdater(object):
                     elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', {
                         'name': elWidgetStyle.attrib['name'],
                         'styleID': elWidgetStyle.attrib['styleID'],
-                        'fgColor': this_default_colors['fgColor'],
-                        'bgColor': this_default_colors['bgColor'],
+                        'fgColor': self.active_theme_default_colors['fgColor'],
+                        'bgColor': self.active_theme_default_colors['bgColor'],
                         'fontName': '',
                         'fontStyle': '0',
                         'fontSize': '',
@@ -207,8 +212,8 @@ class ConfigUpdater(object):
                     elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', {
                         'name': elWidgetStyle.attrib['name'],
                         'styleID': elWidgetStyle.attrib['styleID'],
-                        'fgColor': elFoundThemeWidget.attrib['fgColor'] if 'fgColor' in elFoundThemeWidget.attrib else this_default_colors['fgColor'],
-                        'bgColor': elFoundThemeWidget.attrib['bgColor'] if 'bgColor' in elFoundThemeWidget.attrib else this_default_colors['bgColor'],
+                        'fgColor': elFoundThemeWidget.attrib['fgColor'] if 'fgColor' in elFoundThemeWidget.attrib else self.active_theme_default_colors['fgColor'],
+                        'bgColor': elFoundThemeWidget.attrib['bgColor'] if 'bgColor' in elFoundThemeWidget.attrib else self.active_theme_default_colors['bgColor'],
                         'fontName': elFoundThemeWidget.attrib['fontName'] if 'fontName' in elFoundThemeWidget.attrib else '',
                         'fontStyle': elFoundThemeWidget.attrib['fontStyle'] if 'fontStyle' in elFoundThemeWidget.attrib else '0',
                         'fontSize': elFoundThemeWidget.attrib['fontSize'] if 'fontSize' in elFoundThemeWidget.attrib else '',
@@ -220,6 +225,16 @@ class ConfigUpdater(object):
 
         # populate the actual with the new
         elThemeGlobalStyles[:] = elThemeNewGlobals[:]
+
+    def add_missing_lexer_styles(self, elModelLexer, elStylersMatchLT):
+        console.write("add_missing_lexer_styles({})\n".format(elModelLexer.attrib['name']))
+
+        # TODO NEXT: this needs the theme's GlobalColors just like .add_missing_globals() did,
+        #   so I should really separate out that information into a separate function, which is called
+        #   before either that or this
+
+        # TODO: loop through the the MODEL's list for this lexer, and
+        #   any that are missing need to be added, using the theme's GlobalColors
 
 
     def get_text_without_toplevel_comment(self, fTheme):
@@ -256,7 +271,7 @@ class ConfigUpdater(object):
             strOutputXml = strOutputXml[:e] + self.saved_comment + strOutputXml[e:]
 
         # for now, show the result; TODO = write to file fTheme
-        console.write("{}\n".format(strOutputXml))
+        #console.write("{}\n".format(strOutputXml))
 
     def update_langs(self):
         pass
