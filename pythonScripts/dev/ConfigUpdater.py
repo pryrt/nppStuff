@@ -229,12 +229,9 @@ class ConfigUpdater(object):
     def add_missing_lexer_styles(self, elModelLexer, elStylersMatchLT):
         console.write("add_missing_lexer_styles({})\n".format(elModelLexer.attrib['name']))
 
-        # TODO NEXT: this needs the theme's GlobalColors just like .add_missing_globals() did,
-        #   so I should really separate out that information into a separate function, which is called
-        #   before either that or this
-
-        # TODO: loop through the the MODEL's list for this lexer, and
-        #   any that are missing need to be added, using the theme's GlobalColors
+        # TODO NEXT: use values from get_theme_globals() in self.active_theme_default_colors[]
+        #   as the colors for use when looping through the MODEL's list for this lexer
+        #   add any that are missing need to be added, using the theme's GlobalColors
 
 
     def get_text_without_toplevel_comment(self, fTheme):
