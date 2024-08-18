@@ -234,7 +234,7 @@ class ConfigUpdater(object):
         #   add any that are missing need to be added, using the theme's GlobalColors
         for elWordsStyle in elModelLexer.iter("WordsStyle"):
             #console.write("- check if WordsStyle {} is already in this theme\n".format(elWordsStyle.attrib))
-            strSearch = "WordsStyle[@name='{}']".format(elWordsStyle.attrib['name'])
+            strSearch = "WordsStyle[@styleID='{}']".format(elWordsStyle.attrib['styleID'])
             elFoundThemeStyle = elThemeLexerType.find(strSearch)
             if elFoundThemeStyle is None:
                 elNewStyle = ET.SubElement(elThemeLexerType, 'WordsStyle', {
@@ -246,7 +246,11 @@ class ConfigUpdater(object):
                     'fontStyle':    '0',
                     'fontSize':     '',
                 })
-                #console.writeError("- ADDED style {} to {}\n".format(elNewStyle.attrib, elThemeLexerType.attrib['name']))
+                console.writeError("- ADDED style {} to {}\n".format(elNewStyle.attrib, elThemeLexerType.attrib['name']))
+
+            # TODO: for some, like TCL, the new one has a NAME that matches an existing NAME with a different StyleID
+            #   which will cause confusion...
+            #   I think I might need to rename existing StyleID if their name has officially changed
 
         return
 
@@ -286,6 +290,8 @@ class ConfigUpdater(object):
 
         # for now, show the result; TODO = write to file fTheme
         #console.write("{}\n".format(strOutputXml))
+        with open(fTheme, 'w') as f:
+            f.write(strOutputXml)
 
     def update_langs(self):
         pass
