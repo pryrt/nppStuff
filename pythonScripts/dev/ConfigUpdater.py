@@ -226,12 +226,29 @@ class ConfigUpdater(object):
         # populate the actual with the new
         elThemeGlobalStyles[:] = elThemeNewGlobals[:]
 
-    def add_missing_lexer_styles(self, elModelLexer, elStylersMatchLT):
-        console.write("add_missing_lexer_styles({})\n".format(elModelLexer.attrib['name']))
+    def add_missing_lexer_styles(self, elModelLexer, elThemeLexerType):
+        #console.write("add_missing_lexer_styles({})\n".format(elModelLexer.attrib['name']))
 
         # TODO NEXT: use values from get_theme_globals() in self.active_theme_default_colors[]
         #   as the colors for use when looping through the MODEL's list for this lexer
         #   add any that are missing need to be added, using the theme's GlobalColors
+        for elWordsStyle in elModelLexer.iter("WordsStyle"):
+            #console.write("- check if WordsStyle {} is already in this theme\n".format(elWordsStyle.attrib))
+            strSearch = "WordsStyle[@name='{}']".format(elWordsStyle.attrib['name'])
+            elFoundThemeStyle = elThemeLexerType.find(strSearch)
+            if elFoundThemeStyle is None:
+                elNewStyle = ET.SubElement(elThemeLexerType, 'WordsStyle', {
+                    'name':         elWordsStyle.attrib['name'],
+                    'styleID':      elWordsStyle.attrib['styleID'],
+                    'fgColor':      self.active_theme_default_colors['fgColor'],
+                    'bgColor':      self.active_theme_default_colors['bgColor'],
+                    'fontName':     '',
+                    'fontStyle':    '0',
+                    'fontSize':     '',
+                })
+                #console.writeError("- ADDED style {} to {}\n".format(elNewStyle.attrib, elThemeLexerType.attrib['name']))
+
+        return
 
 
     def get_text_without_toplevel_comment(self, fTheme):
