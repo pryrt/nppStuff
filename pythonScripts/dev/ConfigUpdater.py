@@ -116,7 +116,7 @@ class ConfigUpdater(object):
                 #console.write("NOT FOUND[{}] => {}\n".format(strToFind, elStylersMatchLT))
                 self.add_missing_lexer(elModelLexer, elThemeLexerStyles)
             else:
-                # TODO: need to iterate through each WordsStyle in the elModelLexer and see if it can
+                # iterate through each WordsStyle in the elModelLexer and see if it can
                 #   be found in the elStylersMatchLT (similar to GlobalStyles's add_missing_globals(), below)
                 self.add_missing_lexer_styles(elModelLexer, elStylersMatchLT)
 
@@ -229,7 +229,7 @@ class ConfigUpdater(object):
     def add_missing_lexer_styles(self, elModelLexer, elThemeLexerType):
         #console.write("add_missing_lexer_styles({})\n".format(elModelLexer.attrib['name']))
 
-        # TODO NEXT: use values from get_theme_globals() in self.active_theme_default_colors[]
+        # use values from get_theme_globals() in self.active_theme_default_colors[]
         #   as the colors for use when looping through the MODEL's list for this lexer
         #   add any that are missing need to be added, using the theme's GlobalColors
         for elWordsStyle in elModelLexer.iter("WordsStyle"):
