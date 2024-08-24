@@ -6,17 +6,17 @@ it does this because it doesn't want to overwrite your customizations, but that 
 missing new styles, new languages, and updated keyword lists.
 
 Author: PeterJones @ community.notepad-plus-plus.org
+
+INSTRUCTIONS:
+1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
+2. If you are installed in "C:\Program Files\Notepad++", run Notepad++ as Administrator, otherwise run it normally
+3. Run this script from PythonScript 3 (TODO: test with PythonScript 2)
 """
 from Npp import editor,notepad,console
 import xml.etree.ElementTree as ET  # https://docs.python.org/3/library/xml.etree.elementtree.html
 import os
 import re
 import textwrap
-
-# Main TODO List:
-#   x Update stylers/themes -- use ExtraTheme.xml as the testbed
-#   x Update langs.xml
-#   _ switch from ExtraTheme.xml to _all_ stylers/themes when everything else is working
 
 class CommentedTreeBuilder(ET.TreeBuilder):
     # https://stackoverflow.com/a/34324359/5508606
@@ -39,7 +39,7 @@ class ConfigUpdater(object):
         self.get_model_styler()
 
         dirCfgThemes = os.path.join(self.dirNppConfig, 'themes')
-        if True:
+        if False:
             # debug path -- just do ExtraTheme
             self.update_stylers(dirCfgThemes, 'ExtraTheme.xml') #TMP#
         else:
@@ -76,7 +76,7 @@ class ConfigUpdater(object):
 
     def update_stylers(self, themeDir, themeName):
         fTheme = os.path.join(themeDir, themeName)
-        #console.write("update_stylers('{}')\n".format(fTheme))
+        console.write("update_stylers('{}')\n".format(fTheme))
 
         # preserve comments by using
         #   <https://stackoverflow.com/a/34324359/5508606>
@@ -310,7 +310,7 @@ class ConfigUpdater(object):
     def update_langs(self):
         fLangActive = os.path.join(self.dirNppConfig, 'langs.xml')
         fLangModel = os.path.join(self.dirNpp, 'langs.model.xml')
-        #console.write("update_langs('{}', '{}')\n".format(fLangActive, fLangModel))
+        console.write("update_langs('{}', '{}')\n".format(fLangActive, fLangModel))
 
         # get the trees
         self.tree_langmodel = ET.parse(fLangModel, parser=ET.XMLParser(target=CommentedTreeBuilder()))
