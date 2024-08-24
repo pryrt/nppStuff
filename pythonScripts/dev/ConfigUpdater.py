@@ -153,9 +153,9 @@ class ConfigUpdater(object):
         if elThemeGlobalDefaults is not None:
             self.active_theme_default_colors['fgColor'] = elThemeGlobalDefaults.attrib['fgColor']
             self.active_theme_default_colors['bgColor'] = elThemeGlobalDefaults.attrib['bgColor']
-            console.write("Found Theme Globals: {}\n".format(self.active_theme_default_colors))
-        else:
-            console.write("Missing Theme Globals\n")
+            #console.write("Found Theme Globals: {}\n".format(self.active_theme_default_colors))
+        #else:
+        #    console.write("Missing Theme Globals: using {} by default\n".format(self.active_theme_default_colors))
 
     def add_missing_lexer(self, elModelLexer, elLexerStyles):
         #console.write("add_missing_lexer({})\n".format(elModelLexer.attrib['name']))
@@ -232,25 +232,28 @@ class ConfigUpdater(object):
         # use values from get_theme_globals() in self.active_theme_default_colors[]
         #   as the colors for use when looping through the MODEL's list for this lexer
         #   add any that are missing need to be added, using the theme's GlobalColors
-        for elWordsStyle in elModelLexer.iter("WordsStyle"):
-            #console.write("- check if WordsStyle {} is already in this theme\n".format(elWordsStyle.attrib))
-            strSearch = "WordsStyle[@styleID='{}']".format(elWordsStyle.attrib['styleID'])
+        for elModelStyle in elModelLexer.iter("WordsStyle"):
+            #console.write("- check if WordsStyle {} is already in this theme\n".format(elModelStyle.attrib))
+            strSearch = "WordsStyle[@styleID='{}']".format(elModelStyle.attrib['styleID'])
             elFoundThemeStyle = elThemeLexerType.find(strSearch)
             if elFoundThemeStyle is None:
                 elNewStyle = ET.SubElement(elThemeLexerType, 'WordsStyle', {
-                    'name':         elWordsStyle.attrib['name'],
-                    'styleID':      elWordsStyle.attrib['styleID'],
+                    'name':         elModelStyle.attrib['name'],
+                    'styleID':      elModelStyle.attrib['styleID'],
                     'fgColor':      self.active_theme_default_colors['fgColor'],
                     'bgColor':      self.active_theme_default_colors['bgColor'],
                     'fontName':     '',
                     'fontStyle':    '0',
                     'fontSize':     '',
                 })
-                console.writeError("- ADDED style {} to {}\n".format(elNewStyle.attrib, elThemeLexerType.attrib['name']))
-
-            # TODO: for some, like TCL, the new one has a NAME that matches an existing NAME with a different StyleID
-            #   which will cause confusion...
-            #   I think I might need to rename existing StyleID if their name has officially changed
+                #console.writeError("- ADDED to {}: style {}\n".format(elThemeLexerType.attrib['name'], elNewStyle.attrib))
+            else:
+                # for names that have changed n the model, update the theme to match the model's name
+                #   (keeps up-to-date with the most recent model)
+                if elFoundThemeStyle.attrib['name'] != elModelStyle.attrib['name']:
+                    #console.write("- RENAME {}'s styleID={}: theme's {} to model's {}\n".format(elModelLexer.attrib['name'], elModelStyle.attrib['styleID'], elFoundThemeStyle.attrib['name'], elModelStyle.attrib['name']))
+                    elFoundThemeStyle.attrib['name'] = elModelStyle.attrib['name']
+                    #console.writeError("- RENAME in {}: style {}\n".format(elThemeLexerType.attrib['name'], elFoundThemeStyle.attrib))
 
         return
 
@@ -288,7 +291,6 @@ class ConfigUpdater(object):
             e = m.end(0)
             strOutputXml = strOutputXml[:e] + self.saved_comment + strOutputXml[e:]
 
-        # for now, show the result; TODO = write to file fTheme
         #console.write("{}\n".format(strOutputXml))
         with open(fTheme, 'w') as f:
             f.write(strOutputXml)
