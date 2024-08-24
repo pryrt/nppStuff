@@ -10,6 +10,11 @@ import xml.etree.ElementTree as ET  # https://docs.python.org/3/library/xml.etre
 import os
 import re
 
+# Main TODO List:
+#   x Update stylers/themes -- use ExtraTheme.xml as the testbed
+#   _ Update langs.xml
+#   _ switch from ExtraTheme.xml to _all_ stylers/themes when everything else is working
+
 class CommentedTreeBuilder(ET.TreeBuilder):
     # https://stackoverflow.com/a/34324359/5508606
     def comment(self, data):
@@ -30,24 +35,27 @@ class ConfigUpdater(object):
     def go(self):
         self.get_model_styler()
 
-        #TMP#self.update_stylers(dirNppConfig, 'stylers.xml')
 
-        # loop over all CFG-directory themes and call .update_stylers()
         dirCfgThemes = os.path.join(self.dirNppConfig, 'themes')
-        self.update_stylers(dirCfgThemes, 'ExtraTheme.xml') #TMP#
-        return
+        if True:
+            # debug path -- just do ExtraTheme
+            self.update_stylers(dirCfgThemes, 'ExtraTheme.xml') #TMP#
+        else:
+            # update main stylers.xml
+            self.update_stylers(dirNppConfig, 'stylers.xml')
 
-        if os.path.exists(dirCfgThemes):
-            for f in os.listdir(dirCfgThemes):
-                if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirCfgThemes,f)):
-                    self.update_stylers(dirCfgThemes, f)
+            # then loop over all CFG-directory themes and call .update_stylers()
+            if os.path.exists(dirCfgThemes):
+                for f in os.listdir(dirCfgThemes):
+                    if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirCfgThemes,f)):
+                        self.update_stylers(dirCfgThemes, f)
 
-        # loop over all NPP-directory themes and call .update_stylers() [skip if this is same directory as CFG]
-        dirNppThemes = os.path.join(self.dirNpp, 'themes')
-        if os.path.exists(dirNppThemes) and dirCfgThemes != dirNppThemes:
-            for f in os.listdir(dirNppThemes):
-                if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirNppThemes,f)):
-                    self.update_stylers(dirNppThemes, f)
+            # finally, loop over all NPP-directory themes and call .update_stylers() [skip if this is same directory as CFG]
+            dirNppThemes = os.path.join(self.dirNpp, 'themes')
+            if os.path.exists(dirNppThemes) and dirCfgThemes != dirNppThemes:
+                for f in os.listdir(dirNppThemes):
+                    if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirNppThemes,f)):
+                        self.update_stylers(dirNppThemes, f)
 
         self.update_langs()
 
