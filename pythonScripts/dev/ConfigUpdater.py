@@ -42,7 +42,7 @@ class ConfigUpdater(object):
             self.update_stylers(dirCfgThemes, 'ExtraTheme.xml') #TMP#
         else:
             # update main stylers.xml
-            self.update_stylers(dirNppConfig, 'stylers.xml')
+            self.update_stylers(self.dirNppConfig, 'stylers.xml')
 
             # then loop over all CFG-directory themes and call .update_stylers()
             if os.path.exists(dirCfgThemes):
@@ -57,7 +57,8 @@ class ConfigUpdater(object):
                     if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirNppThemes,f)):
                         self.update_stylers(dirNppThemes, f)
 
-        self.update_langs()
+        fLangs = os.path.join(self.dirNppConfig, 'langs.xml')
+        self.update_langs(fLangs)
 
         return
 
@@ -303,7 +304,14 @@ class ConfigUpdater(object):
         with open(fTheme, 'w') as f:
             f.write(strOutputXml)
 
-    def update_langs(self):
-        pass
+    def update_langs(self, fLangs):
+        console.write("update_langs('{}')\n".format(fLangs))
+
+        # get the tree
+
+        # ...
+
+        # sort the languages: normal, alphabetical, searchResult
+        #   use a variant of the one earlier, except map 'normal' to 0, 'searchResult' to 2, and everything else to 1 so it will be sorted in between
 
 ConfigUpdater().go()
