@@ -4,6 +4,8 @@
 When it updates, Notepad++ tends to avoid updating important things like langs.xml, stylers.xml, and your themes;
 it does this because it doesn't want to overwrite your customizations, but that has the drawback that you end up
 missing new styles, new languages, and updated keyword lists.
+
+Author: PeterJones @ community.notepad-plus-plus.org
 """
 from Npp import editor,notepad,console
 import xml.etree.ElementTree as ET  # https://docs.python.org/3/library/xml.etree.elementtree.html
@@ -13,7 +15,7 @@ import textwrap
 
 # Main TODO List:
 #   x Update stylers/themes -- use ExtraTheme.xml as the testbed
-#   _ Update langs.xml
+#   x Update langs.xml
 #   _ switch from ExtraTheme.xml to _all_ stylers/themes when everything else is working
 
 class CommentedTreeBuilder(ET.TreeBuilder):
@@ -69,12 +71,12 @@ class ConfigUpdater(object):
         elDefaultWidget = self.tree_model.find(".//GlobalStyles/WidgetStyle[@styleID='32']")
         self.model_default_colors['fgColor'] = elDefaultWidget.attrib['fgColor']
         self.model_default_colors['bgColor'] = elDefaultWidget.attrib['bgColor']
-        console.write("get_model_styler({}) => default:{}\n".format(fModel, self.model_default_colors))
+        #console.write("get_model_styler({}) => default:{}\n".format(fModel, self.model_default_colors))
         return
 
     def update_stylers(self, themeDir, themeName):
         fTheme = os.path.join(themeDir, themeName)
-        console.write("update_stylers('{}')\n".format(fTheme))
+        #console.write("update_stylers('{}')\n".format(fTheme))
 
         # preserve comments by using
         #   <https://stackoverflow.com/a/34324359/5508606>
@@ -308,7 +310,7 @@ class ConfigUpdater(object):
     def update_langs(self):
         fLangActive = os.path.join(self.dirNppConfig, 'langs.xml')
         fLangModel = os.path.join(self.dirNpp, 'langs.model.xml')
-        console.write("update_langs('{}', '{}')\n".format(fLangActive, fLangModel))
+        #console.write("update_langs('{}', '{}')\n".format(fLangActive, fLangModel))
 
         # get the trees
         self.tree_langmodel = ET.parse(fLangModel, parser=ET.XMLParser(target=CommentedTreeBuilder()))
@@ -370,7 +372,43 @@ class ConfigUpdater(object):
                     # update the actual list into the sorted text (with no more than ~8000 char per line)
                     elLangKWMatch.text = textwrap.fill(" ".join(kw_list_active), width=8000, break_long_words=False, break_on_hyphens=False, subsequent_indent=" "*16)
 
-            # TODO: also bring in missing comments from before specific keywords
+            # bringing in missing comments from before specific keywords
+
+            # Look for comments in the model for this language
+            kw_comment_map = { 'model': {}, 'active': {} }
+            keep_comment = None
+            for elModelLangKWComment in elModelLang:
+                if "function Comment" in str(elModelLangKWComment):
+                    keep_comment = elModelLangKWComment
+                elif keep_comment is not None:
+                    kw_comment_map['model'][elModelLangKWComment.attrib['name']] = keep_comment
+                    keep_comment = None
+            #console.write("DEBUG: {} MODEL keyword comments = {}\n".format(elModelLang.attrib['name'], kw_comment_map['model']))
+
+            # now look for comments in the active for this language
+            keep_comment = None
+            for elActiveLangKWComment in elLangMatch:
+                if "function Comment" in str(elActiveLangKWComment):
+                    if keep_comment is not None:
+                        raise Exception("NOT IMPLEMENTED: cannot have multiple lines of pre-<Keywords> comments in a row\nInform the author that Notepad++ v{} langs.model.xml requires this feature...".format(".".join(str(x) for x in notepad.getVersion())))
+                    keep_comment = elActiveLangKWComment
+                elif keep_comment is not None:
+                    kw_comment_map['active'][elActiveLangKWComment.attrib['name']] = keep_comment
+                    keep_comment = None
+            #console.write("DEBUG: {} ACTIVE keyword comments = {}\n".format(elModelLang.attrib['name'], kw_comment_map['active']))
+
+            # now determine if active is missing any from model, and add it
+            for key,cmt in kw_comment_map['model'].items():
+                if key not in kw_comment_map['active']:
+                    strSearch = "Keywords[@name='{}']".format(key)
+                    elFoundLanguage = elLangMatch.find(strSearch)
+                    if elFoundLanguage is None: continue    # this should never happen, but fail gracefully if it does
+
+                    idx = list(elLangMatch).index(elFoundLanguage)
+                    elLangMatch.insert(idx, cmt)
+
+                    #console.write("DEBUG: {} didn't have comment before {}, so added <!--{}-->\n".format(elModelLang.attrib['name'], key, cmt.text))
+
 
         # Sort langs with comments
         self.sort_langs_with_comments(elActiveLanguages)
