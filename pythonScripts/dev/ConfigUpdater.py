@@ -9,6 +9,7 @@ from Npp import editor,notepad,console
 import xml.etree.ElementTree as ET  # https://docs.python.org/3/library/xml.etree.elementtree.html
 import os
 import re
+import textwrap
 
 # Main TODO List:
 #   x Update stylers/themes -- use ExtraTheme.xml as the testbed
@@ -35,7 +36,6 @@ class ConfigUpdater(object):
     def go(self):
         self.get_model_styler()
 
-
         dirCfgThemes = os.path.join(self.dirNppConfig, 'themes')
         if True:
             # debug path -- just do ExtraTheme
@@ -58,6 +58,8 @@ class ConfigUpdater(object):
                         self.update_stylers(dirNppThemes, f)
 
         self.update_langs()
+
+        console.write("DONE with ConfigUpdater\n\n")
 
         return
 
@@ -304,24 +306,71 @@ class ConfigUpdater(object):
             f.write(strOutputXml)
 
     def update_langs(self):
-        fLangs = os.path.join(self.dirNppConfig, 'langs.xml')
+        fLangActive = os.path.join(self.dirNppConfig, 'langs.xml')
         fLangModel = os.path.join(self.dirNpp, 'langs.model.xml')
-        console.write("update_langs('{}', '{}')\n".format(fLangs, fLangModel))
+        console.write("update_langs('{}', '{}')\n".format(fLangActive, fLangModel))
 
         # get the trees
         self.tree_langmodel = ET.parse(fLangModel, parser=ET.XMLParser(target=CommentedTreeBuilder()))
-        self.tree_langs = ET.parse(fLangs, parser=ET.XMLParser(target=CommentedTreeBuilder()))
+        self.tree_langs = ET.parse(fLangActive, parser=ET.XMLParser(target=CommentedTreeBuilder()))
 
         # Need to grab the active and model <Languages> nodes
         elActiveLanguages = self.tree_langs.find('Languages')
         elModelLanguages = self.tree_langmodel.find('Languages')
         #console.write("Theme's LexerStyles: {} with {} sub-nodes\n".format(elThemeLexerStyles, len(elThemeLexerStyles)))
 
-        # TODO: Add missing Keywords to existing languages
-        self.add_missing_lang_keywords()
+        # Loop through model languages, inserting missing data:
+        for elModelLang in elModelLanguages.iter("Language"):
+            strToFind = ".//Language[@name='{}']".format(elModelLang.attrib['name'])
+            elLangMatch = elActiveLanguages.find(strToFind)
 
-        # TODO: Add missing Languages
-        self.add_missing_lang()
+            # 1. add any missing languages to Active
+            if elLangMatch is None:
+                elActiveLanguages.append(elModelLang)
+                #console.write("- ADDED {}<{}>\n".format(elModelLang.tag, elModelLang.attrib))
+                continue
+
+            # Loop through keyword elements in the model, inserting missing data
+            for elModelLangKeyword in elModelLang.iter("Keywords"):
+                #console.write("DEBUG: {}'s MODEL {}<{}>\n".format(elModelLang.attrib['name'], elModelLangKeyword.tag, elModelLangKeyword.attrib))
+                strToFind = ".//Keywords[@name='{}']".format(elModelLangKeyword.attrib['name'])
+                elLangKWMatch = elLangMatch.find(strToFind)
+
+                # 2. add any missing Keyword elements to existing Active
+                if elLangKWMatch is None:
+                    elLangMatch.append(elModelLangKeyword)
+                    #console.write("- ADDED {}<{}> to {}<{}>\n".format(elModelLangKeyword.tag, elModelLangKeyword.attrib, elModelLang.tag, elModelLang.attrib['name']))
+                    continue
+
+                # 3. add any missing keywords to existing Active element
+                if elModelLangKeyword.text is not None:
+                    kw_list_model = elModelLangKeyword.text.split()
+                    kw_list_active = elLangKWMatch.text.split() if elLangKWMatch.text else []
+
+                    # if the active list doesn't have any words, add all of the words from the model
+                    if len(kw_list_active)==0:
+                        elLangKWMatch.text = elModelLangKeyword.text
+                        #console.write("- ADDED ({}) to empty {}<{}> list in  {}<{}>\n".format(elLangKWMatch.text, elLangKWMatch.tag, elLangKWMatch.attrib['name'], elModelLang.tag, elModelLang.attrib['name']))
+                        continue
+
+                    # loop through the model words and add any missing ones
+                    was_added = []
+                    for str_kw in kw_list_model:
+                        if str_kw not in kw_list_active:
+                            kw_list_active.append(str_kw)
+                            was_added.append(str_kw)
+
+                    if len(was_added):
+                        #console.write("- ADDED {} to partial {}<{}> list in  {}<{}>\n".format(was_added, elLangKWMatch.tag, elLangKWMatch.attrib['name'], elModelLang.tag, elModelLang.attrib['name']))
+                        pass
+
+                    if len(kw_list_active)>1:
+                        kw_list_active[:] = sorted(kw_list_active)
+
+                    # update the actual list into the sorted text (with no more than ~8000 char per line)
+                    elLangKWMatch.text = textwrap.fill(" ".join(kw_list_active), width=8000, break_long_words=False, break_on_hyphens=False, subsequent_indent=" "*16)
+
+            # TODO: also bring in missing comments from before specific keywords
 
         # Sort langs with comments
         self.sort_langs_with_comments(elActiveLanguages)
@@ -337,8 +386,8 @@ class ConfigUpdater(object):
         strOutputXml = ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=True)
 
         #console.write("{}\n".format(strOutputXml))
-        #with open(fTheme, 'w') as f:
-        #    f.write(strOutputXml)
+        with open(fLangActive, 'w') as f:
+            f.write(strOutputXml)
 
     def sort_langs_with_comments(self, elActiveLanguages):
         # Temporarily store/remove comments
@@ -369,11 +418,5 @@ class ConfigUpdater(object):
             if elFoundLanguage is not None:
                 idx = list(elActiveLanguages).index(elFoundLanguage)
                 elActiveLanguages.insert(idx, cmt['element'])
-
-    def add_missing_lang_keywords(self):
-        console.writeError("add_missing_lang_keywords(): TODO\n")
-
-    def add_missing_lang(self):
-        console.writeError("add_missing_lang(): TODO\n")
 
 ConfigUpdater().go()
