@@ -317,8 +317,30 @@ class ConfigUpdater(object):
         elModelLanguages = self.tree_langmodel.find('Languages')
         #console.write("Theme's LexerStyles: {} with {} sub-nodes\n".format(elThemeLexerStyles, len(elThemeLexerStyles)))
 
-        # ...
+        # TODO: Add missing Keywords to existing languages
+        self.add_missing_lang_keywords()
 
+        # TODO: Add missing Languages
+        self.add_missing_lang()
+
+        # Sort langs with comments
+        self.sort_langs_with_comments(elActiveLanguages)
+
+        # fix the indentation for the whole tree
+        ET.indent(self.tree_langs, space = "    ", level=0)
+
+        # output the final file
+
+        #   use xml_declaration=True in order to get <?xml...?>
+        #   set encoding="unicode" in .tostring() to get printable string,
+        #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
+        strOutputXml = ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=True)
+
+        #console.write("{}\n".format(strOutputXml))
+        #with open(fTheme, 'w') as f:
+        #    f.write(strOutputXml)
+
+    def sort_langs_with_comments(self, elActiveLanguages):
         # Temporarily store/remove comments
         comment_map = {}
         unnamed_comment_key = None
@@ -326,17 +348,15 @@ class ConfigUpdater(object):
             #console.write("ActiveLangauges: child {} => {}\n".format(elThisLanguageRow.tag, elThisLanguageRow.attrib))
             if "function Comment" in str(elThisLanguageRow):
                 unnamed_comment_key = list(elActiveLanguages).index(elThisLanguageRow)
-                console.write("ActiveLanguages: comment '{}' at index {}\n".format(elThisLanguageRow.text, unnamed_comment_key))
+                #console.write("ActiveLanguages: comment '{}' at index {}\n".format(elThisLanguageRow.text, unnamed_comment_key))
                 comment_map[unnamed_comment_key] = { 'element': elThisLanguageRow, 'before': None }
-                #console.write("MODEL <!--{}-->\n".format(elWidgetStyle.text))
-                #elThemeNewGlobals.append(ET.Comment(elWidgetStyle.text))
             elif unnamed_comment_key is not None:
                 comment_map[unnamed_comment_key]['before'] = elThisLanguageRow.attrib['name']
                 unnamed_comment_key = None
-        console.write("Intermediate comment map = {}\n".format(comment_map))
+        #console.write("Intermediate comment map = {}\n".format(comment_map))
         for key,cmt in comment_map.items():
             elActiveLanguages.remove(cmt['element'])
-        console.write("Final comment map = {}\n".format(comment_map))
+        #console.write("Final comment map = {}\n".format(comment_map))
 
         # sort the languages: normal, alphabetical, searchResult
         #   use a variant of the one earlier, except map 'normal' to 0, 'searchResult' to 2, and everything else to 1 so it will be sorted in between
@@ -350,19 +370,10 @@ class ConfigUpdater(object):
                 idx = list(elActiveLanguages).index(elFoundLanguage)
                 elActiveLanguages.insert(idx, cmt['element'])
 
-        # fix the indentation for the whole tree
-        ET.indent(self.tree_langs, space = "    ", level=0)
+    def add_missing_lang_keywords(self):
+        console.writeError("add_missing_lang_keywords(): TODO\n")
 
-        # output the final file
-
-        #   use xml_declaration=True in order to get <?xml...?>
-        #   set encoding="unicode" in .tostring() to get printable string,
-        #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
-        strOutputXml = ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=True)
-
-        console.write("{}\n".format(strOutputXml))
-        #with open(fTheme, 'w') as f:
-        #    f.write(strOutputXml)
-
+    def add_missing_lang(self):
+        console.writeError("add_missing_lang(): TODO\n")
 
 ConfigUpdater().go()
