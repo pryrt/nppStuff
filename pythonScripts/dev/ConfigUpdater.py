@@ -57,8 +57,7 @@ class ConfigUpdater(object):
                     if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirNppThemes,f)):
                         self.update_stylers(dirNppThemes, f)
 
-        fLangs = os.path.join(self.dirNppConfig, 'langs.xml')
-        self.update_langs(fLangs)
+        self.update_langs()
 
         return
 
@@ -304,14 +303,66 @@ class ConfigUpdater(object):
         with open(fTheme, 'w') as f:
             f.write(strOutputXml)
 
-    def update_langs(self, fLangs):
-        console.write("update_langs('{}')\n".format(fLangs))
+    def update_langs(self):
+        fLangs = os.path.join(self.dirNppConfig, 'langs.xml')
+        fLangModel = os.path.join(self.dirNpp, 'langs.model.xml')
+        console.write("update_langs('{}', '{}')\n".format(fLangs, fLangModel))
 
-        # get the tree
+        # get the trees
+        self.tree_langmodel = ET.parse(fLangModel, parser=ET.XMLParser(target=CommentedTreeBuilder()))
+        self.tree_langs = ET.parse(fLangs, parser=ET.XMLParser(target=CommentedTreeBuilder()))
+
+        # Need to grab the active and model <Languages> nodes
+        elActiveLanguages = self.tree_langs.find('Languages')
+        elModelLanguages = self.tree_langmodel.find('Languages')
+        #console.write("Theme's LexerStyles: {} with {} sub-nodes\n".format(elThemeLexerStyles, len(elThemeLexerStyles)))
 
         # ...
 
+        # Temporarily store/remove comments
+        comment_map = {}
+        unnamed_comment_key = None
+        for elThisLanguageRow in elActiveLanguages:
+            #console.write("ActiveLangauges: child {} => {}\n".format(elThisLanguageRow.tag, elThisLanguageRow.attrib))
+            if "function Comment" in str(elThisLanguageRow):
+                unnamed_comment_key = list(elActiveLanguages).index(elThisLanguageRow)
+                console.write("ActiveLanguages: comment '{}' at index {}\n".format(elThisLanguageRow.text, unnamed_comment_key))
+                comment_map[unnamed_comment_key] = { 'element': elThisLanguageRow, 'before': None }
+                #console.write("MODEL <!--{}-->\n".format(elWidgetStyle.text))
+                #elThemeNewGlobals.append(ET.Comment(elWidgetStyle.text))
+            elif unnamed_comment_key is not None:
+                comment_map[unnamed_comment_key]['before'] = elThisLanguageRow.attrib['name']
+                unnamed_comment_key = None
+        console.write("Intermediate comment map = {}\n".format(comment_map))
+        for key,cmt in comment_map.items():
+            elActiveLanguages.remove(cmt['element'])
+        console.write("Final comment map = {}\n".format(comment_map))
+
         # sort the languages: normal, alphabetical, searchResult
         #   use a variant of the one earlier, except map 'normal' to 0, 'searchResult' to 2, and everything else to 1 so it will be sorted in between
+        elActiveLanguages[:] = sorted(elActiveLanguages, reverse=False, key=lambda child: (2 if (child.get('name') == 'searchResult') else 0 if (child.get('name') == 'normal') else 1, child.get('name')))
+
+        # reinsert comments
+        for key,cmt in comment_map.items():
+            strSearch = "Language[@name='{}']".format(cmt['before'])
+            elFoundLanguage = elActiveLanguages.find(strSearch)
+            if elFoundLanguage is not None:
+                idx = list(elActiveLanguages).index(elFoundLanguage)
+                elActiveLanguages.insert(idx, cmt['element'])
+
+        # fix the indentation for the whole tree
+        ET.indent(self.tree_langs, space = "    ", level=0)
+
+        # output the final file
+
+        #   use xml_declaration=True in order to get <?xml...?>
+        #   set encoding="unicode" in .tostring() to get printable string,
+        #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
+        strOutputXml = ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=True)
+
+        console.write("{}\n".format(strOutputXml))
+        #with open(fTheme, 'w') as f:
+        #    f.write(strOutputXml)
+
 
 ConfigUpdater().go()
