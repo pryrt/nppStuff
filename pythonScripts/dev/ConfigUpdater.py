@@ -10,13 +10,16 @@ Author: PeterJones @ community.notepad-plus-plus.org
 INSTRUCTIONS:
 1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
 2. If you are installed in "C:\Program Files\Notepad++", run Notepad++ as Administrator, otherwise run it normally
-3. Run this script from PythonScript 3 (TODO: test with PythonScript 2)
+3. Run this script from PythonScript 3
 """
-from Npp import editor,notepad,console
+from Npp import editor,notepad,console,MESSAGEBOXFLAGS
 import xml.etree.ElementTree as ET  # https://docs.python.org/3/library/xml.etree.elementtree.html
 import os
 import re
 import textwrap
+
+if notepad.getPluginVersion() < '3.0':
+    ET.indent = lambda x, space="", level=0: None   # avoid `AttributeError: 'module' object has no attribute 'indent'` in PS2
 
 class CommentedTreeBuilder(ET.TreeBuilder):
     # https://stackoverflow.com/a/34324359/5508606
@@ -62,6 +65,20 @@ class ConfigUpdater(object):
         self.update_langs()
 
         console.write("DONE with ConfigUpdater\n\n")
+
+        ans = notepad.messageBox(
+            # message
+            """Exit Notepad++ Now?
+            The updated themes and langs files will not take effect until you restart Notepad++.
+            Answer YES to have the script SaveAll and exit for you.
+            Answer NO if you will exit and restart Notepad++ yourself.
+            """,
+            "Exit Notepad++ Now?",  # title
+            MESSAGEBOXFLAGS.YESNO   # options
+        )
+        if ans == MESSAGEBOXFLAGS.RESULTYES:
+            notepad.saveAllFiles()
+            notepad.menuCommand(MENUCOMMAND.FILE_EXIT)
 
         return
 
@@ -144,7 +161,8 @@ class ConfigUpdater(object):
         self.add_missing_globals(treeTheme)
 
         # fix the indentation for the whole tree
-        ET.indent(treeTheme, space = "    ", level=0)
+        if notepad.getPluginVersion() > '2.0':
+            ET.indent(treeTheme, space = "    ", level=0)
 
         # write the tree to an XML file (reinserting the comment if needed)
         self.write_xml_with_optional_comment(treeTheme, fTheme)
@@ -187,7 +205,8 @@ class ConfigUpdater(object):
                 attr['keywordClass'] = elWordsStyle.attrib['keywordClass']
             ET.SubElement(elNewLexer, 'WordsStyle', attrib=attr)
 
-        #ET.indent(elNewLexer, space = "    ", level=2)
+        #if notepad.getPluginVersion() > '2.0':
+        #    ET.indent(elNewLexer, space = "    ", level=2)
 
     def add_missing_globals(self, treeTheme):
         # grab the source and destination GlobalStyles
@@ -296,7 +315,17 @@ class ConfigUpdater(object):
         #   use xml_declaration=True in order to get <?xml...?>
         #   set encoding="unicode" in .tostring() to get printable string,
         #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
-        strOutputXml = ET.tostring(treeTheme.getroot(), encoding="unicode", xml_declaration=True)
+        if notepad.getPluginVersion() < '3.0':
+            # Python 2.7 has different options on the xml.etree.ElementTree module
+            strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(treeTheme.getroot(), encoding="utf-8")
+            # also, the .indent method didn't work, so needs some fixing of indentation
+            import re
+            strOutputXml = re.sub(r'><Widget', r'>\n        <Widget', strOutputXml)
+            strOutputXml = re.sub(r'></',      r'>\n    </',          strOutputXml)
+            strOutputXml = re.sub(r'></',      r'>\n    </',          strOutputXml)
+            strOutputXml = re.sub(r'/><!--',   r'/>\n        <!--',   strOutputXml)
+        else:
+            strOutputXml = ET.tostring(treeTheme.getroot(), encoding="unicode", xml_declaration=True)
 
         if self.has_top_level_comment:
             m = re.search(r'<\?xml.*?\?>\r?\n', strOutputXml, flags=re.DOTALL)
@@ -414,14 +443,18 @@ class ConfigUpdater(object):
         self.sort_langs_with_comments(elActiveLanguages)
 
         # fix the indentation for the whole tree
-        ET.indent(self.tree_langs, space = "    ", level=0)
+        if notepad.getPluginVersion() > '2.0':
+            ET.indent(self.tree_langs, space = "    ", level=0)
 
         # output the final file
 
         #   use xml_declaration=True in order to get <?xml...?>
         #   set encoding="unicode" in .tostring() to get printable string,
         #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
-        strOutputXml = ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=True)
+        if notepad.getPluginVersion() < '3.0':
+            strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="utf-8")
+        else:
+            strOutputXml = ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=True)
 
         #console.write("{}\n".format(strOutputXml))
         with open(fLangActive, 'w') as f:
