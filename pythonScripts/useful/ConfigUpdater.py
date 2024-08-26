@@ -1,18 +1,19 @@
 # encoding=utf-8
-"""Config Files Sometimes Need Updating, Too
-
-When it updates, Notepad++ tends to avoid updating important things like langs.xml, stylers.xml, and your themes;
-it does this because it doesn't want to overwrite your customizations, but that has the drawback that you end up
-missing new styles, new languages, and updated keyword lists.
-
-Author: PeterJones @ community.notepad-plus-plus.org
-Version: 1.0 (2024-Aug-26)
-
-INSTRUCTIONS:
-1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
-2. If you are installed in "C:\Program Files\Notepad++", run Notepad++ as Administrator, otherwise run it normally
-3. Run this script from PythonScript 3
-"""
+#
+##  Config Files Sometimes Need Updating, Too
+##
+##  When it updates, Notepad++ tends to avoid updating important things like langs.xml, stylers.xml, and your themes;
+##  it does this because it doesn't want to overwrite your customizations, but that has the drawback that you end up
+##  missing new styles, new languages, and updated keyword lists.
+##
+##  Author: PeterJones @ community.notepad-plus-plus.org
+##  Version: 1.0 (2024-Aug-26)
+##
+##  INSTRUCTIONS:
+##  1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
+##  2. If you are installed in "C:\Program Files\Notepad++", run Notepad++ as Administrator, otherwise run it normally
+##  3. Run this script from PythonScript 3
+#
 from Npp import editor,notepad,console,MESSAGEBOXFLAGS
 import xml.etree.ElementTree as ET  # https://docs.python.org/3/library/xml.etree.elementtree.html
 import os
@@ -320,7 +321,6 @@ class ConfigUpdater(object):
             # Python 2.7 has different options on the xml.etree.ElementTree module
             strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(treeTheme.getroot(), encoding="utf-8")
             # also, the .indent method didn't work, so needs some fixing of indentation
-            import re
             strOutputXml = re.sub(r'><Widget', r'>\n        <Widget', strOutputXml)
             strOutputXml = re.sub(r'></',      r'>\n    </',          strOutputXml)
             strOutputXml = re.sub(r'></',      r'>\n    </',          strOutputXml)
