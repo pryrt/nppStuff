@@ -16,14 +16,13 @@ In the Forum, we have the ability to talk about problems or new features, and th
 
 ### Search for existing requests
 
-**Before making a new feature request**, please search the existing issues for similar issues by typing the keywords in the **Filters** box, to the right of `is:issue is:open` ; if you find a matching issue, you can click on it, and upvote existing requests and add comments to that discussion, rather than creating duplicates.
+**Before making a new feature request**, please search the existing issues for similar issues by typing the keywords in the **Filters** box, to the right of `is:issue is:open` (also, remove `is:open` from the search bar, because maybe it had been requested and implemented or rejected); if you find a matching issue, you can click on it, and upvote existing requests and add comments to that discussion, rather than creating duplicates.
 
 To upvote. click on the ☺ icon on the right of the issue description (or comment), near the `...` button:
 ![cd4b7e0d-0544-4ab5-8a5f-e27a3d124324-image.png](/assets/uploads/files/1679584770558-cd4b7e0d-0544-4ab5-8a5f-e27a3d124324-image.png) 
 
 _Note_: Some issues have the reaction button in the lower-left corner of the issue description, rather than in the top-right corner.  On those, you can click on the ☺ in that corner, instead, to get the pulldown.  And if there's already a 👍 or other reaction, you can click on that reaction to choose to vote with the same reaction.  
 ![5af2cd42-449a-4929-8bf6-af2fd81202df-image.png](/assets/uploads/files/1679596551328-5af2cd42-449a-4929-8bf6-af2fd81202df-image.png) 
-
 
 ### Create a new request
 
