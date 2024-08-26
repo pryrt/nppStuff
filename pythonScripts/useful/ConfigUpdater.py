@@ -6,6 +6,7 @@ it does this because it doesn't want to overwrite your customizations, but that 
 missing new styles, new languages, and updated keyword lists.
 
 Author: PeterJones @ community.notepad-plus-plus.org
+Version: 1.0 (2024-Aug-26)
 
 INSTRUCTIONS:
 1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
