@@ -12,7 +12,7 @@
 ##  INSTRUCTIONS:
 ##  1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
 ##  2. If you are installed in "C:\Program Files\Notepad++", run Notepad++ as Administrator, otherwise run it normally
-##  3. Run this script from PythonScript 3
+##  3. Run this script from PythonScript
 #
 from Npp import editor,notepad,console,MESSAGEBOXFLAGS
 import xml.etree.ElementTree as ET  # https://docs.python.org/3/library/xml.etree.elementtree.html
