@@ -7,7 +7,7 @@
 ##  missing new styles, new languages, and updated keyword lists.
 ##
 ##  Author: PeterJones @ community.notepad-plus-plus.org
-##  Version: 1.0 (2024-Aug-26)
+##  Version: 1.01 (2024-Aug-27) - bugfix: make the prolog/xml_declaration use double-quotes for attribute values
 ##
 ##  INSTRUCTIONS:
 ##  1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
@@ -317,6 +317,8 @@ class ConfigUpdater(object):
         #   use xml_declaration=True in order to get <?xml...?>
         #   set encoding="unicode" in .tostring() to get printable string,
         #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
+        # 2024-Aug-27: xml_declaration uses single quotes (version='1.0'...), which messes up some tools
+        #  so switching to manually adding the declaration/prolog for both PS2 and PS3
         if notepad.getPluginVersion() < '3.0':
             # Python 2.7 has different options on the xml.etree.ElementTree module
             strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(treeTheme.getroot(), encoding="utf-8")
@@ -326,7 +328,7 @@ class ConfigUpdater(object):
             strOutputXml = re.sub(r'></',      r'>\n    </',          strOutputXml)
             strOutputXml = re.sub(r'/><!--',   r'/>\n        <!--',   strOutputXml)
         else:
-            strOutputXml = ET.tostring(treeTheme.getroot(), encoding="unicode", xml_declaration=True)
+            strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(treeTheme.getroot(), encoding="unicode", xml_declaration=None)
 
         if self.has_top_level_comment:
             m = re.search(r'<\?xml.*?\?>\r?\n', strOutputXml, flags=re.DOTALL)
@@ -452,10 +454,12 @@ class ConfigUpdater(object):
         #   use xml_declaration=True in order to get <?xml...?>
         #   set encoding="unicode" in .tostring() to get printable string,
         #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
+        # 2024-Aug-27: xml_declaration uses single quotes (version='1.0'...), which messes up some tools
+        #  so switching to manually adding the declaration/prolog for both PS2 and PS3
         if notepad.getPluginVersion() < '3.0':
             strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="utf-8")
         else:
-            strOutputXml = ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=True)
+            strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=None)
 
         #console.write("{}\n".format(strOutputXml))
         with open(fLangActive, 'w') as f:
