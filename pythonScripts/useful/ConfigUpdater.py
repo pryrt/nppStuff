@@ -1,19 +1,31 @@
 # encoding=utf-8
 #
-##  Config Files Sometimes Need Updating, Too
-##
-##  When it updates, Notepad++ tends to avoid updating important things like langs.xml, stylers.xml, and your themes;
-##  it does this because it doesn't want to overwrite your customizations, but that has the drawback that you end up
-##  missing new styles, new languages, and updated keyword lists.
-##
-##  Author: PeterJones @ community.notepad-plus-plus.org
-##  Version: 1.01 (2024-Aug-27) - bugfix: make the prolog/xml_declaration use double-quotes for attribute values
-##
-##  INSTRUCTIONS:
-##  1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
-##  2. If you are installed in "C:\Program Files\Notepad++", run Notepad++ as Administrator, otherwise run it normally
-##  3. Run this script from PythonScript
+#  Config Files Sometimes Need Updating, Too
 #
+#  When it updates, Notepad++ tends to avoid updating important things like langs.xml, stylers.xml, and your themes;
+#  it does this because it doesn't want to overwrite your customizations, but that has the drawback that you end up
+#  missing new styles, new languages, and updated keyword lists.
+#
+#  Author: PeterJones @ community.notepad-plus-plus.org
+#  Version: 1.02 (2024-Aug-28)  - FEATURE = add "isIntermediateSorted" mode; enable it by editing the bottom of this script to call ConfigUpdater.go(True) instead of ConfigUpdater.go()
+#                               - BUGFIX = correctly propagate keywordClass from model to stylers & themes
+#                               - BUGFIX = correctly propagate colors to new languages or styles within a language, and more-natural inheritence for default styler from model
+#
+#  INSTRUCTIONS:
+#  1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
+#  2. If you are installed in "C:\Program Files\Notepad++", run Notepad++ as Administrator, otherwise run it normally
+#  3. Run this script from PythonScript
+#
+###############################################################################
+# HISTORY
+#   Version: 1.00 (2024-Aug-26) - Initial Release
+#   Version: 1.01 (2024-Aug-27) - BUGFIX = make the prolog/xml_declaration use double-quotes for attribute values
+#   Version: 1.02 (2024-Aug-28) - FEATURE = add "isIntermediateSorted" mode; enable it by calling ConfigUpdater.go(True) instead of ConfigUpdater.go()
+#                                   => This mode starts by saving a sorted version of the original for stylers.xml and langs.xml, so you can compare old-vs-new, but in proper sorted order
+#                               - BUGFIX = correctly propagate keywordClass from .model. to stylers/themes
+#                               - BUGFIX = correctly propagate colors to new languages or styles within a language, and more-natural inheritence for default styler from model
+###############################################################################
+
 from Npp import editor,notepad,console,MESSAGEBOXFLAGS
 import xml.etree.ElementTree as ET  # https://docs.python.org/3/library/xml.etree.elementtree.html
 import os
@@ -40,7 +52,7 @@ class ConfigUpdater(object):
         self.tree_model             = None
         self.model_default_colors   = { 'fgColor': None, 'bgColor': None }
 
-    def go(self):
+    def go(self, isIntermediateSorted=False):
         self.get_model_styler()
 
         dirCfgThemes = os.path.join(self.dirNppConfig, 'themes')
@@ -49,7 +61,7 @@ class ConfigUpdater(object):
             self.update_stylers(dirCfgThemes, 'ExtraTheme.xml') #TMP#
         else:
             # update main stylers.xml
-            self.update_stylers(self.dirNppConfig, 'stylers.xml')
+            self.update_stylers(self.dirNppConfig, 'stylers.xml', isIntermediateSorted)
 
             # then loop over all CFG-directory themes and call .update_stylers()
             if os.path.exists(dirCfgThemes):
@@ -64,7 +76,7 @@ class ConfigUpdater(object):
                     if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirNppThemes,f)):
                         self.update_stylers(dirNppThemes, f)
 
-        self.update_langs()
+        self.update_langs(isIntermediateSorted)
 
         console.write("DONE with ConfigUpdater\n\n")
 
@@ -93,7 +105,7 @@ class ConfigUpdater(object):
         #console.write("get_model_styler({}) => default:{}\n".format(fModel, self.model_default_colors))
         return
 
-    def update_stylers(self, themeDir, themeName):
+    def update_stylers(self, themeDir, themeName, isIntermediateSorted=False):
         fTheme = os.path.join(themeDir, themeName)
         console.write("update_stylers('{}')\n".format(fTheme))
 
@@ -110,6 +122,14 @@ class ConfigUpdater(object):
                 console.writeError(e)
                 raise e # re-raise original exception
             treeTheme = ET.ElementTree(ET.fromstring(strXML, parser=ET.XMLParser(target=CommentedTreeBuilder())))
+
+        if isIntermediateSorted:
+            elThemeLexerStyles = treeTheme.find('LexerStyles')
+            elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=lambda child: (child.get('name') == 'searchResult', child.get('name')))
+            if notepad.getPluginVersion() > '2.0':
+                ET.indent(treeTheme, space = "    ", level=0)
+            fSorted = os.path.join(themeDir, themeName + ".orig.sorted")
+            self.write_xml_with_optional_comment(treeTheme, fSorted)
 
         #https://github.com/pryrt/nppStuff/blob/cdd094148bd54f4b1c8e24cc328cc0afd558cf26/pythonScripts/nppCommunity/sessionChecker.py#L122
         # ... gives example of iterating through specific elements
@@ -138,6 +158,9 @@ class ConfigUpdater(object):
         elThemeLexerStyles = treeTheme.find('LexerStyles')
         #console.write("Theme's LexerStyles: {} with {} sub-nodes\n".format(elThemeLexerStyles, len(elThemeLexerStyles)))
 
+        # if we're on stylers.xml theme, then keep the colors from the model when adding a new lexer or new style
+        keepModelColors = ('stylers.xml' in themeName)
+
         # iterate through all the treeModel, and see if there are any LexerTypes that cannot also be found in treeTheme
         for elModelLexer in self.tree_model.iter("LexerType"):
             #console.write("LexerType {}\n".format(elModelLexer.attrib))
@@ -145,11 +168,11 @@ class ConfigUpdater(object):
             elStylersMatchLT = treeTheme.find(strToFind)
             if elStylersMatchLT is None:
                 #console.write("NOT FOUND[{}] => {}\n".format(strToFind, elStylersMatchLT))
-                self.add_missing_lexer(elModelLexer, elThemeLexerStyles)
+                self.add_missing_lexer(elModelLexer, elThemeLexerStyles, keepModelColors)
             else:
                 # iterate through each WordsStyle in the elModelLexer and see if it can
                 #   be found in the elStylersMatchLT (similar to GlobalStyles's add_missing_globals(), below)
-                self.add_missing_lexer_styles(elModelLexer, elStylersMatchLT)
+                self.add_missing_lexer_styles(elModelLexer, elStylersMatchLT, keepModelColors)
 
         # sort the lexers by name
         #       cf: https://stackoverflow.com/questions/25338817/sorting-xml-in-python-etree
@@ -189,7 +212,7 @@ class ConfigUpdater(object):
         #else:
         #    console.write("Missing Theme Globals: using {} by default\n".format(self.active_theme_default_colors))
 
-    def add_missing_lexer(self, elModelLexer, elLexerStyles):
+    def add_missing_lexer(self, elModelLexer, elLexerStyles, keepModelColors):
         #console.write("add_missing_lexer({})\n".format(elModelLexer.attrib['name']))
         elNewLexer = ET.SubElement(elLexerStyles, 'LexerType', attrib=elModelLexer.attrib)
         for elWordsStyle in elModelLexer.iter("WordsStyle"):
@@ -197,8 +220,8 @@ class ConfigUpdater(object):
             attr = {
                 'name': elWordsStyle.attrib['name'],
                 'styleID': elWordsStyle.attrib['styleID'],
-                'fgColor': self.model_default_colors['fgColor'],
-                'bgColor': self.model_default_colors['bgColor'],
+                'fgColor': elWordsStyle.attrib['fgColor'] if keepModelColors else self.active_theme_default_colors['fgColor'],
+                'bgColor': elWordsStyle.attrib['bgColor'] if keepModelColors else self.active_theme_default_colors['bgColor'],
                 'fontName': "",
                 'fontStyle': "",
                 'fontSize': "",
@@ -259,7 +282,7 @@ class ConfigUpdater(object):
         # populate the actual with the new
         elThemeGlobalStyles[:] = elThemeNewGlobals[:]
 
-    def add_missing_lexer_styles(self, elModelLexer, elThemeLexerType):
+    def add_missing_lexer_styles(self, elModelLexer, elThemeLexerType, keepModelColors):
         #console.write("add_missing_lexer_styles({})\n".format(elModelLexer.attrib['name']))
 
         # use values from get_theme_globals() in self.active_theme_default_colors[]
@@ -273,20 +296,32 @@ class ConfigUpdater(object):
                 elNewStyle = ET.SubElement(elThemeLexerType, 'WordsStyle', {
                     'name':         elModelStyle.attrib['name'],
                     'styleID':      elModelStyle.attrib['styleID'],
-                    'fgColor':      self.active_theme_default_colors['fgColor'],
-                    'bgColor':      self.active_theme_default_colors['bgColor'],
+                    'fgColor':      elModelStyle.attrib['fgColor'] if keepModelColors else self.active_theme_default_colors['fgColor'],
+                    'bgColor':      elModelStyle.attrib['bgColor'] if keepModelColors else self.active_theme_default_colors['bgColor'],
                     'fontName':     '',
                     'fontStyle':    '0',
                     'fontSize':     '',
                 })
+
+                # 2024-Aug-28 BUGFIX = for new styles, don't forget to propagate keywordClass from .model.
+                if 'keywordClass' in elModelStyle.attrib:
+                    elNewStyle.attrib['keywordClass'] = elModelStyle.attrib['keywordClass']
+                    #console.writeError("- ADDED Style with keywordClass to {}: style {}\n".format(elThemeLexerType.attrib['name'], elNewStyle.attrib))
+
                 #console.writeError("- ADDED to {}: style {}\n".format(elThemeLexerType.attrib['name'], elNewStyle.attrib))
             else:
-                # for names that have changed n the model, update the theme to match the model's name
+                # for names that have changed in the model, update the theme to match the model's name
                 #   (keeps up-to-date with the most recent model)
                 if elFoundThemeStyle.attrib['name'] != elModelStyle.attrib['name']:
                     #console.write("- RENAME {}'s styleID={}: theme's {} to model's {}\n".format(elModelLexer.attrib['name'], elModelStyle.attrib['styleID'], elFoundThemeStyle.attrib['name'], elModelStyle.attrib['name']))
                     elFoundThemeStyle.attrib['name'] = elModelStyle.attrib['name']
                     #console.writeError("- RENAME in {}: style {}\n".format(elThemeLexerType.attrib['name'], elFoundThemeStyle.attrib))
+
+                # 2024-Aug-28 BUGFIX = for existing styles, check .model. to see if they need a keywordClass that they don't have
+                if 'keywordClass' in elModelStyle.attrib:
+                    if 'keywordClass' not in elFoundThemeStyle.attrib:
+                        elFoundThemeStyle.attrib['keywordClass'] = elModelStyle.attrib['keywordClass']
+                        #console.writeError("- ADDED missing keywordClass to {}: style {}\n".format(elThemeLexerType.attrib['name'], elFoundThemeStyle.attrib))
 
         return
 
@@ -323,10 +358,12 @@ class ConfigUpdater(object):
             # Python 2.7 has different options on the xml.etree.ElementTree module
             strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(treeTheme.getroot(), encoding="utf-8")
             # also, the .indent method didn't work, so needs some fixing of indentation
-            strOutputXml = re.sub(r'><Widget', r'>\n        <Widget', strOutputXml)
-            strOutputXml = re.sub(r'></',      r'>\n    </',          strOutputXml)
-            strOutputXml = re.sub(r'></',      r'>\n    </',          strOutputXml)
-            strOutputXml = re.sub(r'/><!--',   r'/>\n        <!--',   strOutputXml)
+            strOutputXml = re.sub(r'>\s*<WordsStyle',   r'>\n            <WordsStyle',  strOutputXml, count=0, flags=re.MULTILINE)
+            strOutputXml = re.sub(r'>\s*<Widget',       r'>\n        <Widget',          strOutputXml, count=0, flags=re.MULTILINE)
+            strOutputXml = re.sub(r'>\s*<LexerType',    r'>\n        <LexerType',       strOutputXml, count=0, flags=re.MULTILINE)
+            strOutputXml = re.sub(r'>\s*</LexerType',   r'>\n        </LexerType',      strOutputXml, count=0, flags=re.MULTILINE)
+            strOutputXml = re.sub(r'></',               r'>\n    </',                   strOutputXml, count=0, flags=re.MULTILINE)
+            strOutputXml = re.sub(r'/><!--',            r'/>\n        <!--',            strOutputXml, count=0, flags=re.MULTILINE)
         else:
             strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(treeTheme.getroot(), encoding="unicode", xml_declaration=None)
 
@@ -339,7 +376,7 @@ class ConfigUpdater(object):
         with open(fTheme, 'w') as f:
             f.write(strOutputXml)
 
-    def update_langs(self):
+    def update_langs(self, isIntermediateSorted=False):
         fLangActive = os.path.join(self.dirNppConfig, 'langs.xml')
         fLangModel = os.path.join(self.dirNpp, 'langs.model.xml')
         console.write("update_langs('{}', '{}')\n".format(fLangActive, fLangModel))
@@ -352,6 +389,18 @@ class ConfigUpdater(object):
         elActiveLanguages = self.tree_langs.find('Languages')
         elModelLanguages = self.tree_langmodel.find('Languages')
         #console.write("Theme's LexerStyles: {} with {} sub-nodes\n".format(elThemeLexerStyles, len(elThemeLexerStyles)))
+
+        if isIntermediateSorted:
+            self.sort_langs_with_comments(elActiveLanguages)
+            if notepad.getPluginVersion() > '2.0':
+                ET.indent(self.tree_langs, space = "    ", level=0)
+            if notepad.getPluginVersion() < '3.0':
+                strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="utf-8")
+            else:
+                strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=None)
+            fLangSorted = os.path.join(self.dirNppConfig, 'langs.xml.orig.sorted')
+            with open(fLangSorted, 'w') as f:
+                f.write(strOutputXml)
 
         # Loop through model languages, inserting missing data:
         for elModelLang in elModelLanguages.iter("Language"):
@@ -496,3 +545,4 @@ class ConfigUpdater(object):
                 elActiveLanguages.insert(idx, cmt['element'])
 
 ConfigUpdater().go()
+#ConfigUpdater().go(True)   # comment out previous line and uncomment this line to create stylers.xml.orig.sorted and langs.xml.orig.sorted to compare the old-but-sorted to the new
