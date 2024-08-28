@@ -7,7 +7,8 @@
 ##  missing new styles, new languages, and updated keyword lists.
 ##
 ##  Author: PeterJones @ community.notepad-plus-plus.org
-##  Version: 1.01 (2024-Aug-27) - bugfix: make the prolog/xml_declaration use double-quotes for attribute values
+##  Version: 1.02 (in progress) - add "isIntermediateSorted" mode; enable it by calling ConfigUpdater.go(True) instead of ConfigUpdater.go()
+##      TODO: BUGFIX = Python / 14.BUILTINS = should inherit keywordClass="instre2" from .model., but isn't
 ##
 ##  INSTRUCTIONS:
 ##  1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
@@ -40,7 +41,7 @@ class ConfigUpdater(object):
         self.tree_model             = None
         self.model_default_colors   = { 'fgColor': None, 'bgColor': None }
 
-    def go(self):
+    def go(self, isIntermediateSorted=False):
         self.get_model_styler()
 
         dirCfgThemes = os.path.join(self.dirNppConfig, 'themes')
@@ -49,7 +50,7 @@ class ConfigUpdater(object):
             self.update_stylers(dirCfgThemes, 'ExtraTheme.xml') #TMP#
         else:
             # update main stylers.xml
-            self.update_stylers(self.dirNppConfig, 'stylers.xml')
+            self.update_stylers(self.dirNppConfig, 'stylers.xml', isIntermediateSorted)
 
             # then loop over all CFG-directory themes and call .update_stylers()
             if os.path.exists(dirCfgThemes):
@@ -64,7 +65,7 @@ class ConfigUpdater(object):
                     if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirNppThemes,f)):
                         self.update_stylers(dirNppThemes, f)
 
-        self.update_langs()
+        self.update_langs(isIntermediateSorted)
 
         console.write("DONE with ConfigUpdater\n\n")
 
@@ -93,7 +94,7 @@ class ConfigUpdater(object):
         #console.write("get_model_styler({}) => default:{}\n".format(fModel, self.model_default_colors))
         return
 
-    def update_stylers(self, themeDir, themeName):
+    def update_stylers(self, themeDir, themeName, isIntermediateSorted=False):
         fTheme = os.path.join(themeDir, themeName)
         console.write("update_stylers('{}')\n".format(fTheme))
 
@@ -110,6 +111,14 @@ class ConfigUpdater(object):
                 console.writeError(e)
                 raise e # re-raise original exception
             treeTheme = ET.ElementTree(ET.fromstring(strXML, parser=ET.XMLParser(target=CommentedTreeBuilder())))
+            
+        if isIntermediateSorted:
+            elThemeLexerStyles = treeTheme.find('LexerStyles')
+            elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=lambda child: (child.get('name') == 'searchResult', child.get('name')))
+            if notepad.getPluginVersion() > '2.0':
+                ET.indent(treeTheme, space = "    ", level=0)
+            fSorted = os.path.join(themeDir, themeName + ".orig.sorted")
+            self.write_xml_with_optional_comment(treeTheme, fSorted)
 
         #https://github.com/pryrt/nppStuff/blob/cdd094148bd54f4b1c8e24cc328cc0afd558cf26/pythonScripts/nppCommunity/sessionChecker.py#L122
         # ... gives example of iterating through specific elements
@@ -339,7 +348,7 @@ class ConfigUpdater(object):
         with open(fTheme, 'w') as f:
             f.write(strOutputXml)
 
-    def update_langs(self):
+    def update_langs(self, isIntermediateSorted=False):
         fLangActive = os.path.join(self.dirNppConfig, 'langs.xml')
         fLangModel = os.path.join(self.dirNpp, 'langs.model.xml')
         console.write("update_langs('{}', '{}')\n".format(fLangActive, fLangModel))
@@ -352,6 +361,18 @@ class ConfigUpdater(object):
         elActiveLanguages = self.tree_langs.find('Languages')
         elModelLanguages = self.tree_langmodel.find('Languages')
         #console.write("Theme's LexerStyles: {} with {} sub-nodes\n".format(elThemeLexerStyles, len(elThemeLexerStyles)))
+        
+        if isIntermediateSorted:
+            self.sort_langs_with_comments(elActiveLanguages)
+            if notepad.getPluginVersion() > '2.0':
+                ET.indent(self.tree_langs, space = "    ", level=0)
+            if notepad.getPluginVersion() < '3.0':
+                strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="utf-8")
+            else:
+                strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=None)
+            fLangSorted = os.path.join(self.dirNppConfig, 'langs.xml.orig.sorted')
+            with open(fLangSorted, 'w') as f:
+                f.write(strOutputXml)
 
         # Loop through model languages, inserting missing data:
         for elModelLang in elModelLanguages.iter("Language"):
@@ -495,4 +516,12 @@ class ConfigUpdater(object):
                 idx = list(elActiveLanguages).index(elFoundLanguage)
                 elActiveLanguages.insert(idx, cmt['element'])
 
-ConfigUpdater().go()
+ConfigUpdater().go(True)
+
+###############################################################################
+# HISTORY
+##  Version: 1.00 (2024-Aug-26) - Initial Release
+##  Version: 1.01 (2024-Aug-27) - bugfix: make the prolog/xml_declaration use double-quotes for attribute values
+##  Version: 1.02 (in progress) - add "isIntermediateSorted" mode; enable it by calling ConfigUpdater.go(True) instead of ConfigUpdater.go()
+##                                  => This mode starts by saving a sorted version of the original for stylers.xml and langs.xml, so you can compare old-vs-new, but in proper sorted order
+###############################################################################
