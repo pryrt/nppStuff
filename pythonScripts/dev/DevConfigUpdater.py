@@ -7,8 +7,8 @@
 #  missing new styles, new languages, and updated keyword lists.
 #
 #  Author: PeterJones @ community.notepad-plus-plus.org
-#  Version: 1.0x (2024-Aug-xx)  - BUGREPORT = commented LexerType crashes
-#                               - BUGREPORT = top-level comment propagates to future theme files!
+#  Version: 1.03 (2024-Aug-29)  - BUGFIX = commented LexerType previously crashed, so change sort key to handle comments correctly
+#                               - BUGFIX = top-level comment previously propagated to future uncommented theme files, so reset the stored-comment variables
 #
 #  INSTRUCTIONS:
 #  1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
@@ -17,12 +17,14 @@
 #
 ###############################################################################
 # HISTORY
-#   Version: 1.00 (2024-Aug-26) - Initial Release
-#   Version: 1.01 (2024-Aug-27) - BUGFIX = make the prolog/xml_declaration use double-quotes for attribute values
-#   Version: 1.02 (2024-Aug-28) - FEATURE = add "isIntermediateSorted" mode; enable it by calling ConfigUpdater.go(True) instead of ConfigUpdater.go()
+#  Version: 1.00 (2024-Aug-26)  - Initial Release
+#  Version: 1.01 (2024-Aug-27)  - BUGFIX = make the prolog/xml_declaration use double-quotes for attribute values
+#  Version: 1.02 (2024-Aug-28)  - FEATURE = add "isIntermediateSorted" mode; enable it by calling ConfigUpdater.go(True) instead of ConfigUpdater.go()
 #                                   => This mode starts by saving a sorted version of the original for stylers.xml and langs.xml, so you can compare old-vs-new, but in proper sorted order
 #                               - BUGFIX = correctly propagate keywordClass from .model. to stylers/themes
 #                               - BUGFIX = correctly propagate colors to new languages or styles within a language, and more-natural inheritence for default styler from model
+#  Version: 1.03 (2024-Aug-29)  - BUGFIX = commented LexerType previously crashed, so change sort key to handle comments correctly
+#                               - BUGFIX = top-level comment previously propagated to future uncommented theme files, so reset the stored-comment variables
 ###############################################################################
 
 from Npp import editor,notepad,console,MESSAGEBOXFLAGS
@@ -108,11 +110,14 @@ class ConfigUpdater(object):
         fTheme = os.path.join(themeDir, themeName)
         console.write("update_stylers('{}')\n".format(fTheme))
 
-        # preserve comments by using
-        #   <https://stackoverflow.com/a/34324359/5508606>
+        # 2024-Aug-29: bugfix: remove comment from previous call of update_stylers(), otherwise no-comment myTheme.xml would inherit comment from commented MossyLawn.xml
+        self.saved_comment = None
+        self.has_top_level_comment = False
 
+
+        # need to preserve comments by using <https://stackoverflow.com/a/34324359/5508606> using CommentedTreeBuilder()
         # but the styler/theme file might have a top-level comment, which xml.etree.ElementTree doesn't like,
-        #   so if there's a top-level comment, grab the string, remove (and save) the comment, and process the edited text instead
+        #     so if there's a top-level comment, grab the string, remove (and save) the comment, and process the edited text instead
         try:
             treeTheme = ET.parse(fTheme, parser=ET.XMLParser(target=CommentedTreeBuilder()))
         except ET.ParseError as e:
