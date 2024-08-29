@@ -7,9 +7,8 @@
 #  missing new styles, new languages, and updated keyword lists.
 #
 #  Author: PeterJones @ community.notepad-plus-plus.org
-#  Version: 1.02 (2024-Aug-28)  - FEATURE = add "isIntermediateSorted" mode; enable it by editing the bottom of this script to call ConfigUpdater.go(True) instead of ConfigUpdater.go()
-#                               - BUGFIX = correctly propagate keywordClass from model to stylers & themes
-#                               - BUGFIX = correctly propagate colors to new languages or styles within a language, and more-natural inheritence for default styler from model
+#  Version: 1.03 (2024-Aug-29)  - BUGFIX = commented LexerType previously crashed, so change sort key to handle comments correctly
+#                               - BUGFIX = top-level comment previously propagated to future uncommented theme files, so reset the stored-comment variables
 #
 #  INSTRUCTIONS:
 #  1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
@@ -18,12 +17,14 @@
 #
 ###############################################################################
 # HISTORY
-#   Version: 1.00 (2024-Aug-26) - Initial Release
-#   Version: 1.01 (2024-Aug-27) - BUGFIX = make the prolog/xml_declaration use double-quotes for attribute values
-#   Version: 1.02 (2024-Aug-28) - FEATURE = add "isIntermediateSorted" mode; enable it by calling ConfigUpdater.go(True) instead of ConfigUpdater.go()
+#  Version: 1.00 (2024-Aug-26)  - Initial Release
+#  Version: 1.01 (2024-Aug-27)  - BUGFIX = make the prolog/xml_declaration use double-quotes for attribute values
+#  Version: 1.02 (2024-Aug-28)  - FEATURE = add "isIntermediateSorted" mode; enable it by calling ConfigUpdater.go(True) instead of ConfigUpdater.go()
 #                                   => This mode starts by saving a sorted version of the original for stylers.xml and langs.xml, so you can compare old-vs-new, but in proper sorted order
 #                               - BUGFIX = correctly propagate keywordClass from .model. to stylers/themes
 #                               - BUGFIX = correctly propagate colors to new languages or styles within a language, and more-natural inheritence for default styler from model
+#  Version: 1.03 (2024-Aug-29)  - BUGFIX = commented LexerType previously crashed, so change sort key to handle comments correctly
+#                               - BUGFIX = top-level comment previously propagated to future uncommented theme files, so reset the stored-comment variables
 ###############################################################################
 
 from Npp import editor,notepad,console,MESSAGEBOXFLAGS
@@ -58,7 +59,7 @@ class ConfigUpdater(object):
         dirCfgThemes = os.path.join(self.dirNppConfig, 'themes')
         if False:
             # debug path -- just do ExtraTheme
-            self.update_stylers(dirCfgThemes, 'ExtraTheme.xml') #TMP#
+            self.update_stylers(dirCfgThemes, 'ExtraTheme.xml')
         else:
             # update main stylers.xml
             self.update_stylers(self.dirNppConfig, 'stylers.xml', isIntermediateSorted)
@@ -109,11 +110,14 @@ class ConfigUpdater(object):
         fTheme = os.path.join(themeDir, themeName)
         console.write("update_stylers('{}')\n".format(fTheme))
 
-        # preserve comments by using
-        #   <https://stackoverflow.com/a/34324359/5508606>
+        # 2024-Aug-29: bugfix: remove comment from previous call of update_stylers(), otherwise no-comment myTheme.xml would inherit comment from commented MossyLawn.xml
+        self.saved_comment = None
+        self.has_top_level_comment = False
 
+
+        # need to preserve comments by using <https://stackoverflow.com/a/34324359/5508606> using CommentedTreeBuilder()
         # but the styler/theme file might have a top-level comment, which xml.etree.ElementTree doesn't like,
-        #   so if there's a top-level comment, grab the string, remove (and save) the comment, and process the edited text instead
+        #     so if there's a top-level comment, grab the string, remove (and save) the comment, and process the edited text instead
         try:
             treeTheme = ET.parse(fTheme, parser=ET.XMLParser(target=CommentedTreeBuilder()))
         except ET.ParseError as e:
@@ -123,9 +127,16 @@ class ConfigUpdater(object):
                 raise e # re-raise original exception
             treeTheme = ET.ElementTree(ET.fromstring(strXML, parser=ET.XMLParser(target=CommentedTreeBuilder())))
 
+        def styler_sort_key(child):
+            # callback used for sorting the lexers by name (both in isIntermediateSorted and after add_missing_lexer/styles)
+            #   use trick <https://stackoverflow.com/a/18411610/5508606> to get 'searchResult' sorted last
+            #   use Eko's suggestion for when there's a comment element in the tree
+            child_name = child.get('name')
+            return (False, '') if child_name is None else (child_name == 'searchResult', child_name)
+
         if isIntermediateSorted:
             elThemeLexerStyles = treeTheme.find('LexerStyles')
-            elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=lambda child: (child.get('name') == 'searchResult', child.get('name')))
+            elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=styler_sort_key)
             if notepad.getPluginVersion() > '2.0':
                 ET.indent(treeTheme, space = "    ", level=0)
             fSorted = os.path.join(themeDir, themeName + ".orig.sorted")
@@ -180,7 +191,7 @@ class ConfigUpdater(object):
         #       ```     parent[:] = sorted(parent, key=lambda child: child.get(attr))
         #       ``` sortchildrenby(root, 'NAME')
         #   use trick <https://stackoverflow.com/a/18411610/5508606> to get 'searchResult' sorted last
-        elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=lambda child: (child.get('name') == 'searchResult', child.get('name')))
+        elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=styler_sort_key)
 
         # look for missing GlobalStyles elements as well
         self.add_missing_globals(treeTheme)
@@ -534,7 +545,14 @@ class ConfigUpdater(object):
 
         # sort the languages: normal, alphabetical, searchResult
         #   use a variant of the one earlier, except map 'normal' to 0, 'searchResult' to 2, and everything else to 1 so it will be sorted in between
-        elActiveLanguages[:] = sorted(elActiveLanguages, reverse=False, key=lambda child: (2 if (child.get('name') == 'searchResult') else 0 if (child.get('name') == 'normal') else 1, child.get('name')))
+        def lang_sort_key(child):
+            child_name = child.get('name')
+            if child_name is None:
+                return (0, '')
+            else:
+                order = 2 if child_name=='searchResult' else 0 if child_name=='normal' else 1
+                return (order, child_name)
+        elActiveLanguages[:] = sorted(elActiveLanguages, reverse=False, key=lang_sort_key)
 
         # reinsert comments
         for key,cmt in comment_map.items():
