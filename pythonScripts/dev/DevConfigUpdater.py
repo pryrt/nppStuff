@@ -55,10 +55,9 @@ class ConfigUpdater(object):
         self.get_model_styler()
 
         dirCfgThemes = os.path.join(self.dirNppConfig, 'themes')
-        if True:
+        if False:
             # debug path -- just do ExtraTheme
             self.update_stylers(dirCfgThemes, 'ExtraTheme.xml')
-            return # TODO: remove this line
         else:
             # update main stylers.xml
             self.update_stylers(self.dirNppConfig, 'stylers.xml', isIntermediateSorted)
@@ -541,7 +540,14 @@ class ConfigUpdater(object):
 
         # sort the languages: normal, alphabetical, searchResult
         #   use a variant of the one earlier, except map 'normal' to 0, 'searchResult' to 2, and everything else to 1 so it will be sorted in between
-        elActiveLanguages[:] = sorted(elActiveLanguages, reverse=False, key=lambda child: (2 if (child.get('name') == 'searchResult') else 0 if (child.get('name') == 'normal') else 1, child.get('name')))
+        def lang_sort_key(child):
+            child_name = child.get('name')
+            if child_name is None:
+                return (0, '')
+            else:
+                order = 2 if child_name=='searchResult' else 0 if child_name=='normal' else 1
+                return (order, child_name)
+        elActiveLanguages[:] = sorted(elActiveLanguages, reverse=False, key=lang_sort_key)
 
         # reinsert comments
         for key,cmt in comment_map.items():
