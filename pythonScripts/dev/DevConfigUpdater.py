@@ -7,9 +7,8 @@
 #  missing new styles, new languages, and updated keyword lists.
 #
 #  Author: PeterJones @ community.notepad-plus-plus.org
-#  Version: 1.02 (2024-Aug-28)  - FEATURE = add "isIntermediateSorted" mode; enable it by editing the bottom of this script to call ConfigUpdater.go(True) instead of ConfigUpdater.go()
-#                               - BUGFIX = correctly propagate keywordClass from model to stylers & themes
-#                               - BUGFIX = correctly propagate colors to new languages or styles within a language, and more-natural inheritence for default styler from model
+#  Version: 1.0x (2024-Aug-xx)  - BUGREPORT = commented LexerType crashes
+#                               - BUGREPORT = top-level comment propagates to future theme files!
 #
 #  INSTRUCTIONS:
 #  1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
@@ -56,9 +55,10 @@ class ConfigUpdater(object):
         self.get_model_styler()
 
         dirCfgThemes = os.path.join(self.dirNppConfig, 'themes')
-        if False:
+        if True:
             # debug path -- just do ExtraTheme
-            self.update_stylers(dirCfgThemes, 'ExtraTheme.xml') #TMP#
+            self.update_stylers(dirCfgThemes, 'ExtraTheme.xml')
+            return # TODO: remove this line
         else:
             # update main stylers.xml
             self.update_stylers(self.dirNppConfig, 'stylers.xml', isIntermediateSorted)
@@ -123,9 +123,16 @@ class ConfigUpdater(object):
                 raise e # re-raise original exception
             treeTheme = ET.ElementTree(ET.fromstring(strXML, parser=ET.XMLParser(target=CommentedTreeBuilder())))
 
+        def styler_sort_key(child):
+            # callback used for sorting the lexers by name (both in isIntermediateSorted and after add_missing_lexer/styles)
+            #   use trick <https://stackoverflow.com/a/18411610/5508606> to get 'searchResult' sorted last
+            #   use Eko's suggestion for when there's a comment element in the tree
+            child_name = child.get('name')
+            return (False, '') if child_name is None else (child_name == 'searchResult', child_name)
+
         if isIntermediateSorted:
             elThemeLexerStyles = treeTheme.find('LexerStyles')
-            elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=lambda child: (child.get('name') == 'searchResult', child.get('name')))
+            elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=styler_sort_key)
             if notepad.getPluginVersion() > '2.0':
                 ET.indent(treeTheme, space = "    ", level=0)
             fSorted = os.path.join(themeDir, themeName + ".orig.sorted")
@@ -180,7 +187,7 @@ class ConfigUpdater(object):
         #       ```     parent[:] = sorted(parent, key=lambda child: child.get(attr))
         #       ``` sortchildrenby(root, 'NAME')
         #   use trick <https://stackoverflow.com/a/18411610/5508606> to get 'searchResult' sorted last
-        elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=lambda child: (child.get('name') == 'searchResult', child.get('name')))
+        elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=styler_sort_key)
 
         # look for missing GlobalStyles elements as well
         self.add_missing_globals(treeTheme)
