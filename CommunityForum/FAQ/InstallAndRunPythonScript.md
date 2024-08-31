@@ -14,25 +14,34 @@ This FAQ is in three sections:
 
 These are the installation instructions.  If you want to know how to _run_ the script, that is described in the **Usage** section, farther down in this FAQ.
 
-0. Install PythonScript plugin, if you don't have it already
-    - **Plugins > Plugins Admin**
-    - checkmark `PythonScript`
-    - click **Install**
-    - _Recommended_: After Notepad++ restarts
-        - go to **Plugins > Python Script > Configuration...**
-        - checkmark **☑ Automatically open console on error** -- this will make sure that if there's a syntax error or runtime error in the script you run later, the console will be shown so that you can see the error
-        - set **Initialisation:** to `ATSTARTUP` so that your startup script will be properly run right when Notepad++ is loaded.  (this is also recommended in the [startup script section (below)](#:~:text=putting%20some%20commands%20in%20your%20%E2%80%9Cstartup%20script%E2%80%9D "startup script")
-1. Create a new script 
+1. Install PythonScript plugin, if you don't have it already
+    - There are two versions of the PythonScript plugin -- you can install either of them (though some scripts might take some tweaking to work in one or the other).
+    - PythonScript 2.0.0: This version of the plugin uses the outdated Python 2.7 at its core, but most of the scripts found in the forum were written for and tested with this version of the plugin.  To install it:
+        - **Plugins > Plugins Admin**
+        - checkmark `PythonScript`
+        - click **Install**
+        - _Recommended_: After Notepad++ restarts
+            - go to **Plugins > Python Script > Configuration...**
+            - checkmark **☑ Automatically open console on error** -- this will make sure that if there's a syntax error or runtime error in the script you run later, the console will be shown so that you can see the error
+            - set **Initialisation:** to `ATSTARTUP` so that your startup script will be properly run right when Notepad++ is loaded.  (this is also recommended in the [startup script section (below)](#:~:text=putting%20some%20commands%20in%20your%20%E2%80%9Cstartup%20script%E2%80%9D "startup script")
+    - PythonScript 3.0.x: This version of the plugin uses a recent Python 3.y version (for example, plugin 3.0.18 uses Python 3.12), which matches modern Python, but some scripts will need to be modified slightly to work with the newer syntax.  To install it:
+        - Close all instances of Notepad++
+        - Go to https://github.com/bruderstein/PythonScript/releases
+        - Go to the newest v3.0.y "pre-release" in the list
+        - Under the "Assets" for that version, pick the "PythonScript_Full" for PluginsAdmin (or whichever variant suits your fancy, really) -- making sure to get the x64 version if you have 64-bit Notepad++
+        - Unzip the contents into the `<npp_install_directory>\Plugins\PythonScript` directory, so the two DLLs are at `<npp_install_directory>\Plugins\PythonScript\*.dll`, and the subdirectories from the zipfile are in subdirectories of that directory
+        - Run Notepad++
+2. Create a new script 
     - **Plugins > Python Script > New script**
     - Give it the name that was suggested in the original post, or something that makes sense to you.  I will call it `ProvidedScript.py` for purposes of this FAQ entry.
     - It should be placed in your "user scripts" directory (_see [Footnote 1](#footnotes:~:text=PythonScript%20directory%20structure%20is%20described%20below. "Footnote #1")_) ... If it doesn't default to that location, then change to the correct location.
     - **Save**
-2. Populate the script
+3. Populate the script
     - Copy the text from the script that was provided to you, verbatim (including spacing/indentation... that is critical): copy/paste is your friend.
         - **_Caveat_**: many scripts posted in the forum end up in a grey or black box; if there is a scroll bar on the right side of that box, please make sure you scroll through and grab the _whole_ script, not just the first "page" worth.
     - Paste in the `ProvidedScript.py` file
     - **Save**
-3. If you want to give it a keyboard shortcut or add it to the editor's right-click context menu:
+4. If you want to give it a keyboard shortcut or add it to the editor's right-click context menu:
     - **Plugins > Python Script > Configuration...**
     - Select **User Scripts**
     - Select `ProvidedScript.py`
