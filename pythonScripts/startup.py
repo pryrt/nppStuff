@@ -58,7 +58,7 @@ zlkbvs = ZoomLevelKeepBothViewsSynched.ZLKBVS()
 # import TabPinManager; tpm = TabPinManager.TPM()
 
 # SubStylesForLexer
-import SubStylesForLexer
+#import SubStylesForLexer
 
 ##
 #import ctypes
