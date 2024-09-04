@@ -343,8 +343,12 @@ class ConfigUpdater(object):
 
 
     def get_text_without_toplevel_comment(self, fTheme):
-        with open(fTheme, mode='r', encoding='utf-8') as f:
-            lines = f.readlines()
+        if is_ps2:
+            with open(fTheme, 'r') as f:
+                lines = f.readlines()
+        else:
+            with open(fTheme, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
         slurp = "".join(lines)
         if lines[1].strip()[0:4] != "<!--":
             return None
@@ -389,8 +393,12 @@ class ConfigUpdater(object):
             strOutputXml = strOutputXml[:e] + self.saved_comment + strOutputXml[e:]
 
         #console.write("{}\n".format(strOutputXml))
-        with open(fTheme, 'w') as f:
-            f.write(strOutputXml)
+        if is_ps2:
+            with open(fTheme, 'w') as f:
+                f.write(strOutputXml)
+        else:
+            with open(fTheme, 'w', encoding='utf-8') as f:
+                f.write(strOutputXml)
 
     def update_langs(self, isIntermediateSorted=False):
         fLangActive = os.path.join(self.dirNppConfig, 'langs.xml')
@@ -414,8 +422,12 @@ class ConfigUpdater(object):
                 ET.indent(self.tree_langs, space = "    ", level=0)
                 strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=None)
             fLangSorted = os.path.join(self.dirNppConfig, 'langs.xml.orig.sorted')
-            with open(fLangSorted, 'w') as f:
-                f.write(strOutputXml)
+            if is_ps2:
+                with open(fLangSorted, 'w') as f:
+                    f.write(strOutputXml)
+            else:
+                with open(fLangSorted, 'w', encoding='utf-8') as f:
+                    f.write(strOutputXml)
 
         # Loop through model languages, inserting missing data:
         for elModelLang in elModelLanguages.iter("Language"):
@@ -526,8 +538,12 @@ class ConfigUpdater(object):
             strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=None)
 
         #console.write("{}\n".format(strOutputXml))
-        with open(fLangActive, 'w') as f:
-            f.write(strOutputXml)
+        if is_ps2:
+            with open(fLangActive, 'w') as f:
+                f.write(strOutputXml)
+        else:
+            with open(fLangActive, 'w', encoding='utf-8') as f:
+                f.write(strOutputXml)
 
     def sort_langs_with_comments(self, elActiveLanguages):
         # Temporarily store/remove comments
