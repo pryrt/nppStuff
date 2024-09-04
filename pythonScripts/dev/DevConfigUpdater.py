@@ -7,8 +7,8 @@
 #  missing new styles, new languages, and updated keyword lists.
 #
 #  Author: PeterJones @ community.notepad-plus-plus.org
-#  Version: 1.03 (2024-Aug-29)  - BUGFIX = commented LexerType previously crashed, so change sort key to handle comments correctly
-#                               - BUGFIX = top-level comment previously propagated to future uncommented theme files, so reset the stored-comment variables
+#  Version: 1.04 (2024-Sep-04)  - IMPROVEMENT = specify encoding for PS3 open() calls
+#                                               (it hadn't caused a problem yet, but probably would in the future)
 #
 #  INSTRUCTIONS:
 #  1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
@@ -25,6 +25,8 @@
 #                               - BUGFIX = correctly propagate colors to new languages or styles within a language, and more-natural inheritence for default styler from model
 #  Version: 1.03 (2024-Aug-29)  - BUGFIX = commented LexerType previously crashed, so change sort key to handle comments correctly
 #                               - BUGFIX = top-level comment previously propagated to future uncommented theme files, so reset the stored-comment variables
+#  Version: 1.04 (2024-Sep-04)  - IMPROVEMENT = specify encoding for PS3 open() calls
+#                                               (it hadn't caused a problem yet, but probably would in the future)
 ###############################################################################
 
 from Npp import editor,notepad,console,MESSAGEBOXFLAGS
@@ -33,7 +35,10 @@ import os
 import re
 import textwrap
 
-if notepad.getPluginVersion() < '3.0':
+is_ps2 = (notepad.getPluginVersion() < '3')
+is_ps3 = not is_ps2
+
+if is_ps2:
     ET.indent = lambda x, space="", level=0: None   # avoid `AttributeError: 'module' object has no attribute 'indent'` in PS2
 
 class CommentedTreeBuilder(ET.TreeBuilder):
@@ -137,7 +142,7 @@ class ConfigUpdater(object):
         if isIntermediateSorted:
             elThemeLexerStyles = treeTheme.find('LexerStyles')
             elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=styler_sort_key)
-            if notepad.getPluginVersion() > '2.0':
+            if is_ps3:
                 ET.indent(treeTheme, space = "    ", level=0)
             fSorted = os.path.join(themeDir, themeName + ".orig.sorted")
             self.write_xml_with_optional_comment(treeTheme, fSorted)
@@ -197,7 +202,7 @@ class ConfigUpdater(object):
         self.add_missing_globals(treeTheme)
 
         # fix the indentation for the whole tree
-        if notepad.getPluginVersion() > '2.0':
+        if is_ps3:
             ET.indent(treeTheme, space = "    ", level=0)
 
         # write the tree to an XML file (reinserting the comment if needed)
@@ -241,7 +246,7 @@ class ConfigUpdater(object):
                 attr['keywordClass'] = elWordsStyle.attrib['keywordClass']
             ET.SubElement(elNewLexer, 'WordsStyle', attrib=attr)
 
-        #if notepad.getPluginVersion() > '2.0':
+        #if is_ps3:
         #    ET.indent(elNewLexer, space = "    ", level=2)
 
     def add_missing_globals(self, treeTheme):
@@ -338,7 +343,7 @@ class ConfigUpdater(object):
 
 
     def get_text_without_toplevel_comment(self, fTheme):
-        with open(fTheme, 'r') as f:
+        with open(fTheme, mode='r', encoding='utf-8') as f:
             lines = f.readlines()
         slurp = "".join(lines)
         if lines[1].strip()[0:4] != "<!--":
@@ -365,7 +370,7 @@ class ConfigUpdater(object):
         #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
         # 2024-Aug-27: xml_declaration uses single quotes (version='1.0'...), which messes up some tools
         #  so switching to manually adding the declaration/prolog for both PS2 and PS3
-        if notepad.getPluginVersion() < '3.0':
+        if is_ps2:
             # Python 2.7 has different options on the xml.etree.ElementTree module
             strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(treeTheme.getroot(), encoding="utf-8")
             # also, the .indent method didn't work, so needs some fixing of indentation
@@ -403,11 +408,10 @@ class ConfigUpdater(object):
 
         if isIntermediateSorted:
             self.sort_langs_with_comments(elActiveLanguages)
-            if notepad.getPluginVersion() > '2.0':
-                ET.indent(self.tree_langs, space = "    ", level=0)
-            if notepad.getPluginVersion() < '3.0':
+            if is_ps2:
                 strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="utf-8")
             else:
+                ET.indent(self.tree_langs, space = "    ", level=0)
                 strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=None)
             fLangSorted = os.path.join(self.dirNppConfig, 'langs.xml.orig.sorted')
             with open(fLangSorted, 'w') as f:
@@ -506,7 +510,7 @@ class ConfigUpdater(object):
         self.sort_langs_with_comments(elActiveLanguages)
 
         # fix the indentation for the whole tree
-        if notepad.getPluginVersion() > '2.0':
+        if is_ps3:
             ET.indent(self.tree_langs, space = "    ", level=0)
 
         # output the final file
@@ -516,7 +520,7 @@ class ConfigUpdater(object):
         #       or encoding="UTF-8" in .tostring() or .write() to get the encoded bytes for writing UTF-8 to a file
         # 2024-Aug-27: xml_declaration uses single quotes (version='1.0'...), which messes up some tools
         #  so switching to manually adding the declaration/prolog for both PS2 and PS3
-        if notepad.getPluginVersion() < '3.0':
+        if is_ps2:
             strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="utf-8")
         else:
             strOutputXml = '<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(self.tree_langs.getroot(), encoding="unicode", xml_declaration=None)
