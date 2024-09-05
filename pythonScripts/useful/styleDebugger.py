@@ -26,7 +26,7 @@ class pyscStyleDebugger(object):
             c = editor.getCharAt(i)
             sout += chr(c)
 
-        skey = ""
+        skey = "\n==========\n\nKEY:\n"
         for s in sorted(s_found):
             skey += "{{{:3}}}: {:<40} | {:<40} | {}\n".format(s, editor.nameOfStyle(s), editor.tagsOfStyle(s), editor.descriptionOfStyle(s))
 
