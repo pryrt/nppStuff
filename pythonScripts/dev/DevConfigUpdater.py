@@ -7,8 +7,10 @@
 #  missing new styles, new languages, and updated keyword lists.
 #
 #  Author: PeterJones @ community.notepad-plus-plus.org
-#  Version: 1.04 (2024-Sep-04)  - IMPROVEMENT = specify encoding for PS3 open() calls
-#                                               (it hadn't caused a problem yet, but probably would in the future)
+#  Version: 1.05 (2024-Sep-05)  - Add URLs for easy upgrade
+#
+#  Source: https://github.com/pryrt/nppStuff/blob/main/pythonScripts/useful/ConfigUpdater.py
+#  Discussion: https://community.notepad-plus-plus.org/topic/26049
 #
 #  INSTRUCTIONS:
 #  1. Install this script per FAQ https://community.notepad-plus-plus.org/topic/23039/faq-how-to-install-and-run-a-script-in-pythonscript
@@ -27,6 +29,7 @@
 #                               - BUGFIX = top-level comment previously propagated to future uncommented theme files, so reset the stored-comment variables
 #  Version: 1.04 (2024-Sep-04)  - IMPROVEMENT = specify encoding for PS3 open() calls
 #                                               (it hadn't caused a problem yet, but probably would in the future)
+#  Version: 1.05 (2024-Sep-05)  - Add URLs for easy upgrade
 ###############################################################################
 
 from Npp import editor,notepad,console,MESSAGEBOXFLAGS
