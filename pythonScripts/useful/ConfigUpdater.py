@@ -30,6 +30,7 @@
 #  Version: 1.04 (2024-Sep-04)  - IMPROVEMENT = specify encoding for PS3 open() calls
 #                                               (it hadn't caused a problem yet, but probably would in the future)
 #  Version: 1.05 (2024-Sep-05)  - Add URLs for easy upgrade
+#  Version: 1.06 (2024-Sep-14)  - IMPROVEMENT = error handling for <installed>\themes\ permissions
 ###############################################################################
 
 from Npp import editor,notepad,console,MESSAGEBOXFLAGS
@@ -80,10 +81,25 @@ class ConfigUpdater(object):
 
             # finally, loop over all NPP-directory themes and call .update_stylers() [skip if this is same directory as CFG]
             dirNppThemes = os.path.join(self.dirNpp, 'themes')
-            if os.path.exists(dirNppThemes) and dirCfgThemes != dirNppThemes:
-                for f in os.listdir(dirNppThemes):
-                    if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirNppThemes,f)):
-                        self.update_stylers(dirNppThemes, f)
+            try:
+                if os.path.exists(dirNppThemes) and dirCfgThemes != dirNppThemes:
+                    for f in os.listdir(dirNppThemes):
+                        if f[-4:]=='.xml' and os.path.isfile(os.path.join(dirNppThemes,f)):
+                            self.update_stylers(dirNppThemes, f)
+            except PermissionError as e:
+                notepad.messageBox(
+                    # message
+                    ("{}\n\nThe OS won't let you write to one or more files in\n    {}\n\n" +
+                    "Either update your permissions and run again; or exit Notepad++, \n" +
+                    "then Right Click and Run As Administrator, then run the script,\n" +
+                    "then restart Notepad++ normally after running as Admin.\n\n" +
+                    "(Any stylers or themes in your config directory will already \n" +
+                    "be updated, and the script will still try to update your\n" +
+                    "langs.xml, so don't worry about those not being done.)"
+                    ).format(str(e), dirNppThemes),
+                    "Permission Error",
+                    MESSAGEBOXFLAGS.OK
+                )
 
         self.update_langs(isIntermediateSorted)
 
