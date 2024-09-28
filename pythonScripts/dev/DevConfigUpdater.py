@@ -31,6 +31,21 @@
 #                                               (it hadn't caused a problem yet, but probably would in the future)
 #  Version: 1.05 (2024-Sep-05)  - Add URLs for easy upgrade
 #  Version: 1.06 (2024-Sep-14)  - IMPROVEMENT = error handling for <installed>\themes\ permissions
+#  Version: 1.07beta (2024-Sep-28)  - [IN PROGRESS] BUGFIX = for stylers.xml, correctly inherit colors on Global Styles from the .model. (similar to what's already done for Lexer styles)
+#                               - IMPROVEMENT = also, when _adding_ a new global style, don't include any attribute that's not in .model. (but when updating an existing style, don't ever delete attributes)
+#                               ** ORIGINAL BUG REPORT:
+#                               **     I ran into a problem(s) with ConfigUpdater as part of my manual 
+#                               **     update process from 8.6.9 to 8.7. Consider “Tab color 1” (thru “5”, but “1” 
+#                               **     is enough to consider for this discussion) introduced in 8.7. As such, it 
+#                               **     was present in 8.7’s stylers.model.xml but not in my stylers.xml. Running 
+#                               **     ConfigUpdater (1.06), it added “Tab color 1” (thru “5”), but it added it 
+#                               **     with bgColor=“FFFFFF” (the model has F3F0CB). Thus, the next restart of N++ 
+#                               **     showed white backgrounds for any colored tabs I had. Moreover, 
+#                               **     ConfigUpdater also added fgColor=“000000”, which causes “Foreground color” 
+#                               **     to be enabled if one later goes to Style Configurator (this is more of a 
+#                               **     minor issue). Another (extremely minor) point is it would be nice if the 
+#                               **     script opens the Python console window before writing to it, just in case 
+#                               **     it isn’t already showing.
 ###############################################################################
 
 from Npp import editor,notepad,console,MESSAGEBOXFLAGS
@@ -41,6 +56,7 @@ import textwrap
 
 is_ps2 = (notepad.getPluginVersion() < '3')
 is_ps3 = not is_ps2
+console.show()
 
 if is_ps2:
     ET.indent = lambda x, space="", level=0: None   # avoid `AttributeError: 'module' object has no attribute 'indent'` in PS2
@@ -69,6 +85,9 @@ class ConfigUpdater(object):
         if False:
             # debug path -- just do ExtraTheme
             self.update_stylers(dirCfgThemes, 'ExtraTheme.xml')
+        elif True:
+            # second debug path -- just update main stylers.xml
+            self.update_stylers(self.dirNppConfig, 'stylers.xml', isIntermediateSorted)
         else:
             # update main stylers.xml
             self.update_stylers(self.dirNppConfig, 'stylers.xml', isIntermediateSorted)
@@ -127,7 +146,7 @@ class ConfigUpdater(object):
         elDefaultWidget = self.tree_model.find(".//GlobalStyles/WidgetStyle[@styleID='32']")
         self.model_default_colors['fgColor'] = elDefaultWidget.attrib['fgColor']
         self.model_default_colors['bgColor'] = elDefaultWidget.attrib['bgColor']
-        #console.write("get_model_styler({}) => default:{}\n".format(fModel, self.model_default_colors))
+        console.write("get_model_styler({}) => default:{}\n".format(fModel, self.model_default_colors))
         return
 
     def update_stylers(self, themeDir, themeName, isIntermediateSorted=False):
@@ -218,7 +237,7 @@ class ConfigUpdater(object):
         elThemeLexerStyles[:] = sorted(elThemeLexerStyles, key=styler_sort_key)
 
         # look for missing GlobalStyles elements as well
-        self.add_missing_globals(treeTheme)
+        self.add_missing_globals(treeTheme, keepModelColors)
 
         # fix the indentation for the whole tree
         if is_ps3:
@@ -243,9 +262,10 @@ class ConfigUpdater(object):
         if elThemeGlobalDefaults is not None:
             self.active_theme_default_colors['fgColor'] = elThemeGlobalDefaults.attrib['fgColor']
             self.active_theme_default_colors['bgColor'] = elThemeGlobalDefaults.attrib['bgColor']
-            #console.write("Found Theme Globals: {}\n".format(self.active_theme_default_colors))
-        #else:
-        #    console.write("Missing Theme Globals: using {} by default\n".format(self.active_theme_default_colors))
+            console.write("Found Theme Globals: {}\n".format(self.active_theme_default_colors))
+        else:
+            console.write("Missing Theme Globals: using {} by default\n".format(self.active_theme_default_colors))
+            pass
 
     def add_missing_lexer(self, elModelLexer, elLexerStyles, keepModelColors):
         #console.write("add_missing_lexer({})\n".format(elModelLexer.attrib['name']))
@@ -268,7 +288,7 @@ class ConfigUpdater(object):
         #if is_ps3:
         #    ET.indent(elNewLexer, space = "    ", level=2)
 
-    def add_missing_globals(self, treeTheme):
+    def add_missing_globals(self, treeTheme, keepModelColors):
         # grab the source and destination GlobalStyles
         elModelGlobalStyles = self.tree_model.find('GlobalStyles')
         elThemeGlobalStyles = treeTheme.find('GlobalStyles')
@@ -276,33 +296,46 @@ class ConfigUpdater(object):
 
         # iterate through the model GlobalStyles elements
         elPreviousThemeWidget = None
-        for elWidgetStyle in elModelGlobalStyles:
-            if "function Comment" in str(elWidgetStyle):
-                #console.write("MODEL <!--{}-->\n".format(elWidgetStyle.text))
-                elThemeNewGlobals.append(ET.Comment(elWidgetStyle.text))
+        for elModelWidgetStyle in elModelGlobalStyles:
+            if "function Comment" in str(elModelWidgetStyle):
+                #console.write("MODEL <!--{}-->\n".format(elModelWidgetStyle.text))
+                elThemeNewGlobals.append(ET.Comment(elModelWidgetStyle.text))
             else:   # normal element
-                #console.write("MODEL: {} => {}\n".format(elWidgetStyle.tag, elWidgetStyle.attrib))
-                strSearch = "WidgetStyle[@name='{}']".format(elWidgetStyle.attrib['name'])
+                console.write("MODEL: {} => {}\n".format(elModelWidgetStyle.tag, elModelWidgetStyle.attrib))
+                strSearch = "WidgetStyle[@name='{}']".format(elModelWidgetStyle.attrib['name'])
                 elFoundThemeWidget = elThemeGlobalStyles.find(strSearch)
                 msg = None
                 if elFoundThemeWidget is None:
                     # need to add the new widget with the correct default colors
-                    elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', {
-                        'name': elWidgetStyle.attrib['name'],
-                        'styleID': elWidgetStyle.attrib['styleID'],
+                    wFG = self.active_theme_default_colors['fgColor']
+                    if 'fgColor' in elModelWidgetStyle.attrib: 
+                        wFG = elModelWidgetStyle.attrib['fgColor']
+                    wBG = self.active_theme_default_colors['bgColor']
+                    if 'bgColor' in elModelWidgetStyle.attrib: 
+                        wBG = elModelWidgetStyle.attrib['bgColor']
+                    tmpDict = {
+                        'name': elModelWidgetStyle.attrib['name'],
+                        'styleID': elModelWidgetStyle.attrib['styleID'],
                         'fgColor': self.active_theme_default_colors['fgColor'],
                         'bgColor': self.active_theme_default_colors['bgColor'],
+                        'fgColor': wFG if keepModelColors else self.active_theme_default_colors['fgColor'],
+                        'bgColor': wBG if keepModelColors else self.active_theme_default_colors['bgColor'],
                         'fontName': '',
                         'fontStyle': '0',
                         'fontSize': '',
-                    })
+                    }
+                    # when ADDING, only inclue attributes found in stylers.model.xml
+                    for k in ('fgColor', 'bgColor', 'fontName', 'fontStyle', 'fontSize'):
+                        if k not in elModelWidgetStyle.attrib: 
+                            del tmpDict[k]
+                    elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', tmpDict)
                     msg = 'ADDED'
                 else:
                     # copy this from the theme to the new
-                    #console.write("Widget attrib = {}\n".format(elFoundThemeWidget.attrib))
+                    console.write("Widget attrib = {}\n".format(elFoundThemeWidget.attrib))
                     elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', {
-                        'name': elWidgetStyle.attrib['name'],
-                        'styleID': elWidgetStyle.attrib['styleID'],
+                        'name': elModelWidgetStyle.attrib['name'],
+                        'styleID': elModelWidgetStyle.attrib['styleID'],
                         'fgColor': elFoundThemeWidget.attrib['fgColor'] if 'fgColor' in elFoundThemeWidget.attrib else self.active_theme_default_colors['fgColor'],
                         'bgColor': elFoundThemeWidget.attrib['bgColor'] if 'bgColor' in elFoundThemeWidget.attrib else self.active_theme_default_colors['bgColor'],
                         'fontName': elFoundThemeWidget.attrib['fontName'] if 'fontName' in elFoundThemeWidget.attrib else '',
@@ -312,7 +345,7 @@ class ConfigUpdater(object):
                     msg = 'FOUND'
 
                 elPreviousThemeWidget = elNewWidget
-                #console.write("{} {}\n".format(msg, elPreviousThemeWidget.attrib))
+                console.write("{} {}\n".format(msg, elPreviousThemeWidget.attrib))
 
         # populate the actual with the new
         elThemeGlobalStyles[:] = elThemeNewGlobals[:]
