@@ -85,9 +85,9 @@ class ConfigUpdater(object):
         if False:
             # debug path -- just do ExtraTheme
             self.update_stylers(dirCfgThemes, 'ExtraTheme.xml')
-        elif True:
-            # second debug path -- just update main stylers.xml
-            self.update_stylers(self.dirNppConfig, 'stylers.xml', isIntermediateSorted)
+        ## elif True:
+        ##     # second debug path -- just update main stylers.xml
+        ##     self.update_stylers(self.dirNppConfig, 'stylers.xml', isIntermediateSorted)
         else:
             # update main stylers.xml
             self.update_stylers(self.dirNppConfig, 'stylers.xml', isIntermediateSorted)
@@ -146,7 +146,7 @@ class ConfigUpdater(object):
         elDefaultWidget = self.tree_model.find(".//GlobalStyles/WidgetStyle[@styleID='32']")
         self.model_default_colors['fgColor'] = elDefaultWidget.attrib['fgColor']
         self.model_default_colors['bgColor'] = elDefaultWidget.attrib['bgColor']
-        console.write("get_model_styler({}) => default:{}\n".format(fModel, self.model_default_colors))
+        #console.write("get_model_styler({}) => default:{}\n".format(fModel, self.model_default_colors))
         return
 
     def update_stylers(self, themeDir, themeName, isIntermediateSorted=False):
@@ -262,9 +262,9 @@ class ConfigUpdater(object):
         if elThemeGlobalDefaults is not None:
             self.active_theme_default_colors['fgColor'] = elThemeGlobalDefaults.attrib['fgColor']
             self.active_theme_default_colors['bgColor'] = elThemeGlobalDefaults.attrib['bgColor']
-            console.write("Found Theme Globals: {}\n".format(self.active_theme_default_colors))
+            #console.write("Found Theme Globals: {}\n".format(self.active_theme_default_colors))
         else:
-            console.write("Missing Theme Globals: using {} by default\n".format(self.active_theme_default_colors))
+            #console.write("Missing Theme Globals: using {} by default\n".format(self.active_theme_default_colors))
             pass
 
     def add_missing_lexer(self, elModelLexer, elLexerStyles, keepModelColors):
@@ -301,7 +301,7 @@ class ConfigUpdater(object):
                 #console.write("MODEL <!--{}-->\n".format(elModelWidgetStyle.text))
                 elThemeNewGlobals.append(ET.Comment(elModelWidgetStyle.text))
             else:   # normal element
-                console.write("MODEL: {} => {}\n".format(elModelWidgetStyle.tag, elModelWidgetStyle.attrib))
+                #console.write("MODEL: {} => {}\n".format(elModelWidgetStyle.tag, elModelWidgetStyle.attrib))
                 strSearch = "WidgetStyle[@name='{}']".format(elModelWidgetStyle.attrib['name'])
                 elFoundThemeWidget = elThemeGlobalStyles.find(strSearch)
                 msg = None
@@ -332,7 +332,7 @@ class ConfigUpdater(object):
                     msg = 'ADDED'
                 else:
                     # copy this from the theme to the new
-                    console.write("Widget attrib = {}\n".format(elFoundThemeWidget.attrib))
+                    #console.write("Widget attrib = {}\n".format(elFoundThemeWidget.attrib))
                     elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', {
                         'name': elModelWidgetStyle.attrib['name'],
                         'styleID': elModelWidgetStyle.attrib['styleID'],
@@ -345,7 +345,7 @@ class ConfigUpdater(object):
                     msg = 'FOUND'
 
                 elPreviousThemeWidget = elNewWidget
-                console.write("{} {}\n".format(msg, elPreviousThemeWidget.attrib))
+                #console.write("{} {}\n".format(msg, elPreviousThemeWidget.attrib))
 
         # populate the actual with the new
         elThemeGlobalStyles[:] = elThemeNewGlobals[:]
