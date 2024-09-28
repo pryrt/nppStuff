@@ -7,7 +7,7 @@
 #  missing new styles, new languages, and updated keyword lists.
 #
 #  Author: PeterJones @ community.notepad-plus-plus.org
-#  Version: 1.05 (2024-Sep-05)  - Add URLs for easy upgrade
+#  Version: See HISTORY, below
 #
 #  Source: https://github.com/pryrt/nppStuff/blob/main/pythonScripts/useful/ConfigUpdater.py
 #  Discussion: https://community.notepad-plus-plus.org/topic/26049
