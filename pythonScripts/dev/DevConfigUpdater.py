@@ -31,21 +31,8 @@
 #                                               (it hadn't caused a problem yet, but probably would in the future)
 #  Version: 1.05 (2024-Sep-05)  - Add URLs for easy upgrade
 #  Version: 1.06 (2024-Sep-14)  - IMPROVEMENT = error handling for <installed>\themes\ permissions
-#  Version: 1.07beta (2024-Sep-28)  - [IN PROGRESS] BUGFIX = for stylers.xml, correctly inherit colors on Global Styles from the .model. (similar to what's already done for Lexer styles)
-#                               - IMPROVEMENT = also, when _adding_ a new global style, don't include any attribute that's not in .model. (but when updating an existing style, don't ever delete attributes)
-#                               ** ORIGINAL BUG REPORT:
-#                               **     I ran into a problem(s) with ConfigUpdater as part of my manual 
-#                               **     update process from 8.6.9 to 8.7. Consider “Tab color 1” (thru “5”, but “1” 
-#                               **     is enough to consider for this discussion) introduced in 8.7. As such, it 
-#                               **     was present in 8.7’s stylers.model.xml but not in my stylers.xml. Running 
-#                               **     ConfigUpdater (1.06), it added “Tab color 1” (thru “5”), but it added it 
-#                               **     with bgColor=“FFFFFF” (the model has F3F0CB). Thus, the next restart of N++ 
-#                               **     showed white backgrounds for any colored tabs I had. Moreover, 
-#                               **     ConfigUpdater also added fgColor=“000000”, which causes “Foreground color” 
-#                               **     to be enabled if one later goes to Style Configurator (this is more of a 
-#                               **     minor issue). Another (extremely minor) point is it would be nice if the 
-#                               **     script opens the Python console window before writing to it, just in case 
-#                               **     it isn’t already showing.
+#  Version: 1.07beta2 (2024-Sep-29)  - [IN PROGRESS] BUGFIX = for stylers.xml, correctly inherit colors on Global Styles from the .model. (similar to what's already done for Lexer styles)
+#                               - IMPROVEMENT = also, when adding or updating a global style, don't include any attribute that's not in .model. ; this will also delete invalid attributes added by previous versions of the script
 ###############################################################################
 
 from Npp import editor,notepad,console,MESSAGEBOXFLAGS
@@ -324,16 +311,11 @@ class ConfigUpdater(object):
                         'fontStyle': '0',
                         'fontSize': '',
                     }
-                    # when ADDING, only inclue attributes found in stylers.model.xml
-                    for k in ('fgColor', 'bgColor', 'fontName', 'fontStyle', 'fontSize'):
-                        if k not in elModelWidgetStyle.attrib: 
-                            del tmpDict[k]
-                    elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', tmpDict)
                     msg = 'ADDED'
                 else:
                     # copy this from the theme to the new
                     #console.write("Widget attrib = {}\n".format(elFoundThemeWidget.attrib))
-                    elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', {
+                    tmpDict = {
                         'name': elModelWidgetStyle.attrib['name'],
                         'styleID': elModelWidgetStyle.attrib['styleID'],
                         'fgColor': elFoundThemeWidget.attrib['fgColor'] if 'fgColor' in elFoundThemeWidget.attrib else self.active_theme_default_colors['fgColor'],
@@ -341,8 +323,14 @@ class ConfigUpdater(object):
                         'fontName': elFoundThemeWidget.attrib['fontName'] if 'fontName' in elFoundThemeWidget.attrib else '',
                         'fontStyle': elFoundThemeWidget.attrib['fontStyle'] if 'fontStyle' in elFoundThemeWidget.attrib else '0',
                         'fontSize': elFoundThemeWidget.attrib['fontSize'] if 'fontSize' in elFoundThemeWidget.attrib else '',
-                    })
+                    }
                     msg = 'FOUND'
+
+                # only inclue attributes found in stylers.model.xml
+                for k in ('fgColor', 'bgColor', 'fontName', 'fontStyle', 'fontSize'):
+                    if k not in elModelWidgetStyle.attrib: 
+                        del tmpDict[k]
+                elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', tmpDict)
 
                 elPreviousThemeWidget = elNewWidget
                 #console.write("{} {}\n".format(msg, elPreviousThemeWidget.attrib))
