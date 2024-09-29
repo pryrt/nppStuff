@@ -19,20 +19,20 @@
 #
 ###############################################################################
 # HISTORY
-#  Version: 1.00 (2024-Aug-26)  - Initial Release
-#  Version: 1.01 (2024-Aug-27)  - BUGFIX = make the prolog/xml_declaration use double-quotes for attribute values
+#  Version: 1.07 (2024-Sep-29)  - BUGFIX = for stylers.xml, correctly inherit colors on Global Styles from the .model. (similar to what's already done for Lexer styles)
+#                               - IMPROVEMENT = also, when adding or updating a global style, don't include any attribute that's not in .model. ; this will also delete invalid attributes added by previous versions of the script
+#  Version: 1.06 (2024-Sep-14)  - IMPROVEMENT = error handling for <installed>\themes\ permissions
+#  Version: 1.05 (2024-Sep-05)  - Add URLs for easy upgrade
+#  Version: 1.04 (2024-Sep-04)  - IMPROVEMENT = specify encoding for PS3 open() calls
+#                                               (it hadn't caused a problem yet, but probably would in the future)
+#  Version: 1.03 (2024-Aug-29)  - BUGFIX = commented LexerType previously crashed, so change sort key to handle comments correctly
+#                               - BUGFIX = top-level comment previously propagated to future uncommented theme files, so reset the stored-comment variables
 #  Version: 1.02 (2024-Aug-28)  - FEATURE = add "isIntermediateSorted" mode; enable it by calling ConfigUpdater.go(True) instead of ConfigUpdater.go()
 #                                   => This mode starts by saving a sorted version of the original for stylers.xml and langs.xml, so you can compare old-vs-new, but in proper sorted order
 #                               - BUGFIX = correctly propagate keywordClass from .model. to stylers/themes
 #                               - BUGFIX = correctly propagate colors to new languages or styles within a language, and more-natural inheritence for default styler from model
-#  Version: 1.03 (2024-Aug-29)  - BUGFIX = commented LexerType previously crashed, so change sort key to handle comments correctly
-#                               - BUGFIX = top-level comment previously propagated to future uncommented theme files, so reset the stored-comment variables
-#  Version: 1.04 (2024-Sep-04)  - IMPROVEMENT = specify encoding for PS3 open() calls
-#                                               (it hadn't caused a problem yet, but probably would in the future)
-#  Version: 1.05 (2024-Sep-05)  - Add URLs for easy upgrade
-#  Version: 1.06 (2024-Sep-14)  - IMPROVEMENT = error handling for <installed>\themes\ permissions
-#  Version: 1.07beta2 (2024-Sep-29)  - [IN PROGRESS] BUGFIX = for stylers.xml, correctly inherit colors on Global Styles from the .model. (similar to what's already done for Lexer styles)
-#                               - IMPROVEMENT = also, when adding or updating a global style, don't include any attribute that's not in .model. ; this will also delete invalid attributes added by previous versions of the script
+#  Version: 1.01 (2024-Aug-27)  - BUGFIX = make the prolog/xml_declaration use double-quotes for attribute values
+#  Version: 1.00 (2024-Aug-26)  - Initial Release
 ###############################################################################
 
 from Npp import editor,notepad,console,MESSAGEBOXFLAGS
