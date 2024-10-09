@@ -76,7 +76,7 @@ The Search Results panel has continued to disappear for many usesrs, even after 
 4. Save `config.xml` without that section, and exit the other editor.
 5. Run one instance of Notepad++
 6. When you do a **Find All** or **Find in Files** or similar, the Search Results panel should re-appear at its default size and location
-7. Report the following details in the [Ctrl+Shift+F not working...](/topic/26164) topic, letting us know you followed steps1-6 in the FAQ:
+7. Report the following details in the [v8.7 Search Results Missing](/topic/26164) topic, letting us know you followed steps1-6 in the FAQ:
    - how many monitors are you using?
    - are any of the monitors "high DPI" monitors (usually for resolutions that are bigger than 1920x1080)
    - does the Search Results panel disappear on your next run after following steps 1-6 and then exiting Notepad++ and re-running?
@@ -90,3 +90,5 @@ The Search Results panel has continued to disappear for many usesrs, even after 
 - User Manual: [Editing Configuration Files](https://npp-user-manual.org/docs/config-files/#editing-configuration-files)
 - [historic discussion](/topic/23344/not-able-to-see-the-search-results-windows-in-notepad)
 - **CLOSED AS FIXED** [feature request](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/13084) - v8.6.9 has fixed the zero-width docked-panels issue by not allowing panels to be that narrow, so they will always be visible.
+    - but see the "v8.7 Search Results" section, above
+  
