@@ -65,7 +65,26 @@ For those who are not able to position their mouse pointer along the appropriate
 
 If this doesn't work for you, you can reply in your original discussion (or create a new [Help Wanted](/category/4/help-wanted) post) and explain that you read this FAQ, and followed all the advice (including checking for tiny docked windows, tried to use the keyboard to move it in case it was off-screen, and tried to manually edit `config.xml`, all to no avail); when you make this reply or new post, please include a copy of the `<GUIConfig name="DockingManager"` through `</GUIConfig>` from your `config.xml`, along with the **?**-menu's **Debug Info**, and a screenshot of your **Find** dialog.  Without this information, you will just be asked to read this FAQ.
 
-Reference:
+## v8.7 Search Results
+
+The Search Results panel has continued to disappear for many usesrs, even after the v8.6.9 code fix, which was supposed to make it not shrink too far.  We have gotten lots of reports of problems in v8.7.  If you have upgraded to v8.7 (or newer) and Search Results panel isn't showing up for you:
+
+1. Close all copies of Notepad++
+2. Use Windows' `notepad.exe` or other editor to edit `%AppData%\Notepad++\config.xml` (unfortunately, Notepad++ cannot edit its own `config.xml`, because the file will be overwritten when Notepad++ closes)
+3. Cut out the `<GUIConfig name=“DockingManager” …>…</GUIConfig>`
+    - paste this into some other temporary location
+4. Save `config.xml` without that section, and exit the other editor.
+5. Run one instance of Notepad++
+6. When you do a **Find All** or **Find in Files** or similar, the Search Results panel should re-appear at its default size and location
+7. Report the following details in the [Ctrl+Shift+F not working...](/topic/26164) topic, letting us know you followed steps1-6 in the FAQ:
+   - how many monitors are you using?
+   - are any of the monitors "high DPI" monitors (usually for resolutions that are bigger than 1920x1080)
+   - does the Search Results panel disappear on your next run after following steps 1-6 and then exiting Notepad++ and re-running?
+   - does the Search Results panel disappear if you move your Search Results panel from the default bottom-edge panel to the top-edge panel?
+   - use the forum's `</>` button and paste the full `<GUIConfig name=“DockingManager” …>…</GUIConfig>` from step 3 between the ` ``` ` lines that the `</>`-button creates
+     ![](/assets/uploads/files/1698413012959-a7a932b5-4ba9-4be6-a070-7a10f3abd77e-image.png)
+
+## References
 - Notepad++ Online User Manual: [Search Results Window](https://npp-user-manual.org/docs/searching/#search-results-window)
 - User Manual: [Configuration File Location](https://npp-user-manual.org/docs/config-files/#configuration-files-location)
 - User Manual: [Editing Configuration Files](https://npp-user-manual.org/docs/config-files/#editing-configuration-files)
