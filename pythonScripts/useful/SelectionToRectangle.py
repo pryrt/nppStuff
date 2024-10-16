@@ -29,7 +29,7 @@ if editor.getSelectionMode()==SELECTIONMODE.STREAM and editor.getSelections()>1:
 
     editor.setSelection(ss,se)
 
-if editor.getSelectionMode()<>SELECTIONMODE.RECTANGLE:
+if editor.getSelectionMode()!=SELECTIONMODE.RECTANGLE:
     editor.setSelectionMode( SELECTIONMODE.RECTANGLE )
     notepad.activateFile(notepad.getCurrentFilename()) # use the activateFile() command to refresh UI; otherwise, it doesn't _look_ like column/rectangle select)
 
