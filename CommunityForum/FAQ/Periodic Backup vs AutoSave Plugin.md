@@ -48,9 +48,73 @@ This backup will go either in the same folder or hierarchy as the original, or i
 
 Notepad++ v8.1.9.1 - v8.3 installed standard with `Simple` backup-on-save enabled for new installations.  This annoyed some users, so v8.3.1 and newer went back to defaulting without any backup-on-save active.
 
-### AutoSave Plugin
+#### AutoSave Plugin v2.00
 
-When you first installed the AutoSave Plugin, using Notepad++'s **Plugins > Plugins Admin** tool, the default configuration is to not have AutoSave providing any automatic saving, so it is doing nothing and you are still relying on Notepad++'s periodic backup (if enabled).
+When you first install AutoSave Plugin from **Plugins > Plugins Admin** (or through a manual download and install), the options will not necessarily automatically save files as expected.  You **must** set the preferences to match your needs, otherwise the plugin is doing nothing for you.
+
+The following preferences are available in AutoSave Plugin v2.00:
+
+![dfd25063-1e19-4f2e-8bd0-28f7fef76f68-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1688130926697-dfd25063-1e19-4f2e-8bd0-28f7fef76f68-image.png)
+
+**Auto Save When:**
+
+_These describe how often the plugin will trigger a save in Notepad++ files.  You can have more than one selected, and any of the selected events will trigger the Auto Save._
+
+- `☐ Notepad++ loses focus`: If this option is checkmarked on ☑, then every time you move from Notepad++ to another window (a Windows explorer, or your browser window, or any other application, or even change focus to the Desktop or clicking on the Windows Start Menu), AutoSave plugin will trigger a save event.
+
+`☐ At timed intervals every _N_ minutes`: If this option is checkmarked on ☑, then every N minutes, AutoSave plugin will trigger save event, even if you have never clicked outside of Notepad++.
+
+- `☐ File tab changes`: If this option is checkmarked on ☑, it saves every time you activate a different tab in Notepad++.
+
+- `☐ Notepad++ exits`: If this option is checkmarked on ☑, it saves when you exit Notepad++.
+
+**Auto Save What:**
+
+_These choose which files will be automatically saved.  Only one of those two options can be active ⦿ at one time._
+
+`○ Current file only`: If this option is active ⦿, only the "current" file in Notepad++ (the active tab) will have AutoSave events.  If you have multiple files open, the other tabs will _not_ be AutoSaved.
+
+`○ All Open Files`: If this option is active ⦿, all files currently opened in Notepad++ will be protected by AutoSave.
+
+**Changes compared to AutoSave v1.61**
+
+It removed options for the "autorecover" style of backup -- so now it will always overwrite the existing file, rather than creating a recovery file alongside the original.  
+- _Alternative: If you need that feature, you can use Notepad++'s built-in Backup on Save, described above._
+
+And v2.00 also removed the handling of the **Unnamed/new Files**, forcing you to rely on Notepad++'s native handling of unnamed files (and thus strengthening the argument behind the admonishment to always manually save your unnamed files to a known location as soon as you can, since AutoSave isn't helping you with that anymore).  
+- _Alternative: If you need Notepad++ to make temporary copies of unnamed/new files, you need to enable Notepad++'s "session snapshot and periodic backup" feature, described above._
+
+Also, if you upgraded from v1.61 or earlier to v2.00, you will need to check your settings, to make sure it's still set up in a way that functions with your workflow.
+
+If you still want to use the older v1.61 AutoSave plugin, see the reply (below) for the details of those settings.
+
+### In Summary
+
+Notepad++'s built-in periodic backup function will save a copy of files that you have edited but not saved, but things outside of Notepad++'s control will occasionally go wrong.   The AutoSave Plugin can provide additional safety in automatic file saving, but in order for it to do anything, you have to install it then set its options to something other than the default state.
+
+It is highly recommend that you spend some time experimenting with how exactly Notepad++'s periodic backup works, and how the AutoSave plugin works, so that you can be sure that you know how they work, and that they're set up in a way that will actually _help_ you.  And please understand that no automatic-save-of-unnamed files is 100% effective, and that you are responsible for saving your files to a known location and making sure you have good working copies and good backups of any critical or mildly important data.
+
+-----
+
+### Links
+
+* [Notepad++](https://notepad-plus-plus.org/) by Don Ho
+* [Notepad++ Community Forum](https://community.notepad-plus-plus.org/) by the Notepad++ Community
+* [Notepad++ Online User Manual](https://npp-user-manual.org/) => with a section on [backup preferences](https://npp-user-manual.org/docs/preferences/#backup)
+* [AutoSave Plugin](https://github.com/francostellari/NppPlugins) by Franco Stellari => maintained separately from Notepad++
+* [Recuva](https://www.google.com/search?q=recuva) => completely unaffiliated with Notepad++ or the Notepad++ Community Forum; listed as an example of [file recovery software for Windows](https://www.google.com/search?q=file+recovery+software+windows) with no guarantee or warranty, explicit or implied, by its listing in this FAQ
+
+----- 
+
+SECOND POST 
+
+-----
+
+### AutoSave Plugin v1.61 (For Historical Reference)
+
+AutoSave Plugin v1.61 has been replaced by v2.00 since September 2022.  It is not listed in Plugins Admin.  However, you might still be able to go to the repo and download the older version, and manually install it.  Unless you desperately need the "Unnamed/new Files" features, it is highly recommended that you use v2.00 or newer, obtained from Plugins Admin.
+
+When you first installed the AutoSave Plugin v1.61 manually (or years ago), the default configuration is to not have AutoSave providing any automatic saving, so it is doing nothing and you are still relying on Notepad++'s periodic backup (if enabled).
 
 You will have to configure this plugin if it is going to do any automatic saving for you.  You do this by going to the **Plugins** menu, selecting **Auto Save**, and picking **Options**.  The following screenshot shows Auto Save v1.61's default Options dialog:
 
@@ -97,41 +161,3 @@ Only one of those two options can be active ⦿.
 
 `○ Save autorecover here`: If this option is active ⦿, you need to choose a directory when you enable this option; the default `$CDIR$\autorecover` doesn't seem to carry any meaning; choose a real directory.  When AutoSave is triggered, the plugin will create a file called `new #` (matching Notepad++'s naming scheme) in that folder; however, it still keeps the file that's shown in Notepad++ as a new/unsaved/unnamed file, so Notead++ and AutoSave Plugin both treat the file as "unsaved" and "unnamed".  This configuration doesn't reset Notepad++'s `new #` numbering, so new files created won't generally collide with the existing autorecover files.  When you close a `new #` tab without saving, the AutoSave plugin's autorecover file will still exist; however, the next time you create a new tab, if Notepad++ re-uses that number, then the new autorecover file will overwrite the old autorecover file of the same name.
 
-
-### In Summary
-
-Notepad++'s built-in periodic backup function will save a copy of files that you have edited but not saved, but things outside of Notepad++'s control will occasionally go wrong.   The AutoSave Plugin can provide additional safety in automatic file saving, but in order for it to do anything, you have to install it then set its options to something other than the default state.
-
-It is highly recommend that you spend some time experimenting with how exactly Notepad++'s periodic backup works, and how the AutoSave plugin works, so that you can be sure that you know how they work, and that they're set up in a way that will actually _help_ you.  And please understand that no automatic-save-of-unnamed files is 100% effective, and that you are responsible for saving your files to a known location and making sure you have good working copies and good backups of any critical or mildly important data.
-
------
-
-### Links
-
-* [Notepad++](https://notepad-plus-plus.org/) by Don Ho
-* [Notepad++ Community Forum](https://community.notepad-plus-plus.org/) by the Notepad++ Community
-* [Notepad++ Online User Manual](https://npp-user-manual.org/) => with a section on [backup preferences](https://npp-user-manual.org/docs/preferences/#backup)
-* [AutoSave Plugin](https://github.com/francostellari/NppPlugins) by Franco Stellari => maintained separately from Notepad++
-* [Recuva](https://www.google.com/search?q=recuva) => completely unaffiliated with Notepad++ or the Notepad++ Community Forum; listed as an example of [file recovery software for Windows](https://www.google.com/search?q=file+recovery+software+windows) with no guarantee or warranty, explicit or implied, by its listing in this FAQ
-
------ 
-
-SECOND POST 
-
------
-
-#### AutoSave v2.00 (September 2022)
-
-The v2.00 options were greatly simplified:
-
-![dfd25063-1e19-4f2e-8bd0-28f7fef76f68-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1688130926697-dfd25063-1e19-4f2e-8bd0-28f7fef76f68-image.png)
-
-It added options to the **Auto Save when** list:
-
-- `☐ File tab changes`: If this option is checkmarked on ☑, it saves every time you activate a different tab in Notepad++.
-
-- `☐ Notepad++ exits`: If this option is checkmarked on ☑, it saves when you exit Notepad++.
-
-It removed options for the "autorecover" style of backup -- so now it will always overwrite the existing file, rather than creating a recovery file alongside the original.  And v2.00 removed the handling of the **Unnamed/new Files**, forcing you to rely on Notepad++'s native handling of unnamed files (and thus strengthening the argument behind the admonishment to always manually save your unnamed files to a known location as soon as you can, since AutoSave isn't helping you with that anymore).
-
-Also, if you upgraded from v1.61 or earlier to v2.00, you will need to check your settings, to make sure it's still set up in a way that functions with your workflow.
