@@ -54,7 +54,7 @@ When you first install AutoSave Plugin from **Plugins > Plugins Admin** (or thro
 
 The following preferences are available in AutoSave Plugin v2.00:
 
-![dfd25063-1e19-4f2e-8bd0-28f7fef76f68-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1688130926697-dfd25063-1e19-4f2e-8bd0-28f7fef76f68-image.png)
+![2a62f12e-405b-4e8d-848c-8a20ed7e18d6-image.png](https://community.notepad-plus-plus.org/assets/uploads/files/1729790233079-2a62f12e-405b-4e8d-848c-8a20ed7e18d6-image.png) 
 
 **Auto Save When:**
 
@@ -62,7 +62,7 @@ _These describe how often the plugin will trigger a save in Notepad++ files.  Yo
 
 - `☐ Notepad++ loses focus`: If this option is checkmarked on ☑, then every time you move from Notepad++ to another window (a Windows explorer, or your browser window, or any other application, or even change focus to the Desktop or clicking on the Windows Start Menu), AutoSave plugin will trigger a save event.
 
-`☐ At timed intervals every _N_ minutes`: If this option is checkmarked on ☑, then every N minutes, AutoSave plugin will trigger save event, even if you have never clicked outside of Notepad++.
+- `☐ At timed intervals every _N_ minutes`: If this option is checkmarked on ☑, then every N minutes, AutoSave plugin will trigger save event, even if you have never clicked outside of Notepad++.
 
 - `☐ File tab changes`: If this option is checkmarked on ☑, it saves every time you activate a different tab in Notepad++.
 
@@ -72,9 +72,9 @@ _These describe how often the plugin will trigger a save in Notepad++ files.  Yo
 
 _These choose which files will be automatically saved.  Only one of those two options can be active ⦿ at one time._
 
-`○ Current file only`: If this option is active ⦿, only the "current" file in Notepad++ (the active tab) will have AutoSave events.  If you have multiple files open, the other tabs will _not_ be AutoSaved.
+- `○ Current file only`: If this option is active ⦿, only the "current" file in Notepad++ (the active tab) will have AutoSave events.  If you have multiple files open, the other tabs will _not_ be AutoSaved.
 
-`○ All Open Files`: If this option is active ⦿, all files currently opened in Notepad++ will be protected by AutoSave.
+- `○ All Open Files`: If this option is active ⦿, all files currently opened in Notepad++ will be protected by AutoSave.
 
 **Changes compared to AutoSave v1.61**
 
