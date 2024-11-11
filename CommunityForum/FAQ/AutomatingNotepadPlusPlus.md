@@ -8,7 +8,15 @@ If you need more power than macros provide, and have some skill with programming
 
 ## Macros
 
-The Notepad++ built-in macro facility allows recording Notepad++ actions (both menu commands and file-editing actions), and playing them back once or repeatedly; macros can be just for a single session, or saved so that they are available every time you run Notepad++.  The [Online User Manual](https://npp-user-manual.org/) includes instructions on how to use the [**Macros** system](https://npp-user-manual.org/docs/macros/), along with a technical discussion of [format for saved macros in the config files](https://npp-user-manual.org/docs/config-files/#macros) so that you can manually edit an existing macro or create one from scratch, so that information will not be repeated here.  Any saved macro can be easily given a keyboard shortcut when it is saved or by using Notepad++'s [Shortcut Mapper](https://npp-user-manual.org/docs/preferences/#shortcut-mapper) for an already-existing macro.
+The Notepad++ built-in macro facility allows recording Notepad++ actions (see next paragraph for details), and playing them back once or repeatedly; macros can be just for a single session, or saved so that they are available every time you run Notepad++.  The [Online User Manual](https://npp-user-manual.org/) includes instructions on how to use the [**Macros** system](https://npp-user-manual.org/docs/macros/), along with a technical discussion of [format for saved macros in the config files](https://npp-user-manual.org/docs/config-files/#macros) so that you can manually edit an existing macro or create one from scratch, so that information will not be repeated here.  Any saved macro can be easily given a keyboard shortcut when it is saved or by using Notepad++'s [Shortcut Mapper](https://npp-user-manual.org/docs/preferences/#shortcut-mapper) for an already-existing macro.
+
+The kinds of "Notepad++ actions" that can be recorded include:
+- Typing text (characters) in the active document
+- Using arrow keys, pageUp, pageDown, Home, and End keys to move the [typing caret](https://npp-user-manual.org/docs/editing/#caret-and-cursor "caret vs cursor") in the active document
+- Selecting and copying/cutting/pasting text.
+- Executing most Notepad++ menu commands
+- "Constant" Search and Replace actions
+  - when you use a macro to record a search or replace action, the FIND and REPLACE fields will be "constant" in the macro, so they will always be the same FIND and REPLACE values every time you run the macro
 
 For many, Macros are sufficient for their automation needs, especially because they can automate multi-step search-and-replace sequences and the like.  However, there are some limitations on Macros that might help you decide to move on to something more powerful than the built-in Macros system:
 
@@ -24,6 +32,7 @@ For many, Macros are sufficient for their automation needs, especially because t
   - No conditional execution ("if/then/else" or similar constructs).
   - It has no method of user input when the macro is running, so you cannot prompt for a file name or for text to be used for a complicated interaction.
     - This has the implication that searches that you record in a macro will always search for the same text; you cannot search for different text every time you run a particular macro.
+  - It has no concept of time, so you cannot say "do X, wait T seconds, then do Y"
 
 ## Plugins
 
