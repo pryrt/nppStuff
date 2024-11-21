@@ -16,9 +16,10 @@ as the framework for handling all of the hidden lexers, not just SAS and Stata
 The post https://community.notepad-plus-plus.org/post/78579 helped update it for Notepad++ v8.4.3
 '''
 
-from Npp import notepad, editor, NOTIFICATION
+from Npp import notepad, editor, console, NOTIFICATION
 from ctypes import windll, WINFUNCTYPE, addressof, create_unicode_buffer
 from ctypes.wintypes import HWND, UINT, WPARAM, LPARAM, HMODULE, LPCWSTR, LPCSTR, LPVOID
+import sys
 
 class GenericLexer:
     _lexer_name = b"Generic"
@@ -29,6 +30,7 @@ class GenericLexer:
         self.lexer_name = create_unicode_buffer(tmp_name)
 
     def announce(self, lexintf):
+        return # comment out this line to announce each HiddenLexer enablement
         tmp_name = self._lexer_name
         if sys.version_info.major==3: tmp_name = self._lexer_name.decode("utf-8")
         console.write("I will colorize {} from {}\n".format(tmp_name, str(lexintf)))
@@ -261,7 +263,8 @@ class X12Lexer(GenericLexer):
         windll.user32.SendMessageW(editor_hwnd, lexintf.SCI_SETILEXER, 0, self.ilexer_ptr)
 
         # LexX12.cxx only defines one property; I want to enable folding
-        editor.setProperty("fold", 1)
+        editor.setProperty("fold", "1")
+        editor.setMarginWidthN(3,14)    # MARGIN3 = FOLD, WIDTH=14px (standard width in NPP)
 
         # if I am wrong about keyword lists, each would go here...
         #editor.setKeyWords(0, "word1 word2")
