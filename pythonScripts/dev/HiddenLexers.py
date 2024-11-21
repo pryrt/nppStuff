@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 '''
 Makes lexilla's "hidden" lexers available for NPP.
+- SAS
+- Stata
+- X12
 
 The most recent version of this script is available at
 https://raw.githubusercontent.com/pryrt/nppStuff/refs/heads/main/pythonScripts/dev/HiddenLexers.py
