@@ -407,3 +407,59 @@ I thought about:
 - _ Propagate swift to all themes
 
 Those don't really belong in this PR, however, so don't include it.
+
+## Documentation
+
+In 2019, it was [suggested](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/3292#issuecomment-531320436) that the User Manual could document the add-a-language process; back then, I didn't know anything about the process, but since I've done it twice now, I suppose I can try to document it.  I'll start with a rough draft here, which may eventually become part of the UM.
+
+### Enable Existing Lexilla Lexer in Notepad++
+
+The [Lexilla library](https://github.com/ScintillaOrg/lexilla/) which Notepad++ uses for syntax highlighting has many languages available to it that Notepad++ doesn't yet provide in the **Language** menu or Style Configurator.  In general, just creating an [issue](https://github.com/notepad-plus-plus/notepad-plus-plus/issues) to request a language be enabled is not 
+sufficient to get it added, because the developers don't have sufficient knowledge of all Lexilla-enabled languages to know if the addition was successful or not; you should put in the request if there's a langauge in Lexilla that you would like added to Notepad++, but, if possible, you could also put in the Pull Request.
+
+The following are all pieces of the codebase that need to be updated in order to activate a currently-inactive lexer. For this description, "Xyz Pdq" will be the name of your language; you, of course, need to use your own language's name.
+
+- `PowerEditor/src/MISC/PluginsManager/Notepad_plus_msgs.h`: 
+	- Need to add an `L_XYZPDQ` constant for your language to the end of the `enum LangType` 
+	- Insert it between the last real language in the list and `L_EXTERNAL`; **never** insert it before an already-existing language, as the position in the list gives it an integer that is used throughout the codebase and config files.
+- `PowerEditor/src/menuCmdID.h`: 
+	- Add `#define IDM_LANG_XYZPDQ` between the last existing language and `IDM_LANG_EXTERNAL`, using the next integer for the value (the `L_...` from the enum should be in that same integer slot in the enum)
+- `PowerEditor/src/ScintillaComponent/ScintillaEditView.h`
+	- declare `setXyzPdqLexer()`
+	- if it's a simple lexer, which just needs to define one or more keyword lists, you can define it here instead of in the `.cpp` below, just calling `setLexer(L_XYZPDQ, LIST_0 | LIST_1 | ...);`, similar to what was done for `setHollywoodLexer()`
+- `PowerEditor/src/ScintillaComponent/ScintillaEditView.cpp`
+	- add the language to `LanguageNameInfo ScintillaEditView::_langNameInfoArray[]`, just before the `L_EXTERNAL` entry.  The table below describes that value that needs to go in each column of that data structure.
+	    | Column       | Example        | Description |
+		|--------------|----------------|-------------|
+		| `_langName`  | `xyzpdq`       | Unique string to identify the language.  Will be used as the `<Language name="xyzpdq" ... />` attribute in `langs.xml` |
+		| `_shortName` | `Xyz Pdq`      | This is the text that appears in the **Languages** menu |
+		| `_longName`  | `Xyz Pdq file` | This is the text that appears in the **Status Bar**'s file type field |
+		| `_langID`    | `L_XYZPDQ`		| This is the `L_...` entry you added to the enum |
+		| `_lexerID`   | `xyzpdq` 		| This is the name of the lexer, as defined in the `lexilla/Lexers/Lex****.cxx`, in the `LexerModule` instantiation |
+	- add your language to the big `switch` block in `ScintillaEditView::defineDocType()`; it should call `setXyzPdqLexer(); break`
+	- add in the definition for your `setXyzPdqLexer()`
+		- If it's just calling `setLexer()`, you can actually define it in the `.h`, as described above.
+		- If it requires complicated logic, define it here, instead.
+		- If the lexer includes SubStyle keyword capability, you can either initialize them in the optional end arguments of the `setLexer()` call (see `setLuaLexer()` and `setPythonLexer()` in the `.h` for examples of how to use those optional arguments), or your more-complicated definitions may call `populateSubStyleKeywords()` themselves, like `ScintillaEditView::setTypeScriptLexer()` does)
+- `PowerEditor/src/Notepad_plus.cpp`:
+    - in the switch in `Notepad_plus::menuID2LangType()`, add 
+	   	```
+	   	case IDM_LANG_XYZPDQ:
+			return L_XYZPDQ;
+	   	```
+- `PowerEditor/src/Parameters.cpp`:
+	- in the switch in `NppParameters::langTypeToCommandID()`, add 
+		```
+		case L_XYZPDQ:
+			id = IDM_LANG_XYZPDQ; break;
+		```
+- `PowerEditor/src/Notepad_plus.rc`:
+	- add a `MENUITEM` in the alphabetically correct place in both the `&Language` big-list, and the `&Language`/`POPUP "X"` per-letter version.
+- `PowerEditor/src/NppCommands.cpp`:
+	- `Notepad_plus::command()` has a huge switch; add `case IDM_LANG_XYZPDQ:` to the big list of similar `case IDM_LANG_...` entries
+
+And add in config files:
+- `PowerEditor/src/langs.model.xml`: add in your `<Language name="xyzpdq"...>` entry with its `<Keywords ...>` entries
+- `PowerEditor/src/stylers.model.xml` and all of the `PowerEditor/installer/themes/*.xml`: add in your `<LexerType name="xyzpdq"...>` with its `<WordsStyles>` entries
+
+You should also include autoCompletion definition and functionList definition if you have it (they are optional, but highly recommended).
