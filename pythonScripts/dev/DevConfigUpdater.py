@@ -19,6 +19,7 @@
 #
 ###############################################################################
 # HISTORY
+#  Version: 1.08 (2024-Sep-29)  - BUGFIX = PS2 removing copyright
 #  Version: 1.07 (2024-Sep-29)  - BUGFIX = for stylers.xml, correctly inherit colors on Global Styles from the .model. (similar to what's already done for Lexer styles)
 #                               - IMPROVEMENT = also, when adding or updating a global style, don't include any attribute that's not in .model. ; this will also delete invalid attributes added by previous versions of the script
 #  Version: 1.06 (2024-Sep-14)  - IMPROVEMENT = error handling for <installed>\themes\ permissions
@@ -148,13 +149,14 @@ class ConfigUpdater(object):
         # need to preserve comments by using <https://stackoverflow.com/a/34324359/5508606> using CommentedTreeBuilder()
         # but the styler/theme file might have a top-level comment, which xml.etree.ElementTree doesn't like,
         #     so if there's a top-level comment, grab the string, remove (and save) the comment, and process the edited text instead
-        try:
-            treeTheme = ET.parse(fTheme, parser=ET.XMLParser(target=CommentedTreeBuilder()))
-        except ET.ParseError as e:
+        #try:
+        #    treeTheme = ET.parse(fTheme, parser=ET.XMLParser(target=CommentedTreeBuilder()))
+        #except ET.ParseError as e:
+        if True:
             strXML = self.get_text_without_toplevel_comment(fTheme)
             if strXML is None:
-                console.writeError(e)
-                raise e # re-raise original exception
+                #console.writeError("strXML is None!!!")
+                raise ET.ParseError("strXML is None!!!")
             treeTheme = ET.ElementTree(ET.fromstring(strXML, parser=ET.XMLParser(target=CommentedTreeBuilder())))
 
         def styler_sort_key(child):
@@ -295,10 +297,10 @@ class ConfigUpdater(object):
                 if elFoundThemeWidget is None:
                     # need to add the new widget with the correct default colors
                     wFG = self.active_theme_default_colors['fgColor']
-                    if 'fgColor' in elModelWidgetStyle.attrib: 
+                    if 'fgColor' in elModelWidgetStyle.attrib:
                         wFG = elModelWidgetStyle.attrib['fgColor']
                     wBG = self.active_theme_default_colors['bgColor']
-                    if 'bgColor' in elModelWidgetStyle.attrib: 
+                    if 'bgColor' in elModelWidgetStyle.attrib:
                         wBG = elModelWidgetStyle.attrib['bgColor']
                     tmpDict = {
                         'name': elModelWidgetStyle.attrib['name'],
@@ -328,7 +330,7 @@ class ConfigUpdater(object):
 
                 # only inclue attributes found in stylers.model.xml
                 for k in ('fgColor', 'bgColor', 'fontName', 'fontStyle', 'fontSize'):
-                    if k not in elModelWidgetStyle.attrib: 
+                    if k not in elModelWidgetStyle.attrib:
                         del tmpDict[k]
                 elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', tmpDict)
 
@@ -390,10 +392,10 @@ class ConfigUpdater(object):
             with open(fTheme, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
         slurp = "".join(lines)
-        if lines[1].strip()[0:4] != "<!--":
-            return None
-
         #console.write("slurp[:100] = {}...\n".format(slurp[:100]))
+
+        if lines[1].strip()[0:4] != "<!--":
+            return slurp
 
         # need to do it once to get the match's text to be able to store it
         m = re.search(r'<!--.*?-->\r?\n', slurp, flags=re.DOTALL)
