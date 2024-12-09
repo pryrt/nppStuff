@@ -1,6 +1,18 @@
 # FAQ: Why Can't I Just Say "Most Recent Version"
 
-Hello.  You've likely been directed here because you had a request for help where you said "I use the most recent version".  Despite what you might think, that's _not_ actually enough to tell us what version of Notepad++ you are using.
+Hello.  You've likely been directed here for one of two main reasons: Because you claimed "I use the most recent version", and someone asked for more specifics on which version.  Or second, because you asked something like "why does Notepad++ say there’s no newer version, when the downloads page clearly shows a newer version"
+
+## One Answer, Two FAQs
+
+Those two questions seem to be completely separate.  But the numbered points below actually explain _both_ why "Most Recent Version" isn't enough, _and_ why **Update Notepad++** and the Downloads page seem to not be in sync.
+
+## FAQ 1: "I use the 'most recent version'"
+
+Despite what you might think, saying "most recent version" is _not_ actually enough to tell us what version of Notepad++ you are using.  The sections below
+
+## FAQ 2: "No Update Available" vs Downloads Plainly Shows Newer Version
+
+If you noticed that **Update Notepad++** claimed there were no updates, when the Downloads page has a newer version, read the **"The Update System May Intentionally Lag Behind The Most Recent Release"** section below, focusing on points #2 and #3.
 
 ## Quick Version:
 
@@ -10,9 +22,9 @@ The best idea is to always look at the **?**-menu's **Debug Info**, copy that to
 
 But _why_ isn't "most recent version" sufficient?
 
-### It's Ambiguous
+### "Most Recent Version" is Ambiguous, aka "The Update System May Intentionally Lag Behind The Most Recent Release"
 
-There are actually multiple versions at a time that can be reasonably considered "the most recent", and we don't know which you are talking about.
+If you used the phrase "the most recent version", you need to understand that there are actually multiple versions at a time that can be reasonably considered "the most recent", and we don't know which you are talking about.  If you asked about **Update Notepad++** vs the Downloads page, these notes explain why they don't always match.
 
 1. If you have automatic updates turned on, Notepad++ only polls every couple of weeks, to avoid overloading the server with "do I have the most recent version" request.  So if a version was released and triggered for automatic updates between the time Notepad++ last polled for automatic updates and now, you might not have the most recently released and triggered version, even though you have automatic updates enabled.  Thus, having automatic updates turned on is not a guarantee you have the most recent version, despite what some people think.
 2. There is the version available using **?**-menu's **Update Notepad++** action. This _can_ be "most recent", but isn't _necessarily_ the "most recent".  This forces checking the server for a new version, so can be more recent than just having automatic updates turned on.  However, per the User Manual's description of [Upgrading](https://npp-user-manual.org/docs/upgrading/), new versions aren't triggered for update immediately, and not all versions are ever triggered for auto-update.  As described there, if a released version is in the 1-2 week buffer between initial release and triggering auto-update, or if a released version is discovered to have critical regressions or bugs, a given version might have been released, but not triggered for automatic update, so **? > Update Notepad++** won't show it.
@@ -21,8 +33,7 @@ There are actually multiple versions at a time that can be reasonably considered
 
 All three of those can be validly considered "most recent".  If you don't tell us an exact version number, we cannot know which of those three meanings is your meaning.  (And to be blunt, some people occasionally haven't actually checked recently, and so they think it's the most
 
-### It's _Still_ Ambiguous
-
+### "vX.Y.Z" is _Still_ Ambiguous
 
 Even if you tell us "I am using vX.Y.Z", that is not sufficient.  Notepad++ has three different executables for a given release version: 32-bit, normal 64-bit, and 64-bit ARM -- referred to as "bitness".  Some bugs show up in only one of those three variants of the same version.  Thus, it's actually necessary for you to specify which executable you are using for a given version.
 
