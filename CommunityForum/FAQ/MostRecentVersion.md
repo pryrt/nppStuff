@@ -1,6 +1,6 @@
 # FAQ: Why Can't I Just Say "Most Recent Version"
 
-Hello.  You've likely been directed here for one of two main reasons: Because you claimed "I use the most recent version", and someone asked for more specifics on which version.  Or second, because you asked something like "why does Notepad++ say there’s no newer version, when the downloads page clearly shows a newer version"
+Hello.  You've likely been directed here for one of two main reasons: First, because you claimed "I use the most recent version", and someone asked for more specifics on which version.  Or second, because you asked something like "why does Notepad++ say there’s no newer version, when the downloads page clearly shows a newer version"
 
 ## One Answer, Two FAQs
 
