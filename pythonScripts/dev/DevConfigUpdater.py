@@ -46,7 +46,6 @@ import textwrap
 is_ps2 = (notepad.getPluginVersion() < '3')
 is_ps3 = not is_ps2
 console.show()
-console.clear() #### TODO: delete
 
 if is_ps2:
     ET.indent = lambda x, space="", level=0: None   # avoid `AttributeError: 'module' object has no attribute 'indent'` in PS2
