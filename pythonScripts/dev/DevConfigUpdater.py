@@ -19,6 +19,7 @@
 #
 ###############################################################################
 # HISTORY
+#  Version: 1.09 (2024-Sep-29)  - IMPROVEMENT = Make the report better describe what was updated, and more human-readable
 #  Version: 1.08 (2024-Sep-29)  - BUGFIX = PS2 removing copyright
 #  Version: 1.07 (2024-Sep-29)  - BUGFIX = for stylers.xml, correctly inherit colors on Global Styles from the .model. (similar to what's already done for Lexer styles)
 #                               - IMPROVEMENT = also, when adding or updating a global style, don't include any attribute that's not in .model. ; this will also delete invalid attributes added by previous versions of the script
@@ -45,6 +46,7 @@ import textwrap
 is_ps2 = (notepad.getPluginVersion() < '3')
 is_ps3 = not is_ps2
 console.show()
+console.clear() #### TODO: delete
 
 if is_ps2:
     ET.indent = lambda x, space="", level=0: None   # avoid `AttributeError: 'module' object has no attribute 'indent'` in PS2
@@ -139,7 +141,7 @@ class ConfigUpdater(object):
 
     def update_stylers(self, themeDir, themeName, isIntermediateSorted=False):
         fTheme = os.path.join(themeDir, themeName)
-        console.write("update_stylers('{}')\n".format(fTheme))
+        console.write("Checking Styler/Theme File: '{}'\n".format(fTheme))
 
         # 2024-Aug-29: bugfix: remove comment from previous call of update_stylers(), otherwise no-comment myTheme.xml would inherit comment from commented MossyLawn.xml
         self.saved_comment = None
@@ -155,7 +157,6 @@ class ConfigUpdater(object):
         if True:
             strXML = self.get_text_without_toplevel_comment(fTheme)
             if strXML is None:
-                #console.writeError("strXML is None!!!")
                 raise ET.ParseError("strXML is None!!!")
             treeTheme = ET.ElementTree(ET.fromstring(strXML, parser=ET.XMLParser(target=CommentedTreeBuilder())))
 
@@ -210,7 +211,6 @@ class ConfigUpdater(object):
             strToFind = ".//LexerType[@name='{}']".format(elModelLexer.attrib['name'])
             elStylersMatchLT = treeTheme.find(strToFind)
             if elStylersMatchLT is None:
-                #console.write("NOT FOUND[{}] => {}\n".format(strToFind, elStylersMatchLT))
                 self.add_missing_lexer(elModelLexer, elThemeLexerStyles, keepModelColors)
             else:
                 # iterate through each WordsStyle in the elModelLexer and see if it can
@@ -257,7 +257,7 @@ class ConfigUpdater(object):
             pass
 
     def add_missing_lexer(self, elModelLexer, elLexerStyles, keepModelColors):
-        #console.write("add_missing_lexer({})\n".format(elModelLexer.attrib['name']))
+        console.write("- Add missing lexer '{}'\n".format(elModelLexer.attrib['name']))
         elNewLexer = ET.SubElement(elLexerStyles, 'LexerType', attrib=elModelLexer.attrib)
         for elWordsStyle in elModelLexer.iter("WordsStyle"):
             #console.write("- need WordsStyle => {}\n".format(elWordsStyle.attrib))
@@ -335,7 +335,9 @@ class ConfigUpdater(object):
                 elNewWidget = ET.SubElement(elThemeNewGlobals, 'WidgetStyle', tmpDict)
 
                 elPreviousThemeWidget = elNewWidget
-                #console.write("{} {}\n".format(msg, elPreviousThemeWidget.attrib))
+                #console.writeError("- DEBUG: {} {}\n".format(msg, elPreviousThemeWidget.attrib))
+                if msg == 'ADDED':
+                    console.write("- Add missing Global Style '{}'\n".format(elPreviousThemeWidget.attrib['name']))
 
         # populate the actual with the new
         elThemeGlobalStyles[:] = elThemeNewGlobals[:]
@@ -364,22 +366,20 @@ class ConfigUpdater(object):
                 # 2024-Aug-28 BUGFIX = for new styles, don't forget to propagate keywordClass from .model.
                 if 'keywordClass' in elModelStyle.attrib:
                     elNewStyle.attrib['keywordClass'] = elModelStyle.attrib['keywordClass']
-                    #console.writeError("- ADDED Style with keywordClass to {}: style {}\n".format(elThemeLexerType.attrib['name'], elNewStyle.attrib))
 
-                #console.writeError("- ADDED to {}: style {}\n".format(elThemeLexerType.attrib['name'], elNewStyle.attrib))
+                console.write("- Lexer '{}': add style '{}'\n".format(elThemeLexerType.attrib['name'], elNewStyle.attrib['name']))
             else:
                 # for names that have changed in the model, update the theme to match the model's name
                 #   (keeps up-to-date with the most recent model)
                 if elFoundThemeStyle.attrib['name'] != elModelStyle.attrib['name']:
-                    #console.write("- RENAME {}'s styleID={}: theme's {} to model's {}\n".format(elModelLexer.attrib['name'], elModelStyle.attrib['styleID'], elFoundThemeStyle.attrib['name'], elModelStyle.attrib['name']))
+                    console.write("- Lexer '{}': rename styleID #{} '{}' to '{}'\n".format(elThemeLexerType.attrib['name'], elModelStyle.attrib['styleID'], elFoundThemeStyle.attrib['name'], elModelStyle.attrib['name']))
                     elFoundThemeStyle.attrib['name'] = elModelStyle.attrib['name']
-                    #console.writeError("- RENAME in {}: style {}\n".format(elThemeLexerType.attrib['name'], elFoundThemeStyle.attrib))
 
                 # 2024-Aug-28 BUGFIX = for existing styles, check .model. to see if they need a keywordClass that they don't have
                 if 'keywordClass' in elModelStyle.attrib:
                     if 'keywordClass' not in elFoundThemeStyle.attrib:
                         elFoundThemeStyle.attrib['keywordClass'] = elModelStyle.attrib['keywordClass']
-                        #console.writeError("- ADDED missing keywordClass to {}: style {}\n".format(elThemeLexerType.attrib['name'], elFoundThemeStyle.attrib))
+                        console.write("- Lexer {}: added missing keywordClass '{}' to style '{}'\n".format(elThemeLexerType.attrib['name'], elFoundThemeStyle.attrib['keywordClass'], elFoundThemeStyle.attrib['name']))
 
         return
 
@@ -445,7 +445,7 @@ class ConfigUpdater(object):
     def update_langs(self, isIntermediateSorted=False):
         fLangActive = os.path.join(self.dirNppConfig, 'langs.xml')
         fLangModel = os.path.join(self.dirNpp, 'langs.model.xml')
-        console.write("update_langs('{}', '{}')\n".format(fLangActive, fLangModel))
+        console.write("Checking Language and Keyword List '{}'\n".format(fLangActive))
 
         # get the trees
         self.tree_langmodel = ET.parse(fLangModel, parser=ET.XMLParser(target=CommentedTreeBuilder()))
@@ -479,7 +479,7 @@ class ConfigUpdater(object):
             # 1. add any missing languages to Active
             if elLangMatch is None:
                 elActiveLanguages.append(elModelLang)
-                #console.write("- ADDED {}<{}>\n".format(elModelLang.tag, elModelLang.attrib))
+                console.write("- Add missing {} '{}'\n".format(elModelLang.tag, elModelLang.attrib['name']))
                 continue
 
             # Loop through keyword elements in the model, inserting missing data
@@ -491,7 +491,7 @@ class ConfigUpdater(object):
                 # 2. add any missing Keyword elements to existing Active
                 if elLangKWMatch is None:
                     elLangMatch.append(elModelLangKeyword)
-                    #console.write("- ADDED {}<{}> to {}<{}>\n".format(elModelLangKeyword.tag, elModelLangKeyword.attrib, elModelLang.tag, elModelLang.attrib['name']))
+                    console.write("- Add missing {} entry for '{}' to '{}'\n".format(elModelLangKeyword.tag, elModelLangKeyword.attrib['name'], elModelLang.attrib['name']))
                     continue
 
                 # 3. add any missing keywords to existing Active element
@@ -503,6 +503,7 @@ class ConfigUpdater(object):
                     if len(kw_list_active)==0:
                         elLangKWMatch.text = elModelLangKeyword.text
                         #console.write("- ADDED ({}) to empty {}<{}> list in  {}<{}>\n".format(elLangKWMatch.text, elLangKWMatch.tag, elLangKWMatch.attrib['name'], elModelLang.tag, elModelLang.attrib['name']))
+                        console.write("- Add missing {} to the empty '{}' list in {} '{}'\n".format(elLangKWMatch.tag, elLangKWMatch.attrib['name'], elModelLang.tag, elModelLang.attrib['name']))
                         continue
 
                     # loop through the model words and add any missing ones
@@ -513,8 +514,7 @@ class ConfigUpdater(object):
                             was_added.append(str_kw)
 
                     if len(was_added):
-                        #console.write("- ADDED {} to partial {}<{}> list in  {}<{}>\n".format(was_added, elLangKWMatch.tag, elLangKWMatch.attrib['name'], elModelLang.tag, elModelLang.attrib['name']))
-                        pass
+                        console.write("- Add missing {} to the '{}' list in {} '{}': {} \n".format(elLangKWMatch.tag, elLangKWMatch.attrib['name'], elModelLang.tag, elModelLang.attrib['name'], ", ".join(was_added)))
 
                     if len(kw_list_active)>1:
                         kw_list_active[:] = sorted(kw_list_active)
