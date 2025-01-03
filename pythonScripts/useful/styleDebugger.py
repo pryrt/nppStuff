@@ -1,4 +1,4 @@
-# encoding=utf-8
+﻿# encoding=utf-8
 #
 # tracks changes in style in the active file,
 # and creates a new plaintext document containing the original file, but indicating style changes with {##}
@@ -13,10 +13,16 @@ class pyscStyleDebugger(object):
         editor.setStyling(m.end(0)-m.start(0), 127)
 
     def go(self):
+        original_pos = editor.getCurrentPos()
         ps = None
         sout = ""
         s_found = []
+        skipTo = -1
         for i in range(editor.getTextLength()):
+            if i<skipTo: 
+                continue
+            else:
+                skipTo = -1
             s = editor.getStyleIndexAt(i)
             if s not in s_found:
                 s_found.append(s)
@@ -24,11 +30,39 @@ class pyscStyleDebugger(object):
                 sout += "{{{}}}".format(s)
                 ps = s
             c = editor.getCharAt(i)
-            sout += chr(c)
+            if c<0 or c>255:
+                editor.gotoPos(i)
+                p = editor.getCurrentPos()
+                q = editor.positionAfter(p)
+                skipTo = q
+                #console.write("X[c:{:06x},i:{},p:{},q:{},skipTo={}]\n".format(c, i, p, q, skipTo))
+                try:
+                    ch = editor.getTextRange(p,q).decode('utf-8')
+                except AttributeError:
+                    ch = editor.getTextRange(p,q)
+                    alreadyUTF8 = True
+                except UnicodeDecodeError:
+                    ch = editor.getTextRange(p,q)
+                    alreadyUTF8 = True
+                    
+                if len(ch) != 2:
+                    new_c = ord(ch)
+                else:
+                    new_c = 0x10000 + (ord(ch[0]) - 0xD800) * 0x400 + (ord(ch[1]) - 0xDC00)
+
+                #console.write("Y[c:{:06x},i:{},p:{},q:{},skipTo={}, new_c:{:06x}]\n".format(c, i, p, q, skipTo, new_c))
+                try:
+                    sout += unichr(new_c)
+                except NameError:
+                    sout += chr(new_c) # already UTF8
+            else:
+                sout += chr(c)
 
         skey = "\n==========\n\nKEY:\n"
         for s in sorted(s_found):
             skey += "{{{:3}}}: {:<40} | {:<40} | {}\n".format(s, editor.nameOfStyle(s), editor.tagsOfStyle(s), editor.descriptionOfStyle(s))
+
+        editor.gotoPos(original_pos)
 
         notepad.new()
         editor.setText(sout)
@@ -45,3 +79,4 @@ class pyscStyleDebugger(object):
 
 
 pyscStyleDebugger().go()
+# ±
