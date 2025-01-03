@@ -105,3 +105,9 @@ Going back to the UTF8-BOM file and UTF-8-based XML/prolog, I was able to double
 So in unicode mode, only keywords work.  If the file is 1252-encoded and N++ is "ANSI", then any character representable in 1252 is allowed.
 
 Next, I could dig into how it's doing the pattern matching, and what exactly is being compared, to see what is different between the keyword search and operator search in Unicode, and between the operator search in unicode vs ANSI.
+
+### LexUser.cxx
+
+Looking at LexPython, I was able to add the `LexicalClass lexicalClasses[]` instance, which defines tags and descriptions for each of the SCE_USER_STYLE_... styles; I was able to make that compile -- I don't have PS on this N++, but in theory, that should mean that the stylerDebugger output should show information in the key.  Actually, let's add in PS2 and do that.  Had to do some debug to get styleDebugger.py working with UTF8 codepoint>127, but eventually able to get it working as with normal code: and with that, I have names for my KEY section.  Interestingly, despite the name of `_IDENTIFIER`, style#24 is really only ever used before whitespace (space, newline, etc)
+
+While trying to loop over the vvstring (`vector<vector<string>>`) for operators1, it seems to stop at the first level: I cannot seem to get a string for the second index... at least not with my current printing scheme.  And I have VS2019, so it cannot build using N++'s VS2022 environment, so I cannot use debugger.
