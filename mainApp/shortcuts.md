@@ -30,3 +30,95 @@ But that doesn't tell me how to modify the combobox values; I would have to figu
 So when I load program, that doesn't get run.  But when I launch MODIFY to get the shortcut dialog, then `Shortcut::run_dlgProc()` gets called.
 
 So, in theory, I should be able to add it there... But it's not immediately working.
+
+Ah, I was in the ScintillaKeyMap, not the Shortcut.  When I went there, I started making it work.
+
+After some debug, set up a separate map which can hold the updated key characters... what I get:
+```c++
+bool mapped_vk_oem = false;
+map<UCHAR, char*> map_of_vk_oem;
+void _map_vk_oem()
+{
+    const size_t MAX_MAPSTR_CHARS=16;
+    const LANGID EN_US = 0x0409;
+    
+    // this function should only be called once, so update the flag
+    mapped_vk_oem = true;
+    
+    // determine the active keyboard "language"
+    LANGID current_lang_id = LOWORD(GetKeyboardLayout(0));
+    
+    // Debug only:
+    wchar_t _tmp_str[512];
+    swprintf_s(_tmp_str, L"PRYRT: _map_vk_oem(): current_lang_id=0x%04X", current_lang_id);
+    OutputDebugStringW(_tmp_str);
+    
+    // for each of the namedKeyArray, check if it's VK_OEM_*, and update the map of VK_OEM names as needed
+    for (size_t i = 0 ; i < nbKeys ; ++i)
+    {
+        // only need to map the VK_OEM_* keys, which are all at or above 0xA0
+        if(namedKeyArray[i].id >= 0xA0) {
+            // first make sure there's a slot in the map for the current id=>STR mapping
+            if (map_of_vk_oem.find(namedKeyArray[i].id) == map_of_vk_oem.end())
+            {
+                char* pstr = new char[MAX_MAPSTR_CHARS+1];
+                map_of_vk_oem[namedKeyArray[i].id] = pstr;
+            }
+
+            // now update the STR in the mapping
+            sprintf_s(map_of_vk_oem[namedKeyArray[i].id], MAX_MAPSTR_CHARS, "%c", MapVirtualKeyA((UINT)namedKeyArray[i].id, MAPVK_VK_TO_CHAR));
+
+            // en-US only: change from ` to ~, because that's what's historically been shown
+            if(current_lang_id==EN_US && map_of_vk_oem[namedKeyArray[i].id][0]=='`')
+            {
+                map_of_vk_oem[namedKeyArray[i].id][0] = '~';
+            }
+
+            // Debug Only
+            swprintf_s(_tmp_str, L"PRYRT: map i=%d id=%d => '%hs'", i, namedKeyArray[i].id, map_of_vk_oem[namedKeyArray[i].id]);
+            OutputDebugStringW(_tmp_str);
+        }
+    }
+    return;
+}
+
+... IN getKeyStrFromVal()
+	if(!mapped_vk_oem) { _map_vk_oem(); }
+	...
+	if (found)
+	{
+		if(namedKeyArray[i].id >= 0xA0) 
+		{
+			str = map_of_vk_oem[namedKeyArray[i].id];
+		}
+		else
+		{
+			str = namedKeyArray[i].name;
+		}
+	}
+
+... IN both Shortcut::run_dlgProc() and ScintillaKeyMap::run_dlgProc():
+			if(!mapped_vk_oem) { _map_vk_oem(); }
+	...
+				if(namedKeyArray[i].id >= 0xA0) {
+					::SendDlgItemMessage(_hSelf, IDC_KEY_COMBO, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(string2wstring(map_of_vk_oem[namedKeyArray[i].id], CP_UTF8).c_str()));
+				} else {
+					::SendDlgItemMessage(_hSelf, IDC_KEY_COMBO, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(string2wstring(namedKeyArray[i].name, CP_UTF8).c_str()));
+				}
+
+
+```
+
+But, as far as I can tell with a single keyboard option, that should work.
+
+I need to copy that off to a temporary location, and create a new branch (FROM main, not the existing branch).  New (clean) branch exists, and working as before.
+
+**Win > Settings > Time & Language > Language**: add a language, **Portuguese (Brazil)**.  Switch to POR and launch N++: it properly gives a different set of characters -- but not all of them display properly.  I will need to add back in some debugging prints, to see if I can figure out what characters it wants.
+
+Okay, so what it does is it does 0x80000000|C, where C is the 1-byte char in the ActiveCodePage.  So I need to trap for the 0x80000000.
+But the MultiByteToWideChar(CP_UTF8) (which is used elsewhere) is expecting its input to be a multibyte character string with proper UTF8-encoding... so if C>0x7F, I need to have properly encoded the codepoint to multiple bytes.
+
+So I came up with something that worked -- creating a psueod-widechar from the v2c value -- but I think it's a hack that's likely to go wrong someplace.  I want a safety commit, but then I want to start exploring MapVirtualKeyW instead, because that will keep it wide to begin with, without ambiguity (I hope).
+
+Okay, the experimental version of MapVirtualKeyW() implementation seems to get the same results for POR(BRAZIL), so I am hoping that it will work for other languages as well.  Quickly verified it still works with en-US keyboard as well.
+**TODO**: I need to merge it above for the >127; then I need to see if it makes sense to just use the W to begin with (but not enough time today)
