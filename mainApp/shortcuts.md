@@ -124,3 +124,7 @@ So I came up with something that worked -- creating a psueod-widechar from the v
 
 Okay, the experimental version of MapVirtualKeyW() implementation seems to get the same results for POR(BRAZIL), so I am hoping that it will work for other languages as well.  Quickly verified it still works with en-US keyboard as well.
 **TODO**: I need to merge it above for the >127; then I need to see if it makes sense to just use the W to begin with (but not enough time today)
+
+--
+
+Today, I was able to collapse those down, and also tried with German QWERTZ keyboard.  I think things are working, to the best of my ability to test.  Make a [comment on the issue](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/15966#issuecomment-2578036556) giving the OP the steps to test my experimental build.
