@@ -1,5 +1,7 @@
 in looking at https://github.com/notepad-plus-plus/notepad-plus-plus/issues/15966 :
 
+heavily reference [MSLearn: Virtual-Key Codes](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes) and [Shortcut FAQ](https://community.notepad-plus-plus.org/topic/19734/faq-list-of-notepad-key-combinations-available-for-shortcuts)
+
 I was able to go to [`getKeyStrFromVal()`](https://github.com/notepad-plus-plus/notepad-plus-plus/blob/7544df534804319720540e0b1848bdc999b5e91e/PowerEditor/src/WinControls/shortcut/shortcut.cpp#L284-L301) and change 
 ```
 	if (found)
