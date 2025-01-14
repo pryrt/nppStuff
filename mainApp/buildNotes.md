@@ -1,7 +1,7 @@
 # GCC
 ```
 cd PowerEditor\gcc\
-cls & mingw32-make & "bin.x86_64\notepad++.exe" & TITLE shortcuts3cls & mingw32-make & "bin.x86_64\notepad++.exe" & TITLE shortcuts3
+cls & mingw32-make & "bin.x86_64\notepad++.exe" & TITLE shortcuts3
 ```
 
 # VS 2019
