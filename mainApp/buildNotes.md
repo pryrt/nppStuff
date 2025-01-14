@@ -26,3 +26,5 @@ Since VisualStudio 2019 is outdated, it cannot build the v143 project, so need t
   ```
   #pragma warning ( pop )
   ```
+
+**IMPORTANT**: Make sure these changes are not committed to GitHub
