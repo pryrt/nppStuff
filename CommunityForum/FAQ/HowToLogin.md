@@ -1,8 +1,8 @@
 Hello, and welcome to the FAQ Desk.
 
-Many people ask questions about how to log in, why we require an account with Google, Facebook, ~~Twitter~~, or GitHub, and why we don't just have email/password login here.
+Many people ask questions about how to log in, why we require an account with Google or GitHub, and why we don't just have email/password login here.
 
-(As of 2023-May-26, the Login With Twitter was disabled, because Twitter disabled free Twitter API access -- which includes login-with-Twitter.)
+(As of 2023-May-26, the Login With Twitter was disabled, because Twitter disabled free Twitter API access -- which includes login-with-Twitter.  As of 2024-Sep-13, Login with Facebook was also disabled, because Facebook changed their policy.)
 
 ### How to Log In ###
 
@@ -44,7 +44,7 @@ OAuth logins are much more secure than a system where your password and login in
 
 In the Spring of 2024, we briefly tried the experiment of signing up with just username/password here, bypassing the OAuth/SSO requirement.  Unfortunately, the amount of spam _drastically_ increased when we did.  Aside from the security described above, the OAuth/SSO providers provide an extra layer of technical barrier that prevents spammers from easily creating dummy accounts.  This extra protection turned out to be necessary to keep the Forum usable, so we have again disabled the username/password signup.  
 
-If you signed up during that period and can no longer log in, create a new account using an OAuth/SSO provider; if you had made posts with the old account, send a chat message to @PeterJones, asking that he change the owner of your old posts over to your new account (making sure you confirm your old account name); upon such a request, he will check the metadata of your old and new accounts, and if he confirms that you appear to be the same actual user, he will change the posts over to the new account so that you keep the credit for your posts.
+If you signed up during that period and can no longer log in, create a new account using an OAuth/SSO provider; if you had made posts with the old account, send a chat message to @PeterJones (click on @PeterJones, click on **`⋮`** to see a menu, choose **Start new chat with PeterJones**, then enter your message in the chat), asking that he change the owner of your old posts over to your new account (making sure you confirm your old account name); upon such a request, he will check the metadata of your old and new accounts, and if he confirms that you appear to be the same actual user, he will change the posts over to the new account so that you keep the credit for your posts.  (You can follow the same procedure if you used to log in with Facebook or Twitter, since both of those have been disabled over time as well.)
 
 ## Multiple login accounts ##
 
@@ -78,7 +78,7 @@ The forum will not email the notifications unless you have confirmed your email 
 
 Unfortunately, the forum emails do not always make it through; many users have complained that they have never received their confirmation email, whereas many others have no problems receiving the confirmation email.  If you don't receive it, it may have been routed to your spam folder; or your email provider may choose to not pass the email on to you when it receives it from the forum's mail-sending server.  Potential workarounds for those who don't receive it include checking spam folders, trying to change to a different email address (if you have another available -- preferably from a different email provider), or setting to an invalid email address and then changing it back to the correct address again (hitting **Submit** after each change).  You might also ask your email provider if they can be temporarily less-strict about what emails get sent to you (though that's a long shot).  None of those, however, are guaranteed to work.
 
-(If you do change your email, please note that it only affects the sending of the confirmation, notification, and digest emails; it does not change how you log in.  As described above, you still log in with the Google, Facebook, ~~Twitter~~, or GitHub accounts, just like you did before the **Change Email**.)
+(If you do change your email, please note that it only affects the sending of the confirmation, notification, and digest emails; it does not change how you log in.  As described above, you still log in with the Google or GitHub accounts, just like you did before the **Change Email**.)
 
 The administrators of the forum have tried debugging the problem, but they are not email server experts, and as of yet they have not yet been able to improve the reliability beyond where it currently is[.](# "And despite multiple attempts by users, complaining loudly or pestering the administrators about it has not yet been successful in imparting the necessary skills to improve the administrator's results in this regard.")  Every once in a while, I am able to do some more research, and I try to give the administrators more ideas of things to fix, but it's a slow process for non-experts.  Improvements were made in Spring/Summer 2022, and it appears that the confirmation emails are now reaching at least some email providers that used to not receive the emails, but  we cannot guarantee that any given provider or specific address will be able to see the confirmation.
 
