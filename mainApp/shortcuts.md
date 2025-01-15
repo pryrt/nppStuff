@@ -128,3 +128,20 @@ Okay, the experimental version of MapVirtualKeyW() implementation seems to get t
 --
 
 Today, I was able to collapse those down, and also tried with German QWERTZ keyboard.  I think things are working, to the best of my ability to test.  Make a [comment on the issue](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/15966#issuecomment-2578036556) giving the OP the steps to test my experimental build.
+
+----
+
+That all worked, and I cleaned it up and (after Don's confirmation) put in a PR with just fixing the names.
+
+I had also been working on adding the unique-to-keyboard keys: I got it working for French by Jan 14, and I think I have it basically working for ABNT2 keyboard Jan 15.  I will want \@gusgo to verify, but my request indicates a technical failure in the fix-the-names commit (since it needs the extra calls that I've got there), and I don't want to advertise this to Don at this point.  Once the original has been accepted, I will want to send the following comment:
+```
+https://github.com/notepad-plus-plus/notepad-plus-plus/issues/16071
+
+\@gusgo,
+
+I am not an expert on the ABNT2 keyboard (never touched one); I've been using Microsoft's `osk.exe` onscreen keyboard tool to test most of the keyboard shortcuts I've been experimenting with; but even when I change the **Options** to show keypad**, I cannot test the extra `.` key on the keypad, because `osk.exe` doesn't include that extra key.
+
+Could you use [this experimental build]() to verify that you can correctly set keyboard shortcuts on either the normal commands or the Scintilla commands using the `/` key, the `Num .` , and the `Num ,` and that the right physical key activates those shortcuts for each?
+
+Thank you.
+```
