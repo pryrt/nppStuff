@@ -141,7 +141,7 @@ https://github.com/notepad-plus-plus/notepad-plus-plus/issues/16071
 
 I am not an expert on the ABNT2 keyboard (never touched one); I've been using Microsoft's `osk.exe` onscreen keyboard tool to test most of the keyboard shortcuts I've been experimenting with; but even when I change the **Options** to show keypad**, I cannot test the extra `.` key on the keypad, because `osk.exe` doesn't include that extra key.
 
-Could you use [this experimental build]() to verify that you can correctly set keyboard shortcuts on either the normal commands or the Scintilla commands using the `/` key, the `Num .` , and the `Num ,` and that the right physical key activates those shortcuts for each?
+Could you use [this experimental build](https://github.com/pryrt/notepad-plus-plus/actions/runs/12793637914#artifacts) to verify that you can correctly set keyboard shortcuts on either the normal commands or the Scintilla commands using the `/` key, the `Num .` , and the `Num ,` and that the right physical key activates those shortcuts for each?
 
 Thank you.
 ```
