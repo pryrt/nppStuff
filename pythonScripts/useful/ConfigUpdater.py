@@ -290,9 +290,12 @@ class ConfigUpdater(object):
                 elThemeNewGlobals.append(ET.Comment(elModelWidgetStyle.text))
             else:   # normal element
                 #console.write("MODEL: {} => {}\n".format(elModelWidgetStyle.tag, elModelWidgetStyle.attrib))
-                strSearch = "WidgetStyle[@name='{}']".format(elModelWidgetStyle.attrib['name'])
-                elFoundThemeWidget = elThemeGlobalStyles.find(strSearch)
                 msg = None
+                # look for the widget by name attribute ignoring case sensitivity
+                elFoundThemeWidget = None
+                for elThemeWidgetStyle in elThemeGlobalStyles:
+                    if 'name' in elThemeWidgetStyle.attrib and elThemeWidgetStyle.attrib['name'].lower() == elModelWidgetStyle.attrib['name'].lower():
+                            elFoundThemeWidget = elThemeWidgetStyle
                 if elFoundThemeWidget is None:
                     # need to add the new widget with the correct default colors
                     wFG = self.active_theme_default_colors['fgColor']
