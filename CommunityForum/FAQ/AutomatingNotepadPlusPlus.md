@@ -93,22 +93,23 @@ Let's assume that you want to have a macro that will **Select All**, then **Plug
     - It would start out as something like this:
         ```
         <Macro name="RecordedMacro" Ctrl="no" Alt="no" Shift="no" Key="0">
-            <Action type="2" message="0" wParam="42007" lParam="0" sParam="0" />
-            <Action type="2" message="0" wParam="42007" lParam="0" sParam="0" />
-            <Action type="2" message="0" wParam="42002" lParam="0" sParam="0" />
+            <Action type="0" message="2013" wParam="0" lParam="0" sParam="" />
+            <Action type="0" message="2013" wParam="0" lParam="0" sParam="" />
+            <Action type="0" message="2178" wParam="0" lParam="0" sParam="" />
         </Macro>
         ```
         That is the **Select All** command twice and the copy (skipping the plugin command between the two **Select All**.
     - You would need to edit it to be like:
         ```
         <Macro name="RecordedMacro" Ctrl="no" Alt="no" Shift="no" Key="0">
-            <Action type="2" message="0" wParam="42007" lParam="0" sParam="0" />
+            <Action type="0" message="2013" wParam="0" lParam="0" sParam="" />
             <Action type="2" message="0" wParam="22064" lParam="0" sParam="0" />
-            <Action type="2" message="0" wParam="42007" lParam="0" sParam="0" />
-            <Action type="2" message="0" wParam="42002" lParam="0" sParam="0" />
+            <Action type="0" message="2013" wParam="0" lParam="0" sParam="" />
+            <Action type="0" message="2178" wParam="0" lParam="0" sParam="" />
         </Macro>
         ```
         which puts the `22064` that I found with NppUISpy in between the two **Select All** instances.
+        - Please note that many recorded editor commands (like copy, paste, home, etc) will be `type="0"` with the scintilla command in the `message="..."` field; whereas menu commands like the plugin command will be `type="2"` and put the menuCommandID into the `wParam="###"` field.  See the [user manual's `<Macro><Action>` details](https://npp-user-manual.org/docs/config-files/#attributes-for-the-action-tag) for more.
     - Save the `shortcuts.xml` and restart Notepad++.
 
 At this point, running your macro should do the select all, the conversion, the select all, and the copy.
