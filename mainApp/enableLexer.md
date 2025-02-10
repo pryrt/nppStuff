@@ -467,3 +467,56 @@ And add in config files:
     - `lexilla/include/SciLexer.h` has `#define` for `#define SCI_XYZPDQ_* N` values; you will need to make sure you have a `<WordsStyle ... styleID="N" ...>` for each of those styles.
 
 You should also include [autoCompletion](../auto-completion/) definition and [functionList](../function-list/) definition if you have them (they are optional, but highly recommended).
+
+# SAS
+
+`https://github.com/notepad-plus-plus/notepad-plus-plus/issues/16148` is an official request for SAS.  Finally gives me an excuse to add it.
+
+## Keywords
+
+### SciTE
+The SciTE-distributed sas.properties file has a tiny list of keywords, so I tried googling for some more.  
+
+```
+# Keywords
+keywords.$(file.patterns.sas)=%let %do
+
+# Block Keywords
+keywords2.$(file.patterns.sas)=also cards class data input model ods proc var where
+
+# Function Keywords
+keywords3.$(file.patterns.sas)=%printz
+
+# Statement Keywords
+keywords4.$(file.patterns.sas)=run
+```
+
+### Notepad4
+Found notepad4 incorporated LexSAS `https://github.com/zufuliu/notepad4/commit/4f20795099b37acdf01515f276702de81af5dc13` , and `https://github.com/zufuliu/notepad4/blob/d61230063d13ba68518021fb7011349dd4cc8ac8/src/EditLexers/stlSAS.cpp` shows their keywords[0],[1], and [2] lists (they have no [3]) list.
+
+LexSAS variable    | keywordlists[#] | style | list
+-------------------|-----|--------------------------|---
+`keywords`         | [0] | SCE_SAS_MACRO_KEYWORD    | abort bquote( cmpres( compstor( copy datatyp( do ds2csv( else end eval( global goto if include index( kverify( left( length( let list local lowcase( macro mend nrbquote( nrquote( nrstr( put qcmpres( qleft( qlowcase( qscan( qsubstr( qsysfunc( qtrim( quote( qupcase( return run scan( str( substr( superq( symdel symexist( symglobl( symlocal( syscall sysevalf( sysexec sysfunc( sysget( syslput sysmacdelete sysmacexec( sysmacexist( sysmexecdepth sysmexecname( sysmstoreclear sysprod( sysrc( sysrput then to trim( tslit( unquote( until upcase( verify( while 
+`blockKeywords`    | [1] | SCE_SAS_BLOCK_KEYWORD    |
+`functionKeywords` | [2] | SCE_SAS_MACRO_FUNCTIONS  | abs( addrlong( airy( allcomb( allcombi( allperm( anyalnum( anyalpha( anycntrl( anydigit( anyfirst( anygraph( anylower( anyname( anyprint( anypunct( anyspace( anyupper( anyxdigit( arcos( arcosh( arsin( arsinh( artanh( atan( atan2( attrc( attrn( band( beta( betainv( bhamming_32( bhamming_hex( blackclprc( blackptprc( blkshclprc( blkshptprc( blshift( bnot( bor( brshift( bxor( byte( call cat( catq( cats( catt( catx( cdf( ceil( ceilz( cexist( char( choosec( choosen( cinv( clibexist( close( cmiss( cnonct( coalesce( coalescec( collate( comb( compare( compbl( compcost( compfuzz( compfuzz_miss( compged( complev( compound( compress( compsrv_oval( compsrv_unquote2( constant( convx( convxp( cos( cosh( cot( count( countc( countw( csc( css( cumipmt( cumprinc( curobs( cv( daccdb( daccdbsl( daccsl( daccsyd( dacctab( dairy( datdif( date( datejul( datepart( datetime( day( dclose( dcreate( depdb( depdbsl( depsl( depsyd( deptab( dequote( deviance( dhms( dif( digamma( dim( dinfo( divide( dlgcdir( dnum( dopen( doptname( doptnum( dosubl( dread( dropnote( dsname( dur( durp( effrate( envlen( erf( erfc( euclid( execute( exist( exp( expm1( fact( fappend( fclose( fcol( fcopy( fdelete( fetch( fetchobs( fexist( fget( fileexist( filename( fileref( finance( find( findc( findw( finfo( finv( fipname( fipnamel( fipstate( first( floor( floorz( fmtinfo( fnonct( fnote( fopen( foptname( foptnum( fpoint( fpos( fput( fread( frewind( frlen( fsep( fuzz( fwrite( gaminv( gamma( garkhclprc( garkhptprc( gcd( geodist( geomean( geomeanz( getcasurl( getlcaslib( getlsessref( getltag( getoption( getsessopt( getvarc( getvarn( graycode( harmean( harmeanz( hash_fast_hex( hash_xx_hex( hashing( hashing_file( hashing_hmac( hashing_hmac_file( hashing_hmac_init( hashing_init( hashing_part( hashing_term( hbound( hms( holiday( holidayck( holidaycount( holidayname( holidaynx( holidayny( holidaytest( hour( htmldecode( htmlencode( ibessel( ifc( ifn( index( indexc( indexw( input( inputc( inputn( int( intcindex( intck( intcycle( intfit( intfmt( intget( intindex( intnx( intrr( intseas( intshift( inttest( intz( iorcmsg( ipmt( iqr( irr( is8601_convert( jbessel( jsonpp( juldate( juldate7( kurtosis( label( lag( largest( lbound( lcm( lcomb( left( length( lengthc( lengthm( lengthn( lexcomb( lexcombi( lexperk( lexperm( lfact( lgamma( libname( libref( log( log10( log1px( log2( logbeta( logcdf( logistic( logpdf( logsdf( lowcase( lperm( lpnorm( mad( margrclprc( margrptprc( max( md5( mdy( mean( median( min( minute( missing( mod( modexist( module( modulec( modulen( modz( month( mopen( mort( msplint( mvalid( n( netpv( nliteral( nmiss( nomrate( normal( notalnum( notalpha( notcntrl( notdigit( note( notfirst( notgraph( notlower( notname( notprint( notpunct( notspace( notupper( notxdigit( npv( nvalid( nwkdom( open( ordinal( pathname( pctl( pdf( peekclong( peeklong( perm( pmt( point( poisson( pokelong( ppmt( probbeta( probbnml( probbnrm( probchi( probf( probgam( probhypr( probit( probmc( probmed( probnegb( probnorm( probt( propcase( prxchange( prxdebug( prxfree( prxmatch( prxnext( prxparen( prxparse( prxposn( prxsubstr( ptrlongadd( put( putc( putn( pvp( qtr( quantile( quote( ranbin( rancau( rancomb( rand( ranexp( rangam( range( rank( rannor( ranperk( ranperm( ranpoi( rantbl( rantri( ranuni( rename( repeat( resolve( reverse( rewind( right( rms( round( rounde( roundz( saving( savings( scan( sdf( sec( second( sessbusy( sessfound( set( sha256( sha256hex( sha256hmachex( sign( sin( sinh( skewness( sleep( smallest( softmax( sort( sortc( sortn( soundex( spedis( sqrt( squantile( std( stderr( stdize( stfips( stname( stnamel( stream( streaminit( streamrewind( strip( subpad( substr( substrn( sum( sumabs( symexist( symget( symgetn( symglobl( symlocal( symput( symputx( sysexist( sysget( sysmsg( sysparm( sysprocessid( sysprocessname( sysprod( sysrc( system( tan( tanh( time( timepart( timevalue( tinv( tnonct( today( translate( transtrn( tranwrd( trigamma( trim( trimn( trunc( tslvl( typeof( tzoneid( tzonename( tzoneoff( tzones2u( tzoneu2s( uniform( upcase( urldecode( urlencode( uss( uuidgen( var( varfmt( varinfmt( varlabel( varlen( varname( varnum( varray( varrayx( vartype( verify( vformat( vformatd( vformatdx( vformatn( vformatnx( vformatw( vformatwx( vformatx( vinarray( vinarrayx( vinformat( vinformatd( vinformatdx( vinformatn( vinformatnx( vinformatw( vinformatwx( vinformatx( vlabel( vlabelx( vlength( vlengthx( vname( vnamex( vnext( vtype( vtypex( vvalue( vvaluex( week( weekday( whichc( whichn( year( yieldp( yrdif( yyq( zipcity( zipcitydistance( zipfips( zipname( zipnamel( zipstate( 
+`statements`       | [3] | SCE_SAS_STATEMENT        | abort alter and array asc attrib by call cards cards4 catname checkpoint connect constraints continue create data datalines datalines4 delete desc describe disconnect distinct do drop else end endsas eq error execute execute_always file filename footnote format from ge goto group gt having if in index infile informat input insert into keep label le leave length libname link list lock lockdown lostcard lt max merge min missing modify ne not options or order otherwise output page proc put putlog quit redirect remove rename replace reset resetline retain return run sasfile select set skip stop sysecho table then title unique until update validate values view when where while 
+
+I reordered those compared to notepad4, so that bquote would be a macro, abs would be a macro function (the closest to "function" I can find), and catname and checkpoint show up as statements
+
+### VIM
+The vim file for SAS has a lot more groups: https://www.vim.org/scripts/script.php?script_id=3522
+
+### documentation.sas.com
+Global Statements by Category (presumably SCE_SAS_STATEMENT):
+https://documentation.sas.com/doc/en/pgmbasecdc/9.4/lestmtsglobal/n07m1xz4g895ttn1bzqksyuncjsd.htm
+
+Dictionary of Functions: ABS, ADDRLONG, etc
+https://documentation.sas.com/doc/en/pgmsascdc/v_059/lefunctionsref/p1q8bq2v0o11n6n1gpij335fqpph.htm
+
+Macro Functions: %BQUOTE, etc
+https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/mcrolref/n1qqdn7r170c30n197p4jfufv1yy.htm
+Macro Statements: %COPY, %DISPLAY, etc, on the pager above "Macro Functions" in TOC
+
+### Summary
+
+Hard to figure out how to group things.  I might just take notepad4's list and be done with it...
