@@ -547,19 +547,18 @@ That list seems reasonable in SciTE, so I'll use those.
 
 ## Styling
 
-ID  | CONSTANT                  | keyword   | copy Perl color
-----|---------------------------|-----------|--------------------
-0   | SCE_SAS_DEFAULT           |           | DEFAULT
-1   | SCE_SAS_COMMENT           |           | COMMENT
-2   | SCE_SAS_COMMENTLINE       |           | COMMENT
-3   | SCE_SAS_COMMENTBLOCK      |           | COMMENT
-4   | SCE_SAS_NUMBER            |           | NUMBER
-5   | SCE_SAS_OPERATOR          |           | OPERATOR
-6   | SCE_SAS_IDENTIFIER        |           | IDENTIFIER
-7   | SCE_SAS_STRING            |           | STRING QQ
-11  | SCE_SAS_MACRO             |           | HASH
-12  | SCE_SAS_MACRO_KEYWORD     | instre1   | ARRAY
-13  | SCE_SAS_BLOCK_KEYWORD     | instre2   | PROTOTYPE
-14  | SCE_SAS_MACRO_FUNCTION    | type1     | FORMAT IDENTIFIER
-15  | SCE_SAS_STATEMENT         | type2     | INSTRUCTION WORD
-
+ID  | CONSTANT               | Style Label    | keyword   | copy color from...
+----|------------------------|----------------|-----------|--------------------
+0   | SCE_SAS_DEFAULT        | DEFAULT        |           | DEFAULT
+1   | SCE_SAS_COMMENT        | COMMENT        |           | COMMENT LINE
+2   | SCE_SAS_COMMENTLINE    | COMMENT LINE   |           | COMMENT LINE
+3   | SCE_SAS_COMMENTBLOCK   | COMMENT BLOCK  |           | COMMENT LINE
+4   | SCE_SAS_NUMBER         | NUMBER         |           | NUMBER
+5   | SCE_SAS_OPERATOR       | OPERATOR       |           | OPERATOR
+6   | SCE_SAS_IDENTIFIER     | IDENTIFIER     |           | IDENTIFIER
+7   | SCE_SAS_STRING         | STRING         |           | STRING QQ
+11  | SCE_SAS_MACRO          | MACRO          |           | HASH
+12  | SCE_SAS_MACRO_KEYWORD  | MACRO KEYWORD  | instre1   | ARRAY
+14  | SCE_SAS_MACRO_FUNCTION | MACRO FUNCTION | type1     | FORMAT IDENTIFIER
+13  | SCE_SAS_BLOCK_KEYWORD  | FUNCTION       | instre2   | PROTOTYPE
+15  | SCE_SAS_STATEMENT      | STATEMENT      | type2     | INSTRUCTION WORD
