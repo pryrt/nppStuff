@@ -520,3 +520,15 @@ Macro Statements: %COPY, %DISPLAY, etc, on the pager above "Macro Functions" in 
 ### Summary
 
 Hard to figure out how to group things.  I might just take notepad4's list and be done with it...
+
+## Implementation
+
+This afternoon, mostly got it working.  To test the lexing aspect, ignoring N++, use the lexilla build and test:
+```
+cd lexilla\src
+mingw32-make
+cd ..\test
+mingw32-make test
+```
+This will create `lexilla\test\examples\sas\*.new` to indicate the new styler outputs, and this helps me find syntax which will exercise each style from the lexer.
+
