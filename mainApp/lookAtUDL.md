@@ -123,3 +123,19 @@ Okay, when I dig into `isInListBackward()` for `±`, `firstChar` is set to `0xC2
 I think maybe next I'll try `⅀ U+2140` => `0xE2 0x85 0x80` , so that will be unambiguous.  It worked fine as a keyword.  Just before calling `Match()` in `isInListForward()`, sc.ch=`⅀`, sc.width=3 and iter2="`â…€`=``0xE2 0x85 0x80`"; moving into Match(), `*s` is the 3byte char-string from iter2; ch is the sc.ch from outside.  So the problem comes because `ch` is an `int` whereas `*s` is `char` -- so it's comparing apples and oranges.  If I force a `return true`, it properly skips forward the 3 -- wait, when I get back to the main loop, `sc.Forward(skipForward)` skips 3 characters instead of 3 bytes.  That's annoying.  And when it highlights, it highlights 3 characters instead of 3 bytes.  Ah, for the simplicity of coding when you didn't have to worry about multi-byte characters.  
 
 I just don't understand how the logic and comparison worked correctly when doing it backward instead of forward.  Let's move it back to keyword, and see if I can figure out whether there's an equivalent to the Match() or if something else is called.  Okay, so it moves to the space _after_ the keyword, which then starts a backwards search; it sees the sc.LengthCurrent() is 3: I think they really get confused as to what is really a byte and what is a character; I am now curious about UDL for normal or high characters with the UTF16-LE, which I will try soon.  So it is comparing firstChar (probably better as firstByte) to the first element of char[] list.WordAt(i): WordAt works with bytes, so that's why it matches.  For operators (ie, `Match()`), I am wondering whether the `sc.GetRelative()` or the `styler.SafeGetCharAt()` that it calls might be a better choice, rather than accessing `sc.ch` directly; hmm, but `sc.Match()` is in the lexilla::`StyleContext.h`, so it's not something that I can change to make Notepad++ work correctly, so I might have to make my own alternate version of Match()
+
+#### UTF-16
+
+So I tried to reproduce some of what I was working on a few weeks ago, and noticed that Operator1 vs Operator2 work differently, because Operator2 (with Separators Required) works like a keyword, whereas the Operator1 works like a Delimiter or one of the others...  So I confirmed that `⅀ U+2140` actually works in Keyword or Op2 for UTF-8, but it doesn't work in UTF16-LE.  
+
+| Category | UTF-8   | ANSI/1252 | UTF16-LE |
+|----------|---------|-----------|----------|
+| Keyword  | Yes     | Yes       | No       |
+| Operator1| No      | Yes       | No       |
+| Operator2| Yes     | Yes       | No       |
+| Delimiter| No      | Yes       | No       |
+| Comment  | No      | Yes       | No       |
+| Number   | No      | Yes       | No       |
+| Fold     | No      | Yes       | No       |
+
+So that's really two similar but not identical bugs.  More fun.
