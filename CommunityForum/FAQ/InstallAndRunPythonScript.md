@@ -89,9 +89,9 @@ You need to start by doing any preparatory work suggested in the original post, 
 - maybe editing the script to customize some regular expression
 
 Run the script using one of the three methods below:
-- If you followed step #3 from **Installation**, you can just use the keyboard shortcut you defined in the Shortcut Mapper
-- If you followed step #3 from **Installation**, you can access the script through **Plugins > Python Script > ProvidedScript**
-- Whether or not you followed step #3 from **Installation**, you can access the script through  **Plugins > Python Script > Scripts > ProvidedScript**
+- If you followed step #4 from **Installation**, you can just use the keyboard shortcut you defined in the Shortcut Mapper
+- If you followed step #4 from **Installation**, you can access the script through **Plugins > Python Script > ProvidedScript**
+- Whether or not you followed step #4 from **Installation**, you can access the script through  **Plugins > Python Script > Scripts > ProvidedScript**
 
 ## Footnotes
 
