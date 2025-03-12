@@ -80,6 +80,30 @@ zlkbvs = ZoomLevelKeepBothViewsSynched.ZLKBVS()
 #editor.setRepresentation(u'\u000D', u'\u240D')
 
 ######################
+##!!## The following can be uncommented to experiment with one or more notifications
+##!!def myFunction(args):
+##!!    code = args['code'] if 'code' in args else None
+##!!    idFrom = args['idFrom'] if 'idFrom' in args else None
+##!!    hwndFrom = args['hwndFrom'] if 'hwndFrom' in args else None
+##!!    console.write(f"notification(code:{code}, idFrom:{idFrom}, hwndFrom:{hwndFrom}) received\n")
+##!!    if code==NOTIFICATION.CMDLINEPLUGINMSG:
+##!!        if idFrom is None: return
+##!!        str = ctypes.wstring_at(idFrom)
+##!!        console.write(f"\tAdditional Info: str=\"{str}\"\n")
+##!!
+##!!notepad.callback(myFunction, [NOTIFICATION.CMDLINEPLUGINMSG])
+##!!#notepad.callback(myFunction, list(range(1001,1032)))    # should be every notification
+##!!console.write("Registered myFunction callback for CMDLINEPLUGINMSG\n")
+##!!myFunction(dict(code=1, hwndFrom=2, idFrom=3))
+######################
+
+######################
+# process -pluginMessage="" from the command-line
+#import pluginNotification26689
+######################
+
+
+######################
 def CCB():
     notepad.clearCallbacks()
     editor.clearCallbacks()
