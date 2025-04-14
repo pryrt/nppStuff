@@ -95,7 +95,9 @@ There are two primary input methods to your application.
    
 **Example**
 
-To give an example similar to the NppExec example,
+The default `pork2sausage.ini` gives a couple of examples of using just the command-line for the input text and the STDOUT of the command as the output text.
+
+But to give an example which requires the selected-text be sent to a temporary file (`progInput`) and the output of the command to another file (`progOutput`), here is a version of the same action as used by the NppExec example from earlier:
 ```
 [gpg-decrypt selection to self]
 progPath=c:\usr\local\apps\gnupg\bin\gpg.exe
@@ -105,4 +107,4 @@ progOutput=C:\Users\XYZ\AppData\Local\Temp\p2s.$(TIMESTAMP).output
 workDir=C:\Users\XYZ\AppData\Local\Temp
 ```
 
-The selected text will be written to the `progInput` file.  Then `progCmd` will be run, which decrypts from the same file as `progInput`, and puts the result in the same file as `progOutput`.  Then the plugin replaces the selected text with the contents of the `progOutput` file.
+The selected text will be written to the `progInput` file.  Then `progCmd` will be run, which decrypts from the same file as `progInput`, and puts the result in the same file as `progOutput`.  Then the plugin replaces the selected text with the contents of the `progOutput` file.  The `$(TIMESTAMP)` is used as part of the filename, so each time the plugin action is run, the temporary files will be different.
