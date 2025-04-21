@@ -680,6 +680,37 @@ sub deleteUserAndContent
 }
 
 
+=item logoutUser
+
+    $community->logoutUser($userID);
+
+Ends any/all active sessions for the given user.
+
+=cut
+
+# followed the URL from https://docs.nodebb.org/api/read/#tag/users/paths/~1api~1user~1%7Buserslug%7D~1session~1%7Buuid%7D/delete
+#       DELETE /api/user/{userslug}/session/{uuid}
+# but it gives 404 error.  I tried inserting the /v3/ to see if it was really a WRITE API, not a READ API, but still 404
+#   I guess my attempt to force users to log out when I ban them is unsuccessful
+sub logoutUser
+{
+    my ($self, $userID) = @_;
+    my $response = $self->client()->get("https://community.notepad-plus-plus.org/api/user/$userID/sessions");
+    die "$response->{url}\n\t=> $response->{status} $response->{reason}" unless $response->{success};
+    my $content = JSON::decode_json($response->{content});
+    die "$response->{url}\n\t=> $response->{status} $response->{reason}\n\t=> {sessions} not found\n\t=> @{[keys %$content]}" unless exists $content->{sessions};
+    my $sessions = $content->{sessions};
+    die "$response->{url}\n\t=> $response->{status} $response->{reason}\n\t=> {sessions} not an array reference\n\t=> @{[$sessions]}" unless ref($sessions) eq 'ARRAY';
+    return 0 unless scalar @$sessions;
+    for my $sess (@$sessions) {
+        warn "session $sess => $sess->{uuid}:\n" . JSON::encode_json($sess) . "\n";
+        $response = $self->client()->delete("https://community.notepad-plus-plus.org/api/user/$userID/sessions/".$sess->{uuid});
+        die "$response->{url}\n\t=> $response->{status} $response->{reason}" unless $response->{success};
+    }
+    return 1;
+}
+
+
 
 =back
 
