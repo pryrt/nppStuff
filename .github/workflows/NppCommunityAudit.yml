@@ -1,0 +1,36 @@
+name: NppCommunityAudit
+
+on:
+  # schedule uses cron syntax:
+  #   16:00 UTC (8:00am PST) on 6=Saturday
+  schedule:
+    - cron: "0 16 * * 6"
+
+  # allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Audit and Clean Notepad++ Community Forum
+    runs-on: windows-latest
+
+    steps:
+      - name: 🚚 Checkout code
+        uses: actions/checkout@v4
+      - name: 📡 Install Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: '5.40'
+      - name: 🔧 Install Prerequisites
+        run: |
+          cpanm Exporter Data::Dump HTTP::Tiny JSON::XS JSON
+      - name: 🔨 Clean Topics & Posts
+        working-directory: ./perl
+        env:
+          NPPCOMM_TOKEN: ${{ secrets.NPPCOMM_TOKEN }}
+        run: perl nppComm-topicAudit.pl
+      - name: 🔥 Clean Users
+        working-directory: ./perl
+        env:
+          NPPCOMM_TOKEN: ${{ secrets.NPPCOMM_TOKEN }}
+        run: perl nppComm-userAudit.pl
