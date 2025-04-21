@@ -25,12 +25,12 @@ jobs:
         run: |
           cpanm Exporter Data::Dump HTTP::Tiny JSON::XS JSON
       - name: 🔨 Clean Topics & Posts
-        working-directory: ./perl
+        working-directory: ./CommunityForum/.perl
         env:
           NPPCOMM_TOKEN: ${{ secrets.NPPCOMM_TOKEN }}
-        run: perl nppComm-topicAudit.pl
+        run: perl topicAudit.pl
       - name: 🔥 Clean Users
-        working-directory: ./perl
+        working-directory: ./CommunityForum/.perl
         env:
           NPPCOMM_TOKEN: ${{ secrets.NPPCOMM_TOKEN }}
-        run: perl nppComm-userAudit.pl
+        run: perl userAudit.pl
