@@ -2,21 +2,47 @@
 
 Hello, and welcome to the FAQ Desk.  You have likely been directed here because someone provided you with a script for PythonScript, and you need instructions on how to install and run the script.
 
-Please read this FAQ in its entirety before trying to follow the instructions.  You may miss some important concepts by trying to just quickly follow the instructions without having read this whole FAQ.  If you have problems at any stage in this process, go back and re-read this entire FAQ and make sure you haven't missed anything.
+Please read at least the **Simple Version** of the FAQ in its entirety before trying to follow the instructions.  If the person recommending you use a script in PythonScript says there are extra instructions, you should read the _entire_ FAQ.  You may miss some important concepts by trying to skip reading this whole FAQ.  If you have problems at any stage in this process, go back and re-read this entire FAQ and make sure you haven't missed anything.
 
-This FAQ is in three sections:
+To be clear, the PythonScript plugin comes bundled with a Python interpreter -- the version numbers will be different between the PythonScript plugin and the version of the Python interpreter that comes bundled with the plugin (PythonScript 2.1 comes with Python interpreter 2.7.17; PythonScript 3.0.22 comes with Python interpreter 3.12.9).  YOU DO NOT NEED TO SEPARATELY INSTALL A PYTHON INTERPRETER; IT COMES WITH THE PLUGIN.
 
-- **Installation** ⇒ Describes how to install and configure the PythonScript plugin, and how to create a new script to paste the contents of a script that you are copying from somewhere else
-- **Usage -- How to Run the Script** ⇒ Describes how to run the script, once you've installed the plugin and created the script with its contents.
-- **Footnotes** ⇒ Gives additional details.  The FAQ will link to the appropriate footnote with a link like [Footnote N](#footnotes "Footnote N"), or you can just scroll down to that section to see the footnote referenced.
+This FAQ is in two main sections, with the full details having three main points:
 
-## Installation
+- **Simple Version** ⇒ This assumes you have a normal Notepad++ installation, and that the script is compatible with PythonScript 2.  (The script author will tell you if it is not compatible with PythonScript 2)
+- **Full Details** ⇒ This provides extra details, for how to work with edge cases, and gives you a fuller understanding of what's going on.
+   - **Installation** ⇒ Describes how to install and configure the PythonScript plugin, and how to create a new script to paste the contents of a script that you are copying from somewhere else
+   - **Usage -- How to Run the Script** ⇒ Describes how to run the script, once you've installed the plugin and created the script with its contents.
+   - **Footnotes** ⇒ Gives additional details.  The FAQ will link to the appropriate footnote with a link like [Footnote N](#footnotes "Footnote N"), or you can just scroll down to that section to see the footnote referenced.
+
+## Simple Version
+
+This assumes you have a normal installation of Notepad++, and are willing to use the easiest-to-install PythonScript (even though it uses the Python 2 interpreter rather than Python 3 interpreter)
+
+1. If you don't have PythonScript installed, this needs to be done once:
+    - **Plugins > Plugins Admin**, checkmark **Python Script** 2.1, and click **Install**.
+    - After Notepad++ restarts, **Plugins > Python Script** will exist.
+2. **Plugins > Python Script > New script**
+    - Save it, usually in `%AppData%\Notepad++\Plugins\Config\PythonScript\scripts\`_`<SomeName>`_`.py`
+        - For those who didn't know, `%AppData%\` automatically expands to something like `c:\users\`_`<username>`_`\AppData\Roaming\`
+    - Paste in the contents of the script from the posting.  Save.
+3. To run the script: **Plugins > Python Script > Scripts > _`<nameOfScript>`_**
+
+It's really that simple.
+
+Everything in the details below just help work around edge cases.  The script author should tell you things like "you need PythonScript v3" or "if you want it to run every time you start notepad++, then follow the instructions in the FAQ".  If they give extra instructions like that, then the details are found below.  It might look complicated as you try to read the remaining for the first time, but if you just follow the instructions, it **will** work.
+
+## Full Details
+
+### Installation
 
 These are the installation instructions.  If you want to know how to _run_ the script, that is described in the **Usage** section, farther down in this FAQ.
 
 1. Install PythonScript plugin, if you don't have it already
     - There are two versions of the PythonScript plugin -- you can install either of them (though some scripts might take some tweaking to work in one or the other).
-    - PythonScript 2.0.0: This version of the plugin uses the outdated Python 2.7 at its core, but most of the scripts found in the forum were written for and tested with this version of the plugin.  To install it:
+        - In general, if you want "easy to install", and the script author hasn't told you otherwise, you can just install PythonScript 2.1.
+        - If you are an experienced Python programmer, and want the full features of the modern Python3 interpreter, you can choose to instead manually install PythonScript 3.0.x.
+            - PythonScript 3.0.x will work great if you are only dealing with Unicode files (UTF-8, usually).  If you are using the old ANSI character sets, some of the text manipulation might not behave as you expect.
+    - PythonScript 2.1.0: This version of the plugin uses the outdated Python 2.7 at its core, but most of the scripts found in the forum were written for and tested with this version of the plugin.  To install it:
         - **Plugins > Plugins Admin**
         - checkmark `PythonScript`
         - click **Install**
@@ -81,7 +107,7 @@ If the script's author mentioned putting some commands in your "startup script" 
 
 It is also highly recommended that you go to **Plugins > Python Script > Configuration...** and checkmark **☑ Automatically open console on error** -- this way, if something goes wrong, the error message will be visible (so you can ask the original author of the script for help _with the error message and details of what went wrong_)
 
-## Usage -- How to Run the Script
+### Usage -- How to Run the Script
 
 You need to start by doing any preparatory work suggested in the original post, including but not limited to:
 
@@ -93,7 +119,7 @@ Run the script using one of the three methods below:
 - If you followed step #4 from **Installation**, you can access the script through **Plugins > Python Script > ProvidedScript**
 - Whether or not you followed step #4 from **Installation**, you can access the script through  **Plugins > Python Script > Scripts > ProvidedScript**
 
-## Footnotes
+### Footnotes
 
 1. PythonScript directory structure is described below.  You will want the "User Scripts" when following these instructions:
     - "Machine Scripts" go in the `...\Plugins\PythonScript\scripts\` directory:
