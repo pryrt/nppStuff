@@ -22,7 +22,7 @@ This assumes you have a normal installation of Notepad++, and are willing to use
     - **Plugins > Plugins Admin**, checkmark **Python Script** 2.1, and click **Install**.
     - After Notepad++ restarts, **Plugins > Python Script** will exist.
 2. **Plugins > Python Script > New script**
-    - Save it, usually in `%AppData%\Notepad++\Plugins\Config\PythonScript\scripts\`_`<SomeName>`_`.py`
+    - Save it, usually in `%AppData%\Notepad++\Plugins\Config\PythonScript\scripts\`_`<nameOfScript>`_`.py`
         - For those who didn't know, `%AppData%\` automatically expands to something like `c:\users\`_`<username>`_`\AppData\Roaming\`
     - Paste in the contents of the script from the posting.  Save.
 3. To run the script: **Plugins > Python Script > Scripts > _`<nameOfScript>`_**
