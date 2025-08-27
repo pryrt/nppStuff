@@ -66,13 +66,13 @@ Some external tools known to be able to control Notepad++:
 
 ## SubFAQ: Using Plugin Commands in Macros
 
-Plugin commands (even for the default plugins, like MIME Tools) are not macro-recordable.  However, with a bit of effort on your part, they can be macro-playable (with some limitations).
+Plugin commands (even for the default plugins, like MIME Tools) are not macro-recordable; neither are **Run**-menu commands, or other Macros.  However, with a bit of effort on your part, they can be macro-playable (with some limitations).
 
-The reason that they aren't macro-recordable is that macros make use of the menu command ID for storing which command to use.  For built-in menu commands, those commands all have a fixed ID, so from one run of Notepad++ to the next, they will always keep the same menu command ID.  Since the plugins available and taking up menu space can be different from run-to-run in Notepad++, the application actually assigns the menu command IDs for each plugin dynamically.  Thus, if you install or upgrade a plugin such that the number of plugin menu commands change, the next time you run Notepad++, other plugins will possibly get different command IDs compared to the previous run (depending on what order Notepad++ processes each of the plugins).
+The reason that they aren't macro-recordable is that macros make use of the menu command ID for storing which command to use.  For built-in menu commands, those commands all have a fixed ID, so from one run of Notepad++ to the next, they will always keep the same menu command ID.  Since the plugins available and taking up menu space can be different from run-to-run in Notepad++, the application actually assigns the menu command IDs for each plugin dynamically (stored Run menu commands and saved Macros, similarly, get a dynamically-allocated command ID).  Thus, if you install or upgrade a plugin such that the number of plugin menu commands change, the next time you run Notepad++, other plugins will possibly get different command IDs compared to the previous run (depending on what order Notepad++ processes each of the plugins).
 
-Due to this dynamic menu command ID, Notepad++ would not be able to guarantee that a command ID it records for the macro would work for the same command the next time Notepad++ is run, and thus does not record macro commands.
+Due to this dynamic menu command ID, Notepad++ would not be able to guarantee that a command ID it records for the macro would work for the same command the next time Notepad++ is run, and thus does not record plugin commands, saved **Run**-menu actions, or other Macro commands.
 
-There are two workarounds:
+There are two workarounds (which will work on Plugin commands, saved **Run**-menu commands, and running other Macros):
 
 1. Use a scripting plugin (like PythonScript) instead of Macros to do your automation (because scripting plugins usually have helper commands that can search through the menu to be able to run even plugin menu commands).  This adds overhead, and you might have to learn a new programming language, but it gives you a lot more power.
 
