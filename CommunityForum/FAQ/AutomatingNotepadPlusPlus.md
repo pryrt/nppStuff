@@ -64,7 +64,7 @@ Some external tools known to be able to control Notepad++:
 
 # ----------------------------------------------
 
-## SubFAQ: Using Plugin Commands in Macros
+## SubFAQ: Using Plugin, Run-menu and Macro Commands in Macros
 
 Plugin commands (even for the default plugins, like MIME Tools) are not macro-recordable; neither are **Run**-menu commands, or other Macros.  However, with a bit of effort on your part, they can be macro-playable (with some limitations).
 
