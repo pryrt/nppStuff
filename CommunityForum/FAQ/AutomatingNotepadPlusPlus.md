@@ -114,4 +114,4 @@ Let's assume that you want to have a macro that will **Select All**, then **Plug
 
 At this point, running your macro should do the select all, the conversion, the select all, and the copy.
 
-The next time you installed or upgraded a plugin, you would need to re-run **Spy!**, and check whether the command ID has changed; if it has, edit `shortcuts.xml` again, and replace the example `22064` with the new number.
+The next time you installed or upgraded a plugin, you would need to re-run **Spy!**, and check whether the command ID has changed; if it has, edit `shortcuts.xml` again, and replace the example `22064` with the new number.  (If your macro involves another macro or a run menu command, you will also have to re-check the command ID using **Spy!** or equivalent: adding plugins , removing plugins, or sometimes even upgrading plugins will change the command IDs for plugin commands; similarly, adding or deleting macros can change the command IDs for other macros; and adding or deleting saved Run menu entries can change the command IDs for other saved Run menu entries.)
