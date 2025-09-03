@@ -669,7 +669,7 @@ sub deleteUserAndContent
 {
     my ($self, $userID) = @_;
     my $response = $self->client()->delete("https://community.notepad-plus-plus.org/api/v3/users/$userID/content");
-    die "$response->{url}\n\t=> $response->{status} $response->{reason}" unless $response->{success};
+    warn "deleteUserAndContent::justContent: $response->{url}\n\t=> $response->{status} $response->{reason}\n" unless $response->{success};
     $response = $self->client()->delete("https://community.notepad-plus-plus.org/api/v3/users/$userID/account");
     die "$response->{url}\n\t=> $response->{status} $response->{reason}" unless $response->{success};
     #my $response = $self->client()->delete("https://community.notepad-plus-plus.org/api/v3/users/$userID");
