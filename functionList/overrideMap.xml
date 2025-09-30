@@ -7,9 +7,9 @@
 |
 \=========================================================================== -->
 <NotepadPlus>
-	<functionList>
-		<associationMap>
-		<!--
+    <functionList>
+        <associationMap>
+            <!--
 			This file is optional (can be removed).
 			Each functionlist parse rule links to a language ID ("langID").
 			The "id" is the parse rule's default file name, but users can override it.
@@ -109,40 +109,36 @@
 			<association id= "myphp2.xml"		langID= "1" />
 			and that's it.
 		-->
-
-
-		<!--
+            <!--
 		   As there is currently only one langID for COBOL:
 		   uncomment the following line to change to cobol-free.xml (cobol section free)
 		   if this is your favourite format
 		-->
-		<!--
+            <!--
 		<association id= "cobol-free.xml"		langID= "50"/>
 		-->
-
-		<!--
+            <!--
 			For User Defined Languages (UDL's) use:
 
 			<association id="my_parser.xml" userDefinedLangName="My UDL Name" />
 
 			If "My UDL Name" doesn't exist yet, you can create it via UDL dialog.
 		-->
-			<!-- ==================== User Defined Languages ============================ -->
-			<association id= "krl.xml"				userDefinedLangName="KRL"/>
-			<association id= "nppexec.xml"			userDefinedLangName="NppExec"/>
-			<association id= "sinumerik.xml"		userDefinedLangName="Sinumerik"/>
-			<association id= "universe_basic.xml"	userDefinedLangName="UniVerse BASIC"/>
-			<association id= "udl_markdown.xml"		userDefinedLangName="Markdown (preinstalled)"/>
-			<association id= "outline.xml"			userDefinedLangName="Outline"/>
-			<!-- ======================================================================== -->
-
-			<!-- ==================== Peter's Customizations ============================ -->
-            <association id= "my_xml.xml"			langID= "9" />
-            <association id= "my_perl.xml"			langID= "21" />
-			<association id= "udl_cadence.xml"		userDefinedLangName="Cadence"/>
-			<association id= "udl_evo.xml"			userDefinedLangName="LtxMxEnVision"/>
-			<association id= "udl_fn_pod.xml"		userDefinedLangName="POD"/>
-			<!-- ======================================================================== -->
-		</associationMap>
-	</functionList>
+            <!-- ==================== User Defined Languages ============================ -->
+            <association id="krl.xml" userDefinedLangName="KRL"/>
+            <association id="nppexec.xml" userDefinedLangName="NppExec"/>
+            <association id="sinumerik.xml" userDefinedLangName="Sinumerik"/>
+            <association id="universe_basic.xml" userDefinedLangName="UniVerse BASIC"/>
+            <association id="udl_markdown.xml" userDefinedLangName="Markdown (preinstalled)"/>
+            <association id="outline.xml" userDefinedLangName="Outline"/>
+            <!-- ======================================================================== -->
+            <!-- ==================== Peter's Customizations ============================ -->
+            <association id="my_xml.xml" langID="9"/>
+            <association id="my_perl.xml" langID="21"/>
+            <association id="udl_cadence.xml" userDefinedLangName="Cadence"/>
+            <association id="udl_evo.xml" userDefinedLangName="LtxMxEnVision"/>
+            <association id="udl_fn_pod.xml" userDefinedLangName="POD"/>
+            <!-- ======================================================================== -->
+        </associationMap>
+    </functionList>
 </NotepadPlus>
