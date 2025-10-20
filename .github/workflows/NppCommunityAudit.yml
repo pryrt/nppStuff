@@ -23,7 +23,7 @@ jobs:
           perl-version: '5.40'
       - name: 🔧 Install Prerequisites
         run: |
-          cpanm Exporter Data::Dump HTTP::Tiny JSON::XS JSON
+          cpanm --verbose --no-interactive Exporter Data::Dump HTTP::Tiny JSON JSON::XS
       - name: 🔨 Clean Topics & Posts
         working-directory: ./CommunityForum/.perl
         env:
