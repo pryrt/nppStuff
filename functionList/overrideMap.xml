@@ -134,7 +134,7 @@
             <!-- ======================================================================== -->
             <!-- ==================== Peter's Customizations ============================ -->
             <association id="my_xml.xml" langID="9"/>
-            <association id="my_perl.xml" langID="21"/>
+            <!--association id="my_perl.xml" langID="21"/--><!-- Notepad++ v8.8.7 comes bundled with an updated perl.xml, so no longer need my_perl.xml -->
             <association id="udl_cadence.xml" userDefinedLangName="Cadence"/>
             <association id="udl_evo.xml" userDefinedLangName="LtxMxEnVision"/>
             <association id="udl_fn_pod.xml" userDefinedLangName="POD"/>
