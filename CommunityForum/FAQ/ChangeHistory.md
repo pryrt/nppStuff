@@ -14,11 +14,19 @@ It's quite useful feature.  Similar techniques have been found in other text edi
 
 Please give it a chance before you try to turn it off.  It really is useful.
 
-But if you insist on abandoning one of the most useful new features of Notepad++, there is a **Display Change History** checkbox in the **Settings > Preferences > Margins/Border/Edge**.  
+But if you insist on abandoning one of the most useful new features of Notepad++, there is a **Display Change History** checkbox in the **Settings > Preferences > Margins/Border/Edge** (from v8.4.6 thru v8.6.4), like:
 
 ![](https://community.notepad-plus-plus.org/assets/uploads/files/1664445587834-93039d56-a88b-4351-9bb6-7a03ca5dbd67-capture-d-%C3%A9cran-2022-09-29-115124.png)
 
 You can uncheck the checkbox in the settings and have the change take effect immediately.  But if you checkmark the setting again to turn it back on, you will have to restart Notepad++ to take effect... So it's not a good idea to turn it off and back on frequently.  If what you're really trying to do is just clear the margin for the short term (get it back to a nice clean margin, with no orange or green, equivalent to how it was when you first loaded your file), all you have to do is clear the history, as described in the next section.
+
+Starting in [v8.6.5](https://github.com/notepad-plus-plus/notepad-plus-plus/wiki/Changes#865), it is more customizable, with two checkboxes in [**Settings > Preferences > Margins/Border/Edge**](https://npp-user-manual.org/docs/preferences/#marginsborderedge) (enabling it both for the margins and for the text background):
+
+![7380891d-94f4-4169-83ec-9835bcb2e1be-image.png](/assets/uploads/files/1761419285623-7380891d-94f4-4169-83ec-9835bcb2e1be-image.png) 
+
+... as well as allowing you to customize the colors in the [**Global Styles** section of the **Style Configurator**](https://npp-user-manual.org/docs/preferences/#global-styles) (follow those links to the User Manual for more details):
+
+![6199ca5d-fbcf-4ad9-b58d-8a9d11e32508-image.png](/assets/uploads/files/1761419365481-6199ca5d-fbcf-4ad9-b58d-8a9d11e32508-image.png) 
 
 ## How do I clear the history? I want to make it have no orange or green bars!
 
@@ -70,4 +78,4 @@ This is a new feature, so it will likely take a few versions of Notepad++ before
 
 **Workaround**: Until this bug is fixed in the underlying library and the fix is propagated to Notepad++ and released, you can workaround this problem by clearing the history (see the **Clear the History** section, above).
 
-The new version [v8.4.7](https://community.notepad-plus-plus.org/topic/23696/notepad-v8-4-7-release-candidate/10) fixes this problem, so install that newer version to avoid the printing issue.
+The newer version [v8.4.7](https://community.notepad-plus-plus.org/topic/23696/notepad-v8-4-7-release-candidate/10) fixes this problem, so install that newer version to avoid the printing issue.
