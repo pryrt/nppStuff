@@ -58,7 +58,7 @@ If you want to go the OPPOSITE way, and have maximal visual impact, try changing
 
 The background color is set with **Settings > Style Configurator > Language: `Global Styles` > Style: `Change History margin`**.  
 
-Unfortunately, you cannot (yet) change the four foreground colors (though that feature [has been requested](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/12321)).
+Starting in v8.6.5, you can change the four foreground colors with **Style: `Change History modified`**, **Style: `Change History revert modified`**, **Style: `Change History revert origin`**, and **Style: `Change History saved`**.
 
 ## Consequences for Plugins
 
@@ -68,14 +68,23 @@ Further, Change History uses Margin number 2, so that is no longer available to 
 
 Plugins that made use of affected marker-numbers or margin 2 will have to be updated in order to not conflict with Notepad++'s use.  If they are not updated, there will be unexpected interactions, and users will be confused.
 
-## Known Issues
+## Historical Issues
 
-This is a new feature, so it will likely take a few versions of Notepad++ before it is stable.  Known issues will be described below, with links to the official bugtracker issue number, and with any known workarounds.  You can check the issue links to see if the status for an issue has changed since this FAQ was last updated.
+During the early days of the feature, there were a few known issues.  They are described below, along with the range of versions where those problems existed.
 
-### Printing
+### Printing 
+
+_Problem for just v8.4.6; fixed v8.4.7._
 
 [Issue #12281](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/12281): Due to a bug in an underlying library, if the Change Margin history is visible, then any lines that were changed (or even saved-since-last-change) will get an unexpected background color when printed.  
 
 **Workaround**: Until this bug is fixed in the underlying library and the fix is propagated to Notepad++ and released, you can workaround this problem by clearing the history (see the **Clear the History** section, above).
 
 The newer version [v8.4.7](https://community.notepad-plus-plus.org/topic/23696/notepad-v8-4-7-release-candidate/10) fixes this problem, so install that newer version to avoid the printing issue.
+
+### Changing Color
+
+_Problem from v8.4.6 - v8.6.4; fixed v8.6.5._
+
+As mentioned above, the four foreground colors were not customizable using Style Configurator until v8.6.5, with **Style: `Change History modified`**, **Style: `Change History revert modified`**, **Style: `Change History revert origin`**, and **Style: `Change History saved`**.
+
