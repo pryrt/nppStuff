@@ -4,8 +4,9 @@ With the release of v8.8.9, there is a [new feature](https://community.notepad-p
 
 Unfortunately, the v8.8.9 implementation included some annoying growing pains: the procedure always uses the same colors that those styles have in the `stylers.model.xml` file (ie, the default "light mode" colors), even if you are using a dark theme, which can make for glaring color issues: on Languages that get new styles added, the text that should be that new style can end up as black-on-white text, even if the rest of the text has a dark background; and if the theme was old enough, some GUI elements (like the Bookmark margin and Change History margin, between the line numbers and the text being edited) may clash with the surrounding GUI elements.
 
-In the future v8.9 this issue will be fixed, so people who had an older theme and use v8.9 will see new styles show up using the default foreground and background colors of that theme, so they won't clash: it might not highlight the new keywords, for example, but at least it won't look worse than it used to.  But unfortunately, 
+In the future v8.9 this issue will be fixed, so people who had an older theme and use v8.9 will see new styles show up using the default foreground and background colors of that theme, so they won't clash: it might not highlight the new keywords, for example, but at least it won't look worse than it used to.  
 
+But unfortunately, once you run it in v8.8.9, your theme will no longer have those entries "missing", and the glaring white background will be saved.  The instructions below will help you with that:
 
 ## Download Source
 
@@ -40,3 +41,7 @@ If you have customized your Theme -- changed the font, or changed a color, or ad
 11. Save `<themeName>.xml`
 12. Exit Notepad++
 13. When you run Notepad++ again, it should now include your customizations again.
+
+## Native Feature compared to ConfigUpdater plugin
+
+The [ConfigUpdater plugin](https://github.com/pryrt/NppPlugin-ConfigUpdater) was introduced as a testbed for some of the ideas that made it into the v8.8.9 native implementation.  As such, if you are in v8.8.9 or newer, you no longer need the ConfigUpdater plugin.  But if you are before v8.8.9, and waiting for the v8.9 fix to the Notepad++ feature before upgrading, then using ConfigUpdater while in v8.8.8-or-older will help you get to a point where if you did upgrade to v8.8.9, it wouldn't make the glaring UI clash and black-on-white text in dark themes.
