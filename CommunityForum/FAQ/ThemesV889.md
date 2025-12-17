@@ -10,7 +10,7 @@ But unfortunately, once you run it in v8.8.9, your theme will no longer have tho
 
 ## Download Source
 
-For now, I have supplied updated copies of all the v8.8.9 themes in my copy of the Notepad++ codebase: <https://github.com/pryrt/notepad-plus-plus/tree/themesPost889/PowerEditor/installer/themes>.  (Eventually, this FAQ will be updated to point to the main application repository instead, but it is important enough to get this FAQ published that I am not waiting until the updated Themes are merged into the main codebase.)  At that page, you can  click on any of the themes you want, and then hit the `⤓` "Download raw file" button to download it.  Then follow the appropriate instructions above, to put it in the right place.
+The [installer themes in the source code](https://github.com/notepad-plus-plus/notepad-plus-plus/tree/master/PowerEditor/installer/themes) have been updated to have all the styles needed (to be able to fix the problems from v8.8.9).  You can go here to grab the theme file(s) you want: <https://github.com/notepad-plus-plus/notepad-plus-plus/tree/master/PowerEditor/installer/themes>.
 
 ## Update Themes in Installation Directory
 
