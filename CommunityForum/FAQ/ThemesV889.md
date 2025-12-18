@@ -8,13 +8,25 @@ In the future v8.9 this issue will be fixed, so people who had an older theme an
 
 But unfortunately, once you run it in v8.8.9, your theme will no longer have those entries "missing", and the glaring white background will be saved.  The instructions below will help you with that:
 
-## Download Source
+## Instructions
+
+**These instructions are _only_ needed if you ran Notepad++ v8.8.9. If you upgraded from something earlier to v8.9-or-later, you do _not_ need these instructions.**
+
+1. Download the updated theme file(s) from the Source (see **Download Source** below)
+2. Depending on circumstances, decide whether you need to update the installation-directory theme, the user-config-directory theme, or both
+    - If you have a portable version of Notepad++, without using the Cloud directory or `-settingsDir`, then you need to just follow the instructions to **Update Theme(s) in User Config Directory**
+    - If you are not using a portable version of Notepad++, then it is recommended to follow **Update Theme(s) in Installation Directory** first, and then decide based on the next item whether to continue or not
+    - If you have any theme file(s) in the user-configuration directory (whether it's `%AppData%\Notepad++\themes\` or the Cloud directory's `.\themes` subdirectory or the `-settingsDir`'s `.\themes` subdirectory, then you should follow the **Update Theme(s) in User Config Directory** for those.
+
+Please note: when correctly following step 2, you may need to follow multiple sets of instructions.  Please read and understand each point under step 2 to make the right changes.
+
+### Download Source
 
 The [installer themes in the source code](https://github.com/notepad-plus-plus/notepad-plus-plus/tree/master/PowerEditor/installer/themes) have been updated to have all the styles needed (to be able to fix the problems from v8.8.9).  You can go here to grab the theme file(s) you want: <https://github.com/notepad-plus-plus/notepad-plus-plus/tree/master/PowerEditor/installer/themes>.
 
-## Update Themes in Installation Directory
+### Update Theme(s) in Installation Directory
 
-Assuming you have a [normal installation](https://npp-user-manual.org/docs/config-files/#configuration-files-location) of Notepad++ (using the `c:\program files\Notepad++` directory), and you haven't made _any_ customizations to your Theme(s), you can just manually replace the Theme(s) in the Installation directory
+Except when you have a portable version of Notepad++, you will generally need to follow this set of instructions for the themes that come in the installation directory.  In a [normal installation](https://npp-user-manual.org/docs/config-files/#configuration-files-location) of Notepad++, the installation will be in `c:\program files\Notepad++` directory or equivalent, and the installation-directory themes will thus be in `c:\program files\Notepad++\themes`.  (See the **Instructions** section above for the decision process to know for sure whether to use this section.)
 
 1. Exit Notepad++
 2. Go to the URL mentioned in the **Download Source** section (above), and download the raw version of your Theme file(s)
@@ -22,11 +34,11 @@ Assuming you have a [normal installation](https://npp-user-manual.org/docs/confi
 4. Copy the downloaded Theme(s) into that directory, overwriting what's there
 5. When you run Notepad++ next time, it will use the updated theme, and the glaring color issues should be gone.
 
-If you have customized your theme with user-keywords or user-extensions, then this won't be sufficient, because Notepad++ 
+If you have customized your theme with user-keywords or user-extensions, then this won't be sufficient, because Notepad++ gives priority to the copy from the user-settings directory. (See the **Instructions** section above for the decision process to know for sure whether this section is sufficient for your needs.)
 
-## Update Themes in AppData or Cloud Directory
+### Update Theme(s) in User Config Directory
 
-If you have customized your Theme -- changed the font, or changed a color, or added User-defined keywords to a Language's style, or added User extensions to the Language in the Style Configurator -- then just replacing the theme in the installation directory won't be sufficient.
+If you have your Theme file in the user-settings directory (AppData hierarchy or Cloud directory or `-settingsDir` directory) for any reason -- whether you customized it by changing the font or color or added user-defined keywords or user-defined extensions using the Style Configurator, or whether you intentionally copied or downloaded a Theme into the user-settings directory, or whether it's there and you don't know how or why it got there: under any of those circumstances, then just replacing the theme in the installation directory won't be sufficient.   (See the **Instructions** section above for the decision process to know for sure whether to use this section.)
 
 1. Exit Notepad++
 2. If you haven't already, go to the URL mentioned in the **Download Source** section (above), and download the raw version of your Theme file(s)
@@ -44,4 +56,4 @@ If you have customized your Theme -- changed the font, or changed a color, or ad
 
 ## Native Feature compared to ConfigUpdater plugin
 
-The [ConfigUpdater plugin](https://github.com/pryrt/NppPlugin-ConfigUpdater) was introduced as a testbed for some of the ideas that made it into the v8.8.9 native implementation.  As such, if you are in v8.8.9 or newer, you no longer need the ConfigUpdater plugin.  But if you are before v8.8.9, and waiting for the v8.9 fix to the Notepad++ feature before upgrading, then using ConfigUpdater while in v8.8.8-or-older will help you get to a point where if you did upgrade to v8.8.9, it wouldn't make the glaring UI clash and black-on-white text in dark themes.
+The [ConfigUpdater plugin](https://github.com/pryrt/NppPlugin-ConfigUpdater) was introduced as a testbed for some of the ideas that made it into the v8.8.9 native implementation.  As such, if you are in v8.8.9 or newer, you no longer need the ConfigUpdater plugin.  But if you are before v8.8.9, and waiting for the v8.9 fix to the Notepad++ feature before upgrading, then using ConfigUpdater while in v8.8.8-or-older will help you get to a point where if you did change your mind and upgrade to v8.8.9, it wouldn't make the glaring UI clash and black-on-white text in dark themes.
