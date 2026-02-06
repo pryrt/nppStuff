@@ -6,6 +6,8 @@ Trying to implement @Coises idea for setting the wrap to exactly 80
 from Npp import *
 import ctypes
 from ctypes import wintypes
+from MsgHooker import MH as MsgHook
+WM_SIZE = 0x0005
 
 # Define the RECT structure to match Win32 API
 class RECT(ctypes.Structure):
@@ -61,14 +63,35 @@ def pysc_setWrap80(ed=editor):
     ed.setMarginRight(wantMargin)
     ed.setMarginLeft(0)
 
-def pysc_setWrap80e1(args=None):
-    pysc_setWrap80(editor1)
+def HIWORD(value): return (value >> 16) & 0xFFFF
+def LOWORD(value): return value & 0xFFFF
 
-def pysc_setWrap80e2(args=None):
-    pysc_setWrap80(editor2)
+def pysc_size_callback( hwnd, msg, wParam, lParam):
+    #console.write(f"cb(h:{hwnd}, m:{msg}, w:{wParam}, l:{lParam}) => {LOWORD(lParam)} x {HIWORD(lParam)}\n")
+    if hwnd == editor1.hwnd:
+        pysc_setWrap80(editor1)
+    elif hwnd == editor2.hwnd:
+        pysc_setWrap80(editor2)
+    return True
 
-def pysc_setWrap80eX(args=None):
-    pysc_setWrap80(editor)
+pysc_setWrap80(editor1)
+pysc_setWrap80(editor2)
+pysc_size_hook = MsgHook([ editor1.hwnd, editor2.hwnd ], pysc_size_callback, [WM_SIZE])
+console.write("SetWrap80 registered WM_SIZE callback\n")
 
-editor.callback(pysc_setWrap80eX, [SCINTILLANOTIFICATION.PAINTED])
-console.write("SetWrap80 registered callback\n")
+def pysc_unsetWrap80(args=None):
+    """
+    To stop
+    pysc_unsetWrap80()
+    """
+    editor1.setMarginRight(0)
+    editor2.setMarginRight(0)
+    global pysc_size_hook
+    if pysc_size_hook:
+        pysc_size_hook.unhook()
+    del pysc_size_hook
+
+# use the following in the console (no #) to stop it from always wrapping at 80
+#
+# pysc_unsetWrap80()
+
