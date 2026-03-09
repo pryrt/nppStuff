@@ -46,7 +46,7 @@ babygrid = user32.FindWindowExW(sk_mapper_hwnd, None, u'BABYGRID',None)
 shortcuts = []
 for tab in range(item_count):
     rows = user32.SendMessageW(babygrid, BGM_GETROWS, 0, 0)
-    print 'rows', rows
+    print('rows', rows)     # line fixed for python 3 syntax
 
     for i in range(1, rows+1):
         shortcut = []
