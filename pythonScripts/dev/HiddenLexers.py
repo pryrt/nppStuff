@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
 Makes lexilla's "hidden" lexers available for NPP.
-- SAS
+- [STOP] SAS - N++ v8.7.8 enabled it internally
 - Stata
 - X12
 
@@ -43,67 +43,41 @@ class GenericLexer:
         raise NotImplementedError("You should be calling colorize() on a specific lexer, not on the {} parent class".format(__class__))
 
 # specific lexer subclasses
-class SasLexer(GenericLexer):
+class ConfLexer(GenericLexer):
     """
-        SAS is another language
+        Apache .htaccess/*.conf lexer
 
-        %let
-        %do
-        also        cards        class
-        data        input        model
-        ods        proc        var
-        where
-        %printz
-        %blah
-        %peterfake
-        where        run
-        * ... comment style 1;
-        run
-        // ... comment style 2;
-        run
-        /* comment style 3 */
-        5 + 7 = 9
-        one
+        https://github.com/notepad-plus-plus/notepad-plus-plus/blob/938b61333260f3fed25fcfd5693b9e16720f2ad1/lexilla/include/SciLexer.h#L611-L620
     """
 
-    _lexer_name = b"sas"
-    SCE_SAS_DEFAULT                                        = 0
-    SCE_SAS_COMMENT                                        = 1
-    SCE_SAS_COMMENTLINE                                    = 2
-    SCE_SAS_COMMENTBLOCK                                   = 3
-    SCE_SAS_NUMBER                                         = 4
-    SCE_SAS_OPERATOR                                       = 5
-    SCE_SAS_IDENTIFIER                                     = 6
-    SCE_SAS_STRING                                         = 7
-    SCE_SAS_TYPE                                           = 8
-    SCE_SAS_WORD                                           = 9
-    SCE_SAS_GLOBAL_MACRO                                   = 10
-    SCE_SAS_MACRO                                          = 11
-    SCE_SAS_MACRO_KEYWORD                                  = 12
-    SCE_SAS_BLOCK_KEYWORD                                  = 13
-    SCE_SAS_MACRO_FUNCTION                                 = 14
-    SCE_SAS_STATEMENT                                      = 15
+    _lexer_name = b"conf"
 
+    SCE_CONF_DEFAULT                                    = 0
+    SCE_CONF_COMMENT                                    = 1
+    SCE_CONF_NUMBER                                     = 2
+    SCE_CONF_IDENTIFIER                                 = 3
+    SCE_CONF_EXTENSION                                  = 4
+    SCE_CONF_PARAMETER                                  = 5
+    SCE_CONF_STRING                                     = 6
+    SCE_CONF_OPERATOR                                   = 7
+    SCE_CONF_IP                                         = 8
+    SCE_CONF_DIRECTIVE                                  = 9
 
     def colorize(self, lexintf):
         self.announce(lexintf)
 
-        editor.styleSetFore(self.SCE_SAS_DEFAULT               , notepad.getEditorDefaultForegroundColor())
-        editor.styleSetFore(self.SCE_SAS_COMMENT               , (0,255,0))
-        editor.styleSetFore(self.SCE_SAS_COMMENTLINE           , (0,255,0))
-        editor.styleSetFore(self.SCE_SAS_COMMENTBLOCK          , (0,255,0))
-        editor.styleSetFore(self.SCE_SAS_NUMBER                , (255,0,0))
-        editor.styleSetFore(self.SCE_SAS_OPERATOR              , (128,64,0))
-        editor.styleSetFore(self.SCE_SAS_IDENTIFIER            , (64,64,64))
-        editor.styleSetFore(self.SCE_SAS_STRING                , (128,128,128))
-        editor.styleSetFore(self.SCE_SAS_TYPE                  , (128,0,255))       # not implemented
-        editor.styleSetFore(self.SCE_SAS_WORD                  , (255,128,0))       # not implemented
-        editor.styleSetFore(self.SCE_SAS_GLOBAL_MACRO          , (255,255,0))       # not implemented
-        editor.styleSetFore(self.SCE_SAS_MACRO                 , (0,0,255))         # start with %
-        editor.styleSetFore(self.SCE_SAS_MACRO_KEYWORD         , (0,255,255))       # keywords/keywords1
-        editor.styleSetFore(self.SCE_SAS_BLOCK_KEYWORD         , (0,0,127))         # keywords2
-        editor.styleSetFore(self.SCE_SAS_MACRO_FUNCTION        , (0,127,127))       # keywords3
-        editor.styleSetFore(self.SCE_SAS_STATEMENT             , (0xAA,0,0))        # keywords4
+        editor.styleSetFore(self.SCE_CONF_DEFAULT                 , notepad.getEditorDefaultForegroundColor())
+        editor.styleSetFore(self.SCE_CONF_COMMENT                 , (0,127,0))
+        editor.styleSetFore(self.SCE_CONF_NUMBER                  , (0,127,127))
+        editor.styleSetFore(self.SCE_CONF_IDENTIFIER              , (0,0,127))
+        editor.styleSetBack(self.SCE_CONF_IDENTIFIER              , (255,250,160))
+        editor.styleSetFore(self.SCE_CONF_EXTENSION               , (0,0,0))
+        editor.styleSetBack(self.SCE_CONF_EXTENSION               , (239,239,239))
+        editor.styleSetFore(self.SCE_CONF_PARAMETER               , (0,63,192))            # keywords2
+        editor.styleSetFore(self.SCE_CONF_STRING                  , (127,0,127))
+        editor.styleSetFore(self.SCE_CONF_OPERATOR                , (255,0,0))
+        editor.styleSetFore(self.SCE_CONF_IP                      , (0,127,127))
+        editor.styleSetFore(self.SCE_CONF_DIRECTIVE               , (0,0,255))           # keywords
 
         # ordering is important
         if lexintf.nppver() < 8.410:
@@ -116,10 +90,169 @@ class SasLexer(GenericLexer):
         editor_hwnd = lexintf.editor1_hwnd if notepad.getCurrentView() == 0 else lexintf.editor2_hwnd
         windll.user32.SendMessageW(editor_hwnd, lexintf.SCI_SETILEXER, 0, self.ilexer_ptr)
 
-        editor.setKeyWords(0, "%let %do")
-        editor.setKeyWords(1, "also cards class data input model ods proc var where")
-        editor.setKeyWords(2, "%printz")
-        editor.setKeyWords(3, "run")
+        # LexX12.cxx only defines one property; I want to enable folding
+        editor.setProperty("fold", "1")
+        editor.setMarginWidthN(3,14)    # MARGIN3 = FOLD, WIDTH=14px (standard width in NPP)
+
+        # if I am wrong about keyword lists, each would go here...
+        # directives: https://httpd.apache.org/docs/current/mod/directives.html
+        editor.setKeyWords(0, """
+            acceptfilter acceptmutex acceptpathinfo accessconfig accessfilename action addalt
+            addaltbyencoding addaltbytype addcharset adddefaultcharset adddescription addencoding
+            addhandler addicon addiconbyencoding addiconbytype addinputfilter addlanguage addmodule
+            addmoduleinfo addoutputfilter addoutputfilterbytype addtype agentlog alias aliasmatch
+            aliaspreservepath all allow allowconnect allowencodedslashes allowmethods allowoverride
+            allowoverridelist anonymous anonymous_authoritative anonymous_logemail anonymous_mustgiveemail
+            anonymous_nouserid anonymous_verifyemail assignuserid asyncrequestworkerfactor
+            authauthoritative authbasicauthoritative authbasicfake authbasicprovider
+            authbasicusedigestalgorithm authdbauthoritative authdbduserpwquery authdbduserrealmquery
+            authdbgroupfile authdbmauthoritative authdbmgroupfile authdbmtype authdbmuserfile
+            authdbuserfile authdigestalgorithm authdigestdomain authdigestfile authdigestgroupfile
+            authdigestnccheck authdigestnonceformat authdigestnoncelifetime authdigestprovider
+            authdigestqop authdigestshmemsize authformauthoritative authformbody authformdisablenostore
+            authformfakebasicauth authformlocation authformloginrequiredlocation
+            authformloginsuccesslocation authformlogoutlocation authformmethod authformmimetype
+            authformpassword authformprovider authformsitepassphrase authformsize authformusername
+            authgroupfile authldapauthoritative authldapauthorizeprefix authldapbindauthoritative
+            authldapbinddn authldapbindpassword authldapcharsetconfig authldapcompareasuser
+            authldapcomparednonserver authldapdereferencealiases authldapenabled authldapfrontpagehack
+            authldapgroupattribute authldapgroupattributeisdn authldapinitialbindasuser
+            authldapinitialbindpattern authldapmaxsubgroupdepth authldapremoteuserattribute
+            authldapremoteuserisdn authldapsearchasuser authldapsubgroupattribute authldapsubgroupclass
+            authldapurl authmerging authname authncachecontext authncacheenable authncacheprovidefor
+            authncachesocache authncachetimeout authnprovideralias authnzfcgicheckauthnprovider
+            authnzfcgidefineprovider authtype authuserfile authzdbdlogintoreferer authzdbdquery
+            authzdbdredirectquery authzdbmtype authzprovideralias authzsendforbiddenonfailure
+            balancergrowth balancerinherit balancermember balancerpersist bindaddress brotlialteretag
+            brotlicompressionmaxinputblock brotlicompressionquality brotlicompressionwindow
+            brotlifilternote browsermatch browsermatchnocase bs2000account bufferedlogs buffersize
+            cachedefaultexpire cachedetailheader cachedirlength cachedirlevels cachedisable cacheenable
+            cacheexpirycheck cachefile cacheforcecompletion cachegcclean cachegcdaily cachegcinterval
+            cachegcmemusage cachegcunused cacheheader cacheignorecachecontrol cacheignoreheaders
+            cacheignorenolastmod cacheignorequerystring cacheignoreurlsessionidentifiers cachekeybaseurl
+            cachelastmodifiedfactor cachelock cachelockmaxage cachelockpath cachemaxexpire cachemaxfilesize
+            cacheminexpire cacheminfilesize cachenegotiateddocs cachequickhandler cachereadsize
+            cachereadtime cacheroot cachesize cachesocache cachesocachemaxsize cachesocachemaxtime
+            cachesocachemintime cachesocachereadsize cachesocachereadtime cachestaleonerror
+            cachestoreexpired cachestorenostore cachestoreprivate cachetimemargin cgidscripttimeout
+            cgimapextension cgipassauth cgiscripttimeout cgivar charsetdefault charsetoptions
+            charsetsourceenc checkbasenamematch checkcaseonly checkspelling childperuserid chrootdir
+            clearmodulelist contentdigest cookiedomain cookieexpires cookiehttponly cookielog cookiename
+            cookiesamesite cookiesecure cookiestyle cookietracking coredumpdirectory customlog dav
+            davbasepath davdepthinfinity davgenericlockdb davlockdb davlockdiscovery davmintimeout
+            dbdexptime dbdinitsql dbdkeep dbdmax dbdmin dbdparams dbdpersist dbdpreparesql dbdriver
+            defaulticon defaultlanguage defaultruntimedir defaulttype define deflatealteretag
+            deflatebuffersize deflatecompressionlevel deflatefilternote deflateinflatelimitrequestbody
+            deflateinflateratioburst deflateinflateratiolimit deflatememlevel deflatewindowsize deny
+            directory directorycheckhandler directoryindex directoryindexredirect directorymatch
+            directoryslash documentroot dtraceprivileges dumpioinput dumpiooutput else elseif
+            enableexceptionhook enablemmap enablesendfile error errordocument errorlog errorlogformat
+            example expiresactive expiresbytype expiresdefault extendedstatus extfilterdefine
+            extfilteroptions fallbackresource fancyindexing fileetag files filesmatch filterchain
+            filterdeclare filterprotocol filterprovider filtertrace flushmaxpipelined flushmaxthreshold
+            forcelanguagepriority forcetype forensiclog from globallog gprofdir gracefulshutdowntimeout
+            group h2copyfiles h2direct h2earlyhint h2earlyhints h2maxdataframelen h2maxheaderblocklen
+            h2maxsessionstreams h2maxstreamerrors h2maxworkeridleseconds h2maxworkers h2minworkers
+            h2moderntlsonly h2outputbuffering h2padding h2proxyrequests h2push h2pushdiarysize
+            h2pushpriority h2pushresource h2serializeheaders h2streammaxmemsize h2streamtimeout
+            h2tlscooldownsecs h2tlswarmupsize h2upgrade h2websockets h2windowsize header headername
+            heartbeataddress heartbeatlisten heartbeatmaxservers heartbeatstorage hostnamelookups
+            httpprotocoloptions identitycheck identitychecktimeout if ifdefine ifdirective iffile ifmodule
+            ifsection ifversion imapbase imapdefault imapmenu include includeoptional indexheadinsert
+            indexignore indexignorereset indexoptions indexorderdefault indexstylesheet inputsed
+            isapiappendlogtoerrors isapiappendlogtoquery isapicachefile isapifakeasync isapilognotsupported
+            isapireadaheadbuffer keepalive keepalivetimeout keptbodysize languagepriority ldapcacheentries
+            ldapcachettl ldapconnectionpoolttl ldapconnectiontimeout ldaplibrarydebug ldapopcacheentries
+            ldapopcachettl ldapreferralhoplimit ldapreferrals ldapretries ldapretrydelay
+            ldapsharedcachefile ldapsharedcachesize ldaptimeout ldaptrustedca ldaptrustedcatype
+            ldaptrustedclientcert ldaptrustedglobalcert ldaptrustedmode ldapverifyservercert limit
+            limitexcept limitinternalrecursion limitrequestbody limitrequestfields limitrequestfieldsize
+            limitrequestline limitxmlrequestbody listen listenbacklog listencoresbucketsratio
+            listentcpdeferaccept loadfile loadmodule location locationmatch lockfile logformat
+            logiotrackttfb loglevel logmessage luaauthzprovider luacodecache luahookaccesschecker
+            luahookauthchecker luahookcheckuserid luahookfixups luahookinsertfilter luahooklog
+            luahookmaptostorage luahookpretranslate luahooktranslatename luahooktypechecker luainherit
+            luainputfilter luamaphandler luaoutputfilter luapackagecpath luapackagepath luaquickhandler
+            luaroot luascope macro maxclients maxconnectionsperchild maxkeepaliverequests maxmemfree
+            maxrangeoverlaps maxrangereversals maxranges maxrequestsperchild maxrequestsperthread
+            maxrequestworkers maxspareservers maxsparethreads maxthreads maxthreadsperchild
+            mcachemaxobjectcount mcachemaxobjectsize mcachemaxstreamingbuffer mcacheminobjectsize
+            mcacheremovalalgorithm mcachesize mdactivationdelay mdbaseserver mdcachallenges
+            mdcertificateagreement mdcertificateauthority mdcertificatecheck mdcertificatefile
+            mdcertificatekeyfile mdcertificatemonitor mdcertificateprotocol mdcertificatestatus
+            mdchallengedns01 mdchallengedns01version mdcheckinterval mdcontactemail mddrivemode
+            mdexternalaccountbinding mdhttpproxy mdinitialdelay mdmatchnames mdmember mdmembers
+            mdmessagecmd mdmuststaple mdnotifycmd mdomain mdomainset mdportmap mdprivatekeys mdprofile
+            mdprofilemandatory mdrenewmode mdrenewviaari mdrenewwindow mdrequirehttps mdretrydelay
+            mdretryfailover mdserverstatus mdstapleothers mdstapling mdstaplingkeepresponse
+            mdstaplingrenewwindow mdstoredir mdstorelocks mdwarnwindow memcacheconnttl mergeslashes
+            mergetrailers metadir metafiles metasuffix mimemagicfile minspareservers minsparethreads
+            mmapfile modemstandard modmimeusepathinfo multiviewsmatch mutex namevirtualhost nocache noproxy
+            numservers nwssltrustedcerts nwsslupgradeable options order outputsed passenv pidfile port
+            privilegesmode protocol protocolecho protocols protocolshonororder proxy proxy100continue
+            proxyaddheaders proxybadheader proxyblock proxydomain proxyerroroverride proxyexpressdbmfile
+            proxyexpressdbmtype proxyexpressenable proxyfcgibackendtype proxyfcgisetenvif
+            proxyftpdircharset proxyftpescapewildcards proxyftplistonwildcard proxyhcexpr proxyhctemplate
+            proxyhctpsize proxyhtmlbufsize proxyhtmlcharsetout proxyhtmldoctype proxyhtmlenable
+            proxyhtmlevents proxyhtmlextended proxyhtmlfixups proxyhtmlinterp proxyhtmllinks proxyhtmlmeta
+            proxyhtmlstripcomments proxyhtmlurlmap proxyiobuffersize proxymatch proxymaxforwards proxypass
+            proxypassinherit proxypassinterpolateenv proxypassmatch proxypassreverse
+            proxypassreversecookiedomain proxypassreversecookiepath proxypreservehost
+            proxyreceivebuffersize proxyremote proxyremotematch proxyrequests proxyscgiinternalredirect
+            proxyscgisendfile proxyset proxysourceaddress proxystatus proxytimeout proxyvia
+            proxywebsocketfallbacktoproxyhttp qsc qualifyredirecturl readbuffersize readmename
+            receivebuffersize redirect redirectmatch redirectpermanent redirectrelative redirecttemp
+            redisconnpoolttl redistimeout refererignore refererlog reflectorheader regexdefaultoptions
+            registerhttpmethod remoteipheader remoteipinternalproxy remoteipinternalproxylist
+            remoteipproxiesheader remoteipproxyprotocol remoteipproxyprotocolexceptions
+            remoteiptrustedproxy remoteiptrustedproxylist removecharset removeencoding removehandler
+            removeinputfilter removelanguage removeoutputfilter removetype requestheader requestreadtimeout
+            require requireall requireany requirenone resourceconfig rewritebase rewritecond rewriteengine
+            rewritelock rewritelog rewriteloglevel rewritemap rewriteoptions rewriterule rlimitcpu
+            rlimitmem rlimitnproc satisfy scoreboardfile script scriptalias scriptaliasmatch
+            scriptinterpretersource scriptlog scriptlogbuffer scriptloglength scriptsock securelisten
+            seerequesttail sendbuffersize serveradmin serveralias serverlimit servername serverpath
+            serverroot serversignature servertokens servertype session sessioncookiename sessioncookiename2
+            sessioncookieremove sessioncryptocipher sessioncryptodriver sessioncryptopassphrase
+            sessioncryptopassphrasefile sessiondbdcookiename sessiondbdcookiename2 sessiondbdcookieremove
+            sessiondbddeletelabel sessiondbdinsertlabel sessiondbdperuser sessiondbdselectlabel
+            sessiondbdupdatelabel sessionenv sessionexclude sessionexpiryupdateinterval sessionheader
+            sessioninclude sessionmaxage setenv setenvif setenvifexpr setenvifnocase sethandler
+            setinputfilter setoutputfilter singlelisten ssiendtag ssierrormsg ssietag ssilastmodified
+            ssilegacyexprparser ssistarttag ssitimeformat ssiundefinedecho sslcacertificatefile
+            sslcacertificatepath sslcadnrequestfile sslcadnrequestpath sslcarevocationcheck
+            sslcarevocationfile sslcarevocationpath sslcertificatechainfile sslcertificatefile
+            sslcertificatekeyfile sslciphersuite sslcompression sslcryptodevice sslengine sslfips
+            sslhonorcipherorder sslinsecurerenegotiation sslmutex sslocspdefaultresponder sslocspenable
+            sslocspnoverify sslocspoverrideresponder sslocspproxyurl sslocsprespondercertificatefile
+            sslocsprespondertimeout sslocspresponsemaxage sslocspresponsetimeskew sslocspuserequestnonce
+            sslopensslconfcmd ssloptions sslpassphrasedialog sslprotocol sslproxycacertificatefile
+            sslproxycacertificatepath sslproxycarevocationcheck sslproxycarevocationfile
+            sslproxycarevocationpath sslproxycheckpeercn sslproxycheckpeerexpire sslproxycheckpeername
+            sslproxyciphersuite sslproxyengine sslproxymachinecertificatechainfile
+            sslproxymachinecertificatefile sslproxymachinecertificatepath sslproxyprotocol sslproxyverify
+            sslproxyverifydepth sslrandomseed sslrenegbuffersize sslrequire sslrequiressl sslsessioncache
+            sslsessioncachetimeout sslsessionticketkeyfile sslsessiontickets sslsrpunknownuserseed
+            sslsrpverifierfile sslstaplingcache sslstaplingerrorcachetimeout sslstaplingfaketrylater
+            sslstaplingforceurl sslstaplingrespondertimeout sslstaplingresponsemaxage
+            sslstaplingresponsetimeskew sslstaplingreturnrespondererrors sslstaplingstandardcachetimeout
+            sslstrictsnivhostcheck sslusername sslusestapling sslverifyclient sslverifydepth
+            sslvhostsnipolicy startservers startthreads stricthostcheck substitute substituteinheritbefore
+            substitutemaxlinelength suexec suexecusergroup threadlimit threadsperchild threadstacksize
+            timeout traceenable transferlog typesconfig unclist undefine undefmacro unsetenv use
+            usecanonicalname usecanonicalphysicalport user userdir vhostcgimode vhostcgiprivs vhostgroup
+            vhostprivs vhostsecure vhostuser virtualdocumentroot virtualdocumentrootip virtualhost
+            virtualscriptalias virtualscriptaliasip watchdoginterval win32disableacceptex xbithack
+            xml2encalias xml2encdefault xml2startparse
+        """)   # directives
+        # parameters: allo deny on off, etc
+        editor.setKeyWords(1, """
+            alert any crit debug downgrade-1.0 emerg execcgi false followsymlinks force-response-1.0 includes
+            indexes inetd info multiviews no nokeepalive none notice off on standalone true warn x-compress x-gzip yes
+        """) # parameters
+        # I originally had the CamelCase, but that wouldn't match; I keep forgetting
+        #   scintilla does LowerCase matching internally
+
 
 class StataLexer(GenericLexer):
     """
@@ -295,8 +428,9 @@ class HiddenLexerInterface:
         """
         self.map_extensions = {}
         self.map_extensions['do'] = self.map_extensions['stata'] = StataLexer()
-        self.map_extensions['sas'] = SasLexer()
+        #self.map_extensions['sas'] = SasLexer()    # N++ v8.7.8 now enables SAS internally
         self.map_extensions['x12'] = X12Lexer()
+        self.map_extensions['htaccess'] = self.map_extensions['conf'] = ConfLexer()
 
         # initialize win32 interface info
         self.notepad_hwnd = windll.user32.FindWindowW(u'Notepad++', None)
