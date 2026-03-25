@@ -1,5 +1,6 @@
 # encoding=utf-8
-"""in response to https://community.notepad-plus-plus.org/topic/27482/
+"""in response to https://community.notepad-plus-plus.org/topic/27472/
+(fixed URL to Topic)
 
 process -pluginMessage="PythonScriptCommandlineSearch=term"
 
