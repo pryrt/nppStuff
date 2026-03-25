@@ -101,6 +101,9 @@ zlkbvs = ZoomLevelKeepBothViewsSynched.ZLKBVS()
 # process -pluginMessage="" from the command-line
 #import pluginNotification26689
 ######################
+# process -pluginMessage="PythonScriptCommandlineSearch=term"
+#import commandlineSearch27482
+######################
 
 
 ######################
