@@ -6,7 +6,7 @@
 
     If the colors are getting deleted at other times, one of your lexers or plugins might be changing the INDICATOR number 0, so you can try to set INDICATOR_ID to another integer (0..7 are for lexers, 8..31 are for the Notepad++ application itself, I cannot guarantee which will or won't be used by your setup) on the INDICATOR_ID = ... line, below
 
-    URL: https://gist.github.com/pryrt/3055e137f3cb9b67a5265125507b2eae
+    URL: https://github.com/pryrt/nppStuff/blob/main/pythonScripts/nppCommunity/21xxx/21044-ColorizeHtmlCssColors.py
 
     modified from a notification-based script in the gist at https://gist.github.com/pryrt/5ade1a13501c4df47f2fd8c00f1c7b03
 
@@ -110,8 +110,7 @@ def grab_color_and_paint_hex8(m):
                     end_position)
 
 def grab_color_and_paint_rgbparen(m):
-    #console.write("match({}..{})='{}'\n".format(m.start(0),m.end(0), m.group(0)))
-    console.write("matches: 0:{}\t1:{}\t2:{}\t3:{}\n".format(m.group(0),m.group(1),m.group(2),m.group(3)))
+    #console.write("matches: 0:{}\t1:{}\t2:{}\t3:{}\n".format(m.group(0),m.group(1),m.group(2),m.group(3)))
     r = int(m.group(1))
     g = int(m.group(2))
     b = int(m.group(3))
@@ -159,3 +158,8 @@ if my_state[my_file]:
                 start_position,
                 end_position)
 
+    editor.research(r'rgba\(\h*(\d+)\h*,\h*(\d+)\h*,\h*(\d+)\h*,\h*\d*?\.\d+\h*\)',
+                grab_color_and_paint_rgbparen,
+                0,
+                start_position,
+                end_position)
