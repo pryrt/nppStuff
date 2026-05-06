@@ -9,10 +9,12 @@ To be clear, the PythonScript plugin comes bundled with a Python interpreter -- 
 This FAQ is in two main sections, with the full details having three main points:
 
 - **Simple Version** ⇒ This assumes you have a normal Notepad++ installation, and that the script is compatible with PythonScript 2.  (The script author will tell you if it is not compatible with PythonScript 2)
-- **Full Details** ⇒ This provides extra details, for how to work with edge cases, and gives you a fuller understanding of what's going on.
-   - **Installation** ⇒ Describes how to install and configure the PythonScript plugin, and how to create a new script to paste the contents of a script that you are copying from somewhere else
+- **Full Details** ⇒ This provides extra details, including how to use either PythonScript 2 or PythonScript 3, details for how to work with edge cases, and gives you a fuller understanding of what's going on.
+   - **Installation** ⇒ Describes how to install and configure the PythonScript plugin (both PythonScript 2 and PythonScript 3), and how to create a new script to paste the contents of a script that you are copying from somewhere else
    - **Usage -- How to Run the Script** ⇒ Describes how to run the script, once you've installed the plugin and created the script with its contents.
    - **Footnotes** ⇒ Gives additional details.  The FAQ will link to the appropriate footnote with a link like [Footnote N](#footnotes "Footnote N"), or you can just scroll down to that section to see the footnote referenced.
+
+To reiterate: this FAQ applies to both PythonScript 2 and PythonScript 3: the procedures are essentially identical, except for plugin installation.
 
 ## Simple Version
 
@@ -30,6 +32,8 @@ This assumes you have a normal installation of Notepad++, and are willing to use
 It's really that simple.
 
 Everything in the details below just help work around edge cases.  The script author should tell you things like "you need PythonScript v3" or "if you want it to run every time you start notepad++, then follow the instructions in the FAQ".  If they give extra instructions like that, then the details are found below.  It might look complicated as you try to read the remaining for the first time, but if you just follow the instructions, it **will** work.
+
+Again, if you want to use PythonScript 3.x instead of PythonScript 2.x, continue reading the **Full Details**, and the FAQ will explain how to install that version of the plugin instead.
 
 ## Full Details
 
@@ -67,7 +71,7 @@ These are the installation instructions.  If you want to know how to _run_ the s
         - **_Caveat_**: many scripts posted in the forum end up in a grey or black box; if there is a scroll bar on the right side of that box, please make sure you scroll through and grab the _whole_ script, not just the first "page" worth.
     - Paste in the `ProvidedScript.py` file
     - **Save**
-4. If you want to give it a keyboard shortcut or add it to the editor's right-click context menu:
+4. If you want to give it a keyboard shortcut (some users call it a "hotkey") or add it to the editor's right-click context menu:
     - **Plugins > Python Script > Configuration...**
     - Select **User Scripts**
     - Select `ProvidedScript.py`
@@ -76,14 +80,15 @@ These are the installation instructions.  If you want to know how to _run_ the s
     - **OK**
     - Exit Notepad++ completely and restart the application
     - **Plugins > Python Script** will now list `ProvidedScript`
-    - To give it a keyboard shortcut:
-        - **Settings > Shortcut Mapper**
+    - To give it a keyboard shortcut ("hotkey"):
+        - Use Notepad++'s shortcut facility, with **Settings > Shortcut Mapper**
             - select the **Plugin commands** tab
-            - Filter = `ProvidedScript`
+            - Filter = `ProvidedScript` (or Filter = `PythonScript` if you want to see all PythonScript commands or scripts)
             - Click on `ProvidedScript` in the list, **Modify**, and set the shortcut as desired, **OK**
             - Click **Close**
         - Now that shortcut will be assigned to the `ProvidedScript` script
     - To add it to the editor’s right-click context menu
+        - (You only need to follow these steps if you want it in the context menu; this is not required by all users.)
         - Choose **Edit Popup contextMenu** from the **Settings** menu (noting the info about having to restart Notepad++ for changes to be realized)
         - A file named `contextMenu.xml` will open into a new tab
         - Insert this line between existing lines of the XML, as desired for your menu:
