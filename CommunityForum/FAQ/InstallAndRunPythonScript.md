@@ -1,6 +1,6 @@
 # FAQ: How to install and run a script in PythonScript
 
-Hello, and welcome to the FAQ Desk.  You have likely been directed here because someone provided you with a script for PythonScript, and you need instructions on how to install and run the script.
+You have likely been directed here because someone provided you with a script for PythonScript, and you need instructions on how to install and run the script.
 
 Please read at least the **Simple Version** of the FAQ in its entirety before trying to follow the instructions.  If the person recommending you use a script in PythonScript says there are extra instructions, you should read the _entire_ FAQ.  You may miss some important concepts by trying to skip reading this whole FAQ.  If you have problems at any stage in this process, go back and re-read this entire FAQ and make sure you haven't missed anything.
 
@@ -14,7 +14,7 @@ This FAQ is in two main sections, with the full details having three main points
    - **Usage -- How to Run the Script** ⇒ Describes how to run the script, once you've installed the plugin and created the script with its contents.
    - **Footnotes** ⇒ Gives additional details.  The FAQ will link to the appropriate footnote with a link like [Footnote N](#footnotes "Footnote N"), or you can just scroll down to that section to see the footnote referenced.
 
-To reiterate: this FAQ applies to both PythonScript 2 and PythonScript 3: the procedures are essentially identical, except for plugin installation.
+To reiterate: this FAQ applies to both PythonScript 2 and PythonScript 3: the procedures are essentially identical, except for plugin installation.  Any instruction that doesn't list a specific version 2.x or version 3.x will work for either.
 
 ## Simple Version
 
@@ -72,23 +72,27 @@ These are the installation instructions.  If you want to know how to _run_ the s
     - Paste in the `ProvidedScript.py` file
     - **Save**
 4. If you want to give it a keyboard shortcut (some users call it a "hotkey") or add it to the editor's right-click context menu:
-    - **Plugins > Python Script > Configuration...**
-    - Select **User Scripts**
-    - Select `ProvidedScript.py`
-    - Click the left **Add** to add the script to the **Menu items** table
-        - Note: it needs to be added to this list to be able to be accessed via Notepad++'s Shortcut Mapper
-    - **OK**
-    - Exit Notepad++ completely and restart the application
+    - As a prerequisite for either situation, you must add the script to the main Python Script menu, following these steps:
+        - **Plugins > Python Script > Configuration...**
+        - Select **User Scripts**
+        - Select `ProvidedScript.py`
+        - Click the left **Add** to add the script to the **Menu items** table
+            - Note: it needs to be added to this list to be able to be accessed via Notepad++'s Shortcut Mapper
+        - **OK**
+        - Exit Notepad++ completely and restart the application.
+            - If you do not do this, the **Shorcut Mapper** cannot see the new script, and the keyboard shortcut instructions below will not work.
+            - If you do not do this, the contextMenu.xml will not see the new script, and the context menu instructions below will not work.
     - **Plugins > Python Script** will now list `ProvidedScript`
-    - To give it a keyboard shortcut ("hotkey"):
+    - To give your script a keyboard shortcut ("hotkey"):
+        - Follow the "prerequisite" steps, above.
         - Use Notepad++'s shortcut facility, with **Settings > Shortcut Mapper**
             - select the **Plugin commands** tab
             - Filter = `ProvidedScript` (or Filter = `PythonScript` if you want to see all PythonScript commands or scripts)
             - Click on `ProvidedScript` in the list, **Modify**, and set the shortcut as desired, **OK**
             - Click **Close**
         - Now that shortcut will be assigned to the `ProvidedScript` script
-    - To add it to the editor’s right-click context menu
-        - (You only need to follow these steps if you want it in the context menu; this is not required by all users.)
+    - To add your script to the editor’s right-click context menu
+        - Follow the "prerequisite" steps, above.
         - Choose **Edit Popup contextMenu** from the **Settings** menu (noting the info about having to restart Notepad++ for changes to be realized)
         - A file named `contextMenu.xml` will open into a new tab
         - Insert this line between existing lines of the XML, as desired for your menu:
