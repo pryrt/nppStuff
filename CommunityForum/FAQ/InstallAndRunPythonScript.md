@@ -65,6 +65,7 @@ These are the installation instructions.  If you want to know how to _run_ the s
     - **Plugins > Python Script > New script**
     - Give it the name that was suggested in the original post, or something that makes sense to you.  I will call it `ProvidedScript.py` for purposes of this FAQ entry.
     - It should be placed in your "user scripts" directory (_see [Footnote 1](#footnotes:~:text=PythonScript%20directory%20structure%20is%20described%20below. "Footnote #1")_) ... If it doesn't default to that location, then change to the correct location.
+        - Alternately, you could use the "machine scripts" directory (_described in same [Footnote 1](#footnotes:~:text=PythonScript%20directory%20structure%20is%20described%20below. "Footnote #1")_), but that's not recommended, as it might require Elevated/Admin/UAC permission to save the script there.
     - **Save**
 3. Populate the script
     - Copy the text from the script that was provided to you, verbatim (including spacing/indentation... that is critical): copy/paste is your friend.
@@ -74,7 +75,7 @@ These are the installation instructions.  If you want to know how to _run_ the s
 4. If you want to give it a keyboard shortcut (some users call it a "hotkey") or add it to the editor's right-click context menu:
     - As a prerequisite for either situation, you must add the script to the main Python Script menu, following these steps:
         - **Plugins > Python Script > Configuration...**
-        - Select **User Scripts**
+        - Select radio button for **User Scripts** (or **Machine Scripts**, depending on which location you chose in step 2, above, referencing [Footnote 1](#footnotes:~:text=PythonScript%20directory%20structure%20is%20described%20below. "Footnote #1"))
         - Select `ProvidedScript.py`
         - Click the left **Add** to add the script to the **Menu items** table
             - Note: it needs to be added to this list to be able to be accessed via Notepad++'s Shortcut Mapper
