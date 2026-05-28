@@ -48,6 +48,12 @@ This backup will go either in the same folder or hierarchy as the original, or i
 
 Notepad++ v8.1.9.1 - v8.3 installed standard with `Simple` backup-on-save enabled for new installations.  This annoyed some users, so v8.3.1 and newer went back to defaulting without any backup-on-save active.
 
+_Note_: In case it's not clear: the "Backup on Save" feature will always save the previous version of the file.  For example:
+    - Open filename `c:\realpath\file.txt` when Notepad++ it set to `Simple` Backup on Save, to the custom directory `c:\custom\backup\`; see that the file contents starts as `a b c` .
+    - Edit the contents to `d e f`, and hit save.  Now `c:\realpath\file.txt` contains `d e f` and `c:\custom\backup\file.txt.bak` contains `a b c` .
+    - Edit the contents to `x y z`, and hit save.  Now `c:\realpath\file.txt` contains `x y z` and `c:\custom\backup\file.txt.bak` contains `d e f` .
+    - The backup-on-save file is thus always one version behind the main file (hence, it's a backup of your previous version).
+
 #### AutoSave Plugin v2.00
 
 When you first install AutoSave Plugin from **Plugins > Plugins Admin** (or through a manual download and install), the options will not necessarily automatically save files as expected.  You **must** set the preferences to match your needs, otherwise the plugin is doing nothing for you.
