@@ -103,6 +103,7 @@ zlkbvs = ZoomLevelKeepBothViewsSynched.ZLKBVS()
 ######################
 # process -pluginMessage="PythonScriptCommandlineSearch=term"
 #import commandlineSearch27482
+import commandlineSearch27472de
 ######################
 
 

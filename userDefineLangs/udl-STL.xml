@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <NotepadPlus>
     <UserLang name="STL" ext="stl" udlVersion="2.1">
         <Settings>
@@ -18,7 +19,7 @@
             <Keywords name="Folders in code1, open"></Keywords>
             <Keywords name="Folders in code1, middle"></Keywords>
             <Keywords name="Folders in code1, close"></Keywords>
-            <Keywords name="Folders in code2, open">solid facet &quot;outer loop&quot;</Keywords>
+            <Keywords name="Folders in code2, open">solid facet "outer loop"</Keywords>
             <Keywords name="Folders in code2, middle"></Keywords>
             <Keywords name="Folders in code2, close">endsolid endfacet endloop</Keywords>
             <Keywords name="Folders in comment, open"></Keywords>

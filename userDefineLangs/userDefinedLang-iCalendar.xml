@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <NotepadPlus>
     <UserLang name="iCal" ext="ics" udlVersion="2.1">
         <Settings>
@@ -24,7 +25,9 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">SUMMARY&#x000D;&#x000A;CLASS&#x000D;&#x000A;DESCRIPTION</Keywords>
+            <Keywords name="Keywords1">SUMMARY
+CLASS
+DESCRIPTION</Keywords>
             <Keywords name="Keywords2"></Keywords>
             <Keywords name="Keywords3"></Keywords>
             <Keywords name="Keywords4"></Keywords>
