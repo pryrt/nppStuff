@@ -167,3 +167,20 @@ Only one of those two options can be active ⦿.
 
 `○ Save autorecover here`: If this option is active ⦿, you need to choose a directory when you enable this option; the default `$CDIR$\autorecover` doesn't seem to carry any meaning; choose a real directory.  When AutoSave is triggered, the plugin will create a file called `new #` (matching Notepad++'s naming scheme) in that folder; however, it still keeps the file that's shown in Notepad++ as a new/unsaved/unnamed file, so Notead++ and AutoSave Plugin both treat the file as "unsaved" and "unnamed".  This configuration doesn't reset Notepad++'s `new #` numbering, so new files created won't generally collide with the existing autorecover files.  When you close a `new #` tab without saving, the AutoSave plugin's autorecover file will still exist; however, the next time you create a new tab, if Notepad++ re-uses that number, then the new autorecover file will overwrite the old autorecover file of the same name.
 
+
+-----
+
+### Corrupted Session
+
+Starting in Notepad++ v8.6.5, it will store `session.xml.inCaseOfCorruption.bak` next to `session.xml`, and will automatically use that if `session.xml` is corrupted.
+
+However, if you ever find that you open Notepad++ (especially after an update or a system crash) and find that the files opened weren't in the same state as when you let them, you can _try_ this procedure:
+
+- Exit Notepad++
+- Windows Explorer, go to `%AppData%\Notepad++` (or in your appropriate config-file location if you aren't using AppData for config)
+- Rename `session.xml` to `session.xml--keep`
+- Copy `session.xml.inCaseOfCorruption.bak` to `session.xml`
+- Run Notepad++
+
+→ If it's now showing the right copy of your files, great!
+- If not, exit Notepad++, delete `session.xml`, and rename `session.xml--keep` back to `session.xml` .
